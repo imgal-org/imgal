@@ -1,6 +1,11 @@
 [package]
-name = "flimal"
+name = "imgal"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "imgal"
+crate-type = ["cdylib", "lib"]
+
 [dependencies]
+jni = "0.21.1"
