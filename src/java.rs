@@ -1,10 +1,10 @@
 use jni::JNIEnv;
-use jni::objects::{JClass, JDoubleArray};
+use jni::objects::{JClass, JDoubleArray, ReleaseMode};
 use jni::sys::{jdouble};
 
 use crate::math::sum;
 
-// binding for double array
+// Java binding for double array, copy
 #[no_mangle]
 pub extern "system" fn Java_TestRustJavaInterop_sum(
     env: JNIEnv,
@@ -19,5 +19,20 @@ pub extern "system" fn Java_TestRustJavaInterop_sum(
     // compute sum
     let output = sum(&buf);
     // return sum result
+    output
+}
+
+// Java binding for double array, no copy
+#[no_mangle]
+pub extern "system" fn Java_TestRustJavaInterop_sumNoCopy(
+    mut env: JNIEnv,
+    _class: JClass,
+    input: JDoubleArray
+    ) -> jdouble {
+    // get unsafe array elements
+    let elements = unsafe {
+        env.get_array_elements(&input, ReleaseMode::NoCopyBack)
+    }.unwrap();
+    let output = sum(&elements);
     output
 }
