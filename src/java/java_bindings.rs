@@ -2,7 +2,7 @@ use jni::JNIEnv;
 use jni::objects::{JClass, JDoubleArray, ReleaseMode};
 use jni::sys::{jdouble};
 
-use crate::math::sum;
+use crate::statistics::sum;
 
 // Java binding for double array, copy
 #[no_mangle]
