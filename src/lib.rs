@@ -1,2 +1,2 @@
 pub mod java;
-pub mod statistics;
+pub mod statistic;

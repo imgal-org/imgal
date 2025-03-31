@@ -1,4 +1,4 @@
-use imgal::statistics::sum;
+use imgal::statistic::sum;
 
 #[test]
 fn test_sum_integers() {
