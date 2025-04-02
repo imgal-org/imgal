@@ -15,5 +15,5 @@ use std::f64::consts;
 ///
 /// The Omega value.
 pub fn omega(period: &f64) -> f64 {
-    (2 * consts::PI)/(period)
+    (2 as f64 * consts::PI)/(period)
 }
