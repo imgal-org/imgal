@@ -1,3 +1,3 @@
 pub mod java;
-pub mod parameter;
-pub mod statistic;
+pub mod parameters;
+pub mod statistics;

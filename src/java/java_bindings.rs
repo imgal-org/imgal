@@ -2,11 +2,11 @@ use jni::JNIEnv;
 use jni::objects::{JClass, JDoubleArray, ReleaseMode};
 use jni::sys::{jdouble};
 
-use crate::statistic::sum;
+use crate::statistics::sum;
 
 // Java binding for double array, no copy
 #[no_mangle]
-pub extern "system" fn Java_org_imgal_statistic_NativeSum_nativeSum(
+pub extern "system" fn Java_org_imgal_statistics_NativeSum_nativeSum(
     mut env: JNIEnv,
     _class: JClass,
     array: JDoubleArray

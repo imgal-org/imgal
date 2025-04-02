@@ -1,4 +1,4 @@
-package org.imgal.statistic;
+package org.imgal.statistics;
 
 /**
  * Interface for native statistics
