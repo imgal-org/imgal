@@ -1,3 +1,2 @@
-pub mod parameter;
-
-pub use parameter::omega;
+pub mod omega;
+pub use omega::omega;
