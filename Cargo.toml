@@ -5,7 +5,8 @@ edition = "2021"
 
 [lib]
 name = "imgal"
-crate-type = ["cdylib", "lib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 jni = "0.21.1"
+pyo3 = { version = "0.24.1", features = ["extension-module"] }
