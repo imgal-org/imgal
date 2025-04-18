@@ -1,3 +1,5 @@
+use std::iter::Sum;
+
 /// Compute the sum of the input array.
 ///
 /// # Arguments
@@ -15,10 +17,6 @@
 /// let float_data = [1.82, 3.35, 7.13, 9.25];
 /// assert_eq!(sum(&float_data), 21.55);
 /// ```
-pub fn sum<T: std::ops::Add<Output = T> + Copy + Default>(input: &[T]) -> T {
-    let mut output = T::default();
-    for &v in input {
-        output = output + v;
-    }
-    output
+pub fn sum<T: Copy + Sum<T>>(input: &[T]) -> T {
+    input.iter().copied().sum()
 }
