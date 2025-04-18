@@ -20,7 +20,9 @@
 /// # Returns
 ///
 /// * `f64` - The computed integral.
-pub fn composite_simpson(y: &[f64], delta_x: f64) -> f64 {
+pub fn composite_simpson(y: &[f64], delta_x: Option<f64>) -> f64 {
+    // set default delta x if necessary
+    let d_x: f64 = delta_x.unwrap_or(1.0);
     // find the number of subintervals
     let n: usize = y.len() - 1;
     // check for even number of subintervals
@@ -30,7 +32,7 @@ pub fn composite_simpson(y: &[f64], delta_x: f64) -> f64 {
         // compute the even subintervals with Simpson's rule
         let integral: f64 = simpson(&y[..n], delta_x).unwrap();
         // compute the last subinterval with a trapizoid
-        let trap: f64 = (delta_x / 2.0) * (y[n - 1] + y[n]);
+        let trap: f64 = (d_x / 2.0) * (y[n - 1] + y[n]);
         integral + trap
     }
 }
@@ -52,7 +54,9 @@ pub fn composite_simpson(y: &[f64], delta_x: f64) -> f64 {
 ///
 /// * `Ok(f64)` - The computed integral.
 /// * `Err(&str)` - Error message if the number of subintervals is odd
-pub fn simpson(y: &[f64], delta_x: f64) -> Result<f64, &'static str> {
+pub fn simpson(y: &[f64], delta_x: Option<f64>) -> Result<f64, &'static str> {
+    // set default delta x if necessary
+    let d_x: f64 = delta_x.unwrap_or(1.0);
     // find the number of subintervals
     let n: usize = y.len() - 1;
     // check for even number of subintervals
@@ -64,7 +68,7 @@ pub fn simpson(y: &[f64], delta_x: f64) -> Result<f64, &'static str> {
             coef = if i % 2 == 1 { 4.0 } else { 2.0 };
             integral += coef * y[i];
         }
-        Ok((delta_x / 3.0) * integral)
+        Ok((d_x / 3.0) * integral)
     } else {
         Err("Odd number of subintervals is not supported for Simpson's 1/3 rule.")
     }

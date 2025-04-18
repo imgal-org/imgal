@@ -38,14 +38,16 @@ fn reg_py_mod_statistics(parent_mod: &Bound<'_, PyModule>) -> PyResult<()> {
 /// Python binding for integrate::compsite_simpson
 #[pyfunction]
 #[pyo3(name = "composite_simpson")]
-fn py_fn_integrate_composite_simpson(y: Vec<f64>, delta_x: f64) -> f64 {
+#[pyo3(signature = (y, delta_x=None))]
+fn py_fn_integrate_composite_simpson(y: Vec<f64>, delta_x: Option<f64>) -> f64 {
     integrate::composite_simpson(&y, delta_x)
 }
 
 /// Python binding for integrate::simpson
 #[pyfunction]
 #[pyo3(name = "simpson")]
-fn py_fn_integrate_simpson(y: Vec<f64>, delta_x: f64) -> f64 {
+#[pyo3(signature = (y, delta_x=None))]
+fn py_fn_integrate_simpson(y: Vec<f64>, delta_x: Option<f64>) -> f64 {
     integrate::simpson(&y, delta_x).unwrap()
 }
 
