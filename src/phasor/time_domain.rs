@@ -27,19 +27,20 @@ pub fn imaginary(
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
-) -> f64{
+) -> f64 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
     let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
 
     // integrate sine transform (imaginary)
     let n: usize = i_data.len();
+    let dt: f64 = period / (n as f64);
     let mut buf = vec![0.0; n];
     for i in 0..n {
-        buf[i] = i_data[i] * f64::sin(h * w * period * i as f64);
+        buf[i] = i_data[i] * f64::sin(h * w * (dt * i as f64));
     }
-    let i_sin_integral: f64 = midpoint(&buf, Some(period));
-    let i_integral: f64 = midpoint(&i_data, Some(period));
+    let i_sin_integral: f64 = midpoint(&buf, Some(dt));
+    let i_integral: f64 = midpoint(&i_data, Some(dt));
     i_sin_integral / i_integral
 }
 
@@ -75,11 +76,12 @@ pub fn real(
 
     // integrate cosine transform (real)
     let n: usize = i_data.len();
+    let dt: f64 = period / (n as f64);
     let mut buf: Vec<f64> = vec![0.0; n];
     for i in 0..n {
-        buf[i] = i_data[i] * f64::cos(h * w * period * i as f64);
+        buf[i] = i_data[i] * f64::cos(h * w * (dt * i as f64));
     }
-    let i_cos_integral: f64 = midpoint(&buf, Some(period));
-    let i_integral: f64 = midpoint(&i_data, Some(period));
+    let i_cos_integral: f64 = midpoint(&buf, Some(dt));
+    let i_integral: f64 = midpoint(&i_data, Some(dt));
     i_cos_integral / i_integral
 }
