@@ -35,9 +35,10 @@ pub fn imaginary(
     // integrate sine transform (imaginary)
     let n: usize = i_data.len();
     let dt: f64 = period / (n as f64);
-    let mut buf = vec![0.0; n];
+    let h_w_dt: f64 = h * w * dt;
+    let mut buf = Vec::with_capacity(n);
     for i in 0..n {
-        buf[i] = i_data[i] * f64::sin(h * w * (dt * i as f64));
+        buf.push(i_data[i] * f64::sin(h_w_dt * (i as f64)));
     }
     let i_sin_integral: f64 = midpoint(&buf, Some(dt));
     let i_integral: f64 = midpoint(&i_data, Some(dt));
@@ -77,9 +78,10 @@ pub fn real(
     // integrate cosine transform (real)
     let n: usize = i_data.len();
     let dt: f64 = period / (n as f64);
-    let mut buf: Vec<f64> = vec![0.0; n];
+    let h_w_dt: f64 = h * w * dt;
+    let mut buf = Vec::with_capacity(n);
     for i in 0..n {
-        buf[i] = i_data[i] * f64::cos(h * w * (dt * i as f64));
+        buf.push(i_data[i] * f64::cos(h_w_dt * (i as f64)));
     }
     let i_cos_integral: f64 = midpoint(&buf, Some(dt));
     let i_integral: f64 = midpoint(&i_data, Some(dt));
