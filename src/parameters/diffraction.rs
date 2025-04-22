@@ -11,6 +11,6 @@
 ///
 /// # Returns
 ///
-pub fn abbe_diffraction_limit(wavelength: i32, na: f64) -> f64 {
-    wavelength as f64 / (2.0 * na)
+pub fn abbe_diffraction_limit(wavelength: f64, na: f64) -> f64 {
+    wavelength / (2.0 * na)
 }

@@ -32,7 +32,7 @@ pub fn py_fn_integrate_simpson(y: Vec<f64>, delta_x: Option<f64>) -> f64 {
 /// Python binding for parameters::abbe_diffraction_limit.
 #[pyfunction]
 #[pyo3(name = "abbe_diffraction_limit")]
-pub fn py_fn_parameters_abbe_diffraction_limit(wavelength: i32, na: f64) -> f64 {
+pub fn py_fn_parameters_abbe_diffraction_limit(wavelength: f64, na: f64) -> f64 {
     parameters::abbe_diffraction_limit(wavelength, na)
 }
 
