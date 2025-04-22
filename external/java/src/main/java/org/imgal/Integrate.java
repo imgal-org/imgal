@@ -20,21 +20,21 @@ class Integrate {
 	/**
 	 * TODO
 	 */
-	public static double compositeSimpson(final double[] y, double deltaX) {
+	public static double compositeSimpson(final double[] y, final double deltaX) {
 		return Integrate.nativeCompositeSimpson(y, deltaX);
 	}
 
 	/**
 	 * TODO
 	 */
-	public static double midpoint(final double[] y, double h) {
+	public static double midpoint(final double[] y, final double h) {
 		return Integrate.nativeMidpoint(y, h);
 	}
 
 	/**
 	 * TODO
 	 */
-	public static double simpson(final double[] y, double deltaX) {
+	public static double simpson(final double[] y, final double deltaX) {
 		return Integrate.nativeSimpson(y, deltaX);
 	}
 }
