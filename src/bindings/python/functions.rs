@@ -1,6 +1,7 @@
 use pyo3::prelude::*;
 
 use crate::integrate;
+use crate::parameters;
 use crate::phasor;
 use crate::statistics;
 
@@ -20,7 +21,7 @@ pub fn py_fn_integrate_midpoint(y: Vec<f64>, h: Option<f64>) -> f64 {
     integrate::midpoint(&y, h)
 }
 
-/// Python binding for integrate::simpson
+/// Python binding for integrate::simpson.
 #[pyfunction]
 #[pyo3(name = "simpson")]
 #[pyo3(signature = (y, delta_x=None))]
@@ -28,7 +29,14 @@ pub fn py_fn_integrate_simpson(y: Vec<f64>, delta_x: Option<f64>) -> f64 {
     integrate::simpson(&y, delta_x).unwrap()
 }
 
-///Python binding for phasor::time_domain::imaginary
+/// Python binding for parameters::omega.
+#[pyfunction]
+#[pyo3(name = "omega")]
+pub fn py_fn_parameters_omega(period: f64) -> f64 {
+    parameters::omega(period)
+}
+
+///Python binding for phasor::time_domain::imaginary.
 #[pyfunction]
 #[pyo3(name = "imaginary")]
 #[pyo3(signature = (i_data, period, harmonic=None, omega=None))]
