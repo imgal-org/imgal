@@ -12,7 +12,7 @@ class Integrate {
 		System.loadLibrary("imgal");
 	}
 
-	// declare native integration functions
+	// declare native "integrate" functions
 	private static native double nativeCompositeSimpson(double[] y, double deltaX);
 	private static native double nativeMidpoint(double[] y, double h);
 	private static native double nativeSimpson(double[] y, double deltaX);

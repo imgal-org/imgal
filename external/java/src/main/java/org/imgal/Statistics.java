@@ -1,7 +1,7 @@
 package org.imgal;
 
 /**
- * Interface for native statistics
+ * Interface for native statistics.
  *
  * @author Edward Evans
  */
@@ -12,13 +12,13 @@ class Statistics {
 		System.loadLibrary("imgal");
 	}
 
-	// declare native library functions
+	// declare native "statistics: functions
 	private static native double nativeSum(double[] input);
 
 	/**
 	 * TODO
 	 */
 	public static double sum(final double[] input) {
-		return NativeSum.nativeSum(input);
+		return Statistics.nativeSum(input);
 	}
 }
