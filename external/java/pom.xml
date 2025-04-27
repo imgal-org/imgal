@@ -33,6 +33,56 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
             </plugin>
+        <!-- Optional: Build the Rust library -->
+            <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+                <execution>
+                <id>build-rust-library</id>
+                <phase>generate-resources</phase>
+                <goals>
+                    <goal>exec</goal>
+                </goals>
+                <configuration>
+                    <executable>cargo</executable>
+                    <workingDirectory>${project.basedir}/../</workingDirectory> <!-- points to Rust project root -->
+                    <arguments>
+                    <argument>build</argument>
+                    <argument>--release</argument> <!-- remove if you want debug builds -->
+                    </arguments>
+                </configuration>
+                </execution>
+            </executions>
+            </plugin>
+
+            <!-- Copy the compiled Rust library into resources -->
+            <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.3.0</version>
+            <executions>
+                <execution>
+                <id>copy-native-lib</id>
+                <phase>process-resources</phase>
+                <goals>
+                    <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                    <outputDirectory>${project.build.outputDirectory}/native</outputDirectory>
+                    <resources>
+                    <resource>
+                        <directory>${project.basedir}/../target/release</directory>
+                        <includes>
+                        <include>libimgal.so</include>
+                        </includes>
+                    </resource>
+                    </resources>
+                </configuration>
+                </execution>
+            </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
