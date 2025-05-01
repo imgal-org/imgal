@@ -24,14 +24,14 @@ public abstract class AbstractNativeLibrary {
 	static {
 		try {
 			URL url = AbstractNativeLibrary.class.getResource(libPath);
-			Path tmpLib = Files.createTempFile("libimgal", "so");
+			Path tmpLib = Files.createTempFile("libimgal_java", "so");
 			try (InputStream is = url.openStream()) {
 				Files.copy(is, tmpLib, StandardCopyOption.REPLACE_EXISTING);
 			}
 			tmpLib.toFile().deleteOnExit();
 			libLookup = SymbolLookup.libraryLookup(tmpLib, Arena.global());
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to load library", e);
+			throw new RuntimeException("Failed to load library.", e);
 		}
 	}
 }

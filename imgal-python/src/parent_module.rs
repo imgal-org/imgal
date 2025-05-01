@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use super::child_modules;
 
 /// Python binding for the imgal parent module.
-#[pymodule(name = "imgal")]
+#[pymodule(name = "imgal_python")]
 fn imgal_parent_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // register child modules
     child_modules::register_integrate_module(m)?;

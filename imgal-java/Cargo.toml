@@ -1,0 +1,11 @@
+[package]
+name = "imgal-java"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "imgal_java"
+crate-type = ["cdylib"]
+
+[dependencies]
+imgal-core = { path = "../imgal-core" }

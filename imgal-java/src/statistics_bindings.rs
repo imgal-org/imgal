@@ -1,8 +1,8 @@
 use std::slice;
 
-use crate::statistics;
+use imgal_core::statistics;
 
-// C ABI inteface for statistics::sum.
+// C ABI inteface for imgal_core::statistics::sum.
 #[unsafe(no_mangle)]
 pub extern "C" fn sum(ptr: *const f64, len: usize) -> f64 {
     // saftey check: validate the pointer and array length

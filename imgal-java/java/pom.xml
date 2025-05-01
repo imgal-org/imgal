@@ -46,8 +46,9 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>cargo</executable>
-			    <workingDirectory>${project.basedir}/../../</workingDirectory>
+			    <executable>cargo</executable>
+			    <!-- build imgal-java only -->
+			    <workingDirectory>${project.basedir}/../</workingDirectory>
                             <arguments>
                                 <argument>build</argument>
                                 <argument>--release</argument>
@@ -77,7 +78,7 @@
                                 <resource>
 					<directory>${project.basedir}/../../target/release</directory>
                                     <includes>
-                                        <include>libimgal.so</include>
+                                        <include>libimgal_java.so</include>
                                     </includes>
                                     <excludes>
                                         <exclude>**/*.d</exclude>
@@ -89,14 +90,14 @@
                                 <resource>
 					<directory>${project.basedir}/../../target/release</directory>
                                     <includes>
-                                        <include>imgal.dll</include>
+                                        <include>imgal_java.dll</include>
                                     </includes>
                                 </resource>
                                 <!-- macOS -->
                                 <resource>
 					<directory>${project.basedir}/../../target/release</directory>
                                     <includes>
-                                        <include>libimgal.dylib</include>
+                                        <include>libimgal_java.dylib</include>
                                     </includes>
                                 </resource>
                             </resources>

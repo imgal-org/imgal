@@ -1,4 +1,3 @@
-pub mod bindings;
 pub mod integrate;
 pub mod parameters;
 pub mod phasor;

@@ -1,9 +1,9 @@
 use pyo3::prelude::*;
 
-use crate::integrate;
-use crate::parameters;
-use crate::phasor;
-use crate::statistics;
+use imgal_core::integrate;
+use imgal_core::parameters;
+use imgal_core::phasor;
+use imgal_core::statistics;
 
 /// Python binding for integrate::composite_simpson
 #[pyfunction]
