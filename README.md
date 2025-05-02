@@ -2,8 +2,8 @@
 
 ⚠️ Warning: This is an experimental project!
 
-Imgal (**Im**a**g**e **A**lgorithm **L**ibrary), is fast and mostly* safe image processing and algorithm library written in Rust. This library is directly inspired by imagej-ops,
-SciJava Ops, imglib2, the ImageJ2 ecosystems. Imgal is organized as a monorepo with `imgal-core` as the base alorithm library while `imgal-java` and `imgal-python` serve `imgal`'s
+Imgal (**Im**a**g**e **A**lgorithm **L**ibrary), is fast and mostly* safe image processing and algorithm library written in Rust. This library is directly inspired by [imagej-ops](https://github.com/imagej/imagej-ops/),
+[SciJava Ops](https://github.com/scijava/scijava), [ImgLib2](https://github.com/imglib/imglib2), the ImageJ2 ecosystem. Imgal is organized as a monorepo with `imgal-core` as the base alorithm library while `imgal-java` and `imgal-python` serve `imgal`'s
 Java and Python bindings respectively.
 
 # Building `imgal` from source
