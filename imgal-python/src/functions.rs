@@ -43,7 +43,7 @@ pub fn py_fn_parameters_omega(period: f64) -> f64 {
     parameters::omega(period)
 }
 
-///Python binding for phasor::time_domain::imaginary.
+/// Python binding for phasor::time_domain::imaginary.
 #[pyfunction]
 #[pyo3(name = "imaginary")]
 #[pyo3(signature = (i_data, period, harmonic=None, omega=None))]
@@ -56,7 +56,7 @@ pub fn py_fn_phasor_time_domain_imaginary(
     phasor::time_domain::imaginary(&i_data, period, harmonic, omega)
 }
 
-///Python binding for phasor::time_domain::real.
+/// Python binding for phasor::time_domain::real.
 #[pyfunction]
 #[pyo3(name = "real")]
 #[pyo3(signature = (i_data, period, harmonic=None, omega=None))]
