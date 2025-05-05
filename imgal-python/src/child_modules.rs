@@ -27,11 +27,28 @@ pub fn register_parameters_module(parent_module: &Bound<'_, PyModule>) -> PyResu
 pub fn register_phasor_module(parent_module: &Bound<'_, PyModule>) -> PyResult<()> {
     let phasor_module = PyModule::new(parent_module.py(), "phasor")?;
     let time_domain_module = PyModule::new(parent_module.py(), "time_domain")?;
+    let plot_module = PyModule::new(parent_module.py(), "plot")?;
     // add phasor::time_domain submodule functions
-    time_domain_module.add_function(wrap_pyfunction!(functions::py_fn_phasor_time_domain_imaginary, &time_domain_module)?)?;
-    time_domain_module.add_function(wrap_pyfunction!(functions::py_fn_phasor_time_domain_real, &time_domain_module)?)?;
+    time_domain_module.add_function(wrap_pyfunction!(
+        functions::py_fn_phasor_time_domain_imaginary,
+        &time_domain_module
+    )?)?;
+    time_domain_module.add_function(wrap_pyfunction!(
+        functions::py_fn_phasor_time_domain_real,
+        &time_domain_module
+    )?)?;
+    // add phasor::plot submodule functions
+    plot_module.add_function(wrap_pyfunction!(
+        functions::py_fn_phasor_plot_modulation,
+        &plot_module
+    )?)?;
+    plot_module.add_function(wrap_pyfunction!(
+        functions::py_fn_phasor_plot_theta,
+        &plot_module
+    )?)?;
     // attach phasor submodule before attaching to the parent module
     phasor_module.add_submodule(&time_domain_module)?;
+    phasor_module.add_submodule(&plot_module)?;
     parent_module.add_submodule(&phasor_module)
 }
 

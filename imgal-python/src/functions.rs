@@ -69,6 +69,20 @@ pub fn py_fn_phasor_time_domain_real(
     phasor::time_domain::real(&i_data, period, harmonic, omega)
 }
 
+/// Python binding for phasor::plot::modulation.
+#[pyfunction]
+#[pyo3(name = "modulation")]
+pub fn py_fn_phasor_plot_modulation(g: f64, s: f64) -> f64 {
+    phasor::plot::modulation(g, s)
+}
+
+/// Python binding for phasor::plot::theta.
+#[pyfunction]
+#[pyo3(name = "theta")]
+pub fn py_fn_phasor_plot_theta(g: f64, s: f64) -> f64 {
+    phasor::plot::theta(g, s)
+}
+
 /// Python binding for statistics::sum
 #[pyfunction]
 #[pyo3(name = "sum")]
