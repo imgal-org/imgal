@@ -1,0 +1,12 @@
+# Rust #
+Cargo.lock
+
+# Maven #
+target/
+
+# IntelliJ #
+.idea/
+*.iml
+
+# Vim #
+*.swp
