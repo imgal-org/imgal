@@ -5,6 +5,8 @@ use crate::parameters;
 
 /// Compute the imaginary S component of lifetime data.
 ///
+/// # Description
+///
 /// The imaginary component, S, time domain equation is calculated
 /// using:
 ///
@@ -22,12 +24,7 @@ use crate::parameters;
 /// # Returns
 ///
 /// * `f64` - The imaginary, S, component.
-pub fn imaginary(
-    i_data: &[f64],
-    period: f64,
-    harmonic: Option<f64>,
-    omega: Option<f64>,
-) -> f64 {
+pub fn imaginary(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Option<f64>) -> f64 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
     let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
@@ -45,8 +42,9 @@ pub fn imaginary(
     i_sin_integral / i_integral
 }
 
-
 /// Compute the real G component of lifetime data.
+///
+/// # Description
 ///
 /// The real component, G, time domain equation is calculated
 /// using:
@@ -65,12 +63,7 @@ pub fn imaginary(
 /// # Returns
 ///
 /// * `f64` - The real, G, component.
-pub fn real(
-    i_data: &[f64],
-    period: f64,
-    harmonic: Option<f64>,
-    omega: Option<f64>,
-) -> f64 {
+pub fn real(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Option<f64>) -> f64 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
     let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
