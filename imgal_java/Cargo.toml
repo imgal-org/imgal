@@ -1,6 +1,7 @@
 [package]
-name = "imgal-java"
+name = "imgal_java"
 version = "0.1.0"
+authors = ["Edward Evans"]
 edition = "2024"
 
 [lib]
@@ -8,4 +9,4 @@ name = "imgal_java"
 crate-type = ["cdylib"]
 
 [dependencies]
-imgal-core = { path = "../imgal-core" }
+imgal_core = { path = "../imgal_core" }

@@ -1,7 +1,17 @@
+[package]
+name = "imgal"
+version = "0.1.0"
+authors = ["Edward Evans"]
+edition = "2024"
+
 [workspace]
 members = [
-	"imgal-core",
-	"imgal-java",
-	"imgal-python",
+	"imgal_core",
+	"imgal_java",
+	"imgal_python",
 ]
 resolver = "3"
+
+
+[dependencies]
+imgal_core = { path = "imgal_core" }

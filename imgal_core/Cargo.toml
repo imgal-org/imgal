@@ -1,6 +1,7 @@
 [package]
-name = "imgal-core"
+name = "imgal_core"
 version = "0.1.0"
+authors = ["Edward Evans"]
 edition = "2024"
 
 [lib]

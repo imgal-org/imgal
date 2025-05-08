@@ -1,6 +1,7 @@
 [package]
-name = "imgal-python"
+name = "imgal_python"
 version = "0.1.0"
+authors = ["Edward Evans"]
 edition = "2024"
 
 [lib]
@@ -8,5 +9,5 @@ name = "imgal_python"
 crate-type = ["cdylib"]
 
 [dependencies]
-imgal-core = { path = "../imgal-core" }
+imgal_core = { path = "../imgal_core" }
 pyo3 = { version = "0.24.1", features = ["extension-module"] }
