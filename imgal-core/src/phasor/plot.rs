@@ -20,7 +20,7 @@ use std::f64;
 ///
 /// # Reference
 ///
-/// https://doi.org/10.1146/annurev-biophys-062920-063631
+/// <https://doi.org/10.1146/annurev-biophys-062920-063631>
 pub fn multi_component_modulation(g: f64, s: f64) -> f64 {
     let g_sqr: f64 = g * g;
     let s_sqr: f64 = s * s;
@@ -49,7 +49,7 @@ pub fn multi_component_modulation(g: f64, s: f64) -> f64 {
 ///
 /// # Reference
 ///
-/// https://doi.org/10.1146/annurev-biophys-062920-063631
+/// <https://doi.org/10.1146/annurev-biophys-062920-063631>
 pub fn multi_component_theta(g: f64, s: f64) -> f64 {
     s.atan2(g)
 }
@@ -73,7 +73,7 @@ pub fn multi_component_theta(g: f64, s: f64) -> f64 {
 ///
 /// # Reference
 ///
-/// https://doi.org/10.1146/annurev-biophys-062920-063631
+/// <https://doi.org/10.1146/annurev-biophys-062920-063631>
 pub fn single_component_modulation(theta: f64) -> f64 {
     f64::cos(theta)
 }
@@ -98,7 +98,7 @@ pub fn single_component_modulation(theta: f64) -> f64 {
 ///
 /// # Reference
 ///
-/// https://doi.org/10.1146/annurev-biophys-062920-063631
+/// <https://doi.org/10.1146/annurev-biophys-062920-063631>
 pub fn single_component_theta(omega: f64, tau: f64) -> f64 {
     (omega * tau).atan()
 }

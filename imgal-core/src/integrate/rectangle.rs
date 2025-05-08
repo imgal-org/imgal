@@ -7,7 +7,7 @@ use crate::statistics::sum;
 /// Approximates the definite integral using the Midpoint rule
 /// with pre-computed y-values.
 ///
-/// ∫[a,b] f(x) dx ≈ h × [f(x₁) + f(x₂) + ... + f(xₙ)]
+/// ∫\[a,b\] f(x) dx ≈ h × [f(x₁) + f(x₂) + ... + f(xₙ)]
 ///
 /// # Arguments
 ///
