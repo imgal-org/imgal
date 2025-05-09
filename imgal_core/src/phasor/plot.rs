@@ -1,5 +1,21 @@
 use std::f64;
 
+/// Calibrate a phasor coordinate.
+pub fn calibrate_imaginary(g: f64, s:f64, modulation: f64, theta: f64) -> f64 {
+    // compute the modulation and theta angle translations
+    let g_trans = modulation * theta.cos();
+    let s_trans = modulation * theta.sin();
+    g * s_trans + s * g_trans
+}
+
+/// Calibrate a phasor coordinate.
+pub fn calibrate_real(g: f64, s: f64, modulation: f64, theta: f64) -> f64 {
+    // compute modulation and theta translations
+    let g_trans = modulation * theta.cos();
+    let s_trans = modulation * theta.sin();
+    g * g_trans - s * s_trans
+}
+
 /// Compute the modulation of a multi-component phasor coordinate.
 ///
 /// # Description
