@@ -76,25 +76,25 @@ pub fn py_fn_phasor_plot_multi_component_modulation(g: f64, s: f64) -> f64 {
     phasor::plot::multi_component_modulation(g, s)
 }
 
-/// Python binding for phasor::plot::multi_component_theta.
+/// Python binding for phasor::plot::multi_component_phi.
 #[pyfunction]
-#[pyo3(name = "multi_component_theta")]
-pub fn py_fn_phasor_plot_multi_component_theta(g: f64, s: f64) -> f64 {
-    phasor::plot::multi_component_theta(g, s)
+#[pyo3(name = "multi_component_phi")]
+pub fn py_fn_phasor_plot_multi_component_phi(g: f64, s: f64) -> f64 {
+    phasor::plot::multi_component_phi(g, s)
 }
 
 /// Python binding for phasor::plot::single_component_modulation.
 #[pyfunction]
 #[pyo3(name = "single_component_modulation")]
-pub fn py_fn_phasor_plot_single_component_modulation(theta: f64) -> f64 {
-    phasor::plot::single_component_modulation(theta)
+pub fn py_fn_phasor_plot_single_component_modulation(phi: f64) -> f64 {
+    phasor::plot::single_component_modulation(phi)
 }
 
-/// Python binding for phasor::plot::single_component_theta.
+/// Python binding for phasor::plot::single_component_phi.
 #[pyfunction]
-#[pyo3(name = "single_component_theta")]
-pub fn py_fn_phasor_plot_single_component_theta(omega: f64, tau: f64) -> f64 {
-    phasor::plot::single_component_theta(omega, tau)
+#[pyo3(name = "single_component_phi")]
+pub fn py_fn_phasor_plot_single_component_phi(omega: f64, tau: f64) -> f64 {
+    phasor::plot::single_component_phi(omega, tau)
 }
 
 /// Python binding for statistics::sum

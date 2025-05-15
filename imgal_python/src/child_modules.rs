@@ -65,7 +65,7 @@ pub fn register_phasor_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
         &plot_module
     )?)?;
     plot_module.add_function(wrap_pyfunction!(
-        functions::py_fn_phasor_plot_multi_component_theta,
+        functions::py_fn_phasor_plot_multi_component_phi,
         &plot_module
     )?)?;
     plot_module.add_function(wrap_pyfunction!(
@@ -73,7 +73,7 @@ pub fn register_phasor_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
         &plot_module
     )?)?;
     plot_module.add_function(wrap_pyfunction!(
-        functions::py_fn_phasor_plot_single_component_theta,
+        functions::py_fn_phasor_plot_single_component_phi,
         &plot_module
     )?)?;
     // attach phasor submodule before attaching to the parent module
