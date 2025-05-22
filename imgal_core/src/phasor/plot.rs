@@ -23,7 +23,7 @@ use std::f64;
 /// # Returns
 ///
 /// * `f64` - The rotated and scaled (calibrated) imaginary, S, component.
-pub fn calibrate_imaginary(g: f64, s:f64, modulation: f64, phi: f64) -> f64 {
+pub fn calibrate_imaginary(g: f64, s: f64, modulation: f64, phi: f64) -> f64 {
     // compute the modulation and theta angle translations
     let g_trans = modulation * phi.cos();
     let s_trans = modulation * phi.sin();

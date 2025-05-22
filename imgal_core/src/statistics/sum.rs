@@ -9,7 +9,7 @@ use std::iter::Sum;
 /// # Examples
 ///
 /// ```
-/// use imgal::math::sum;
+/// use imgal_core::statistics::sum;
 ///
 /// let int_data = [2, 5, 10, 18];
 /// assert_eq!(sum(&int_data), 35);
