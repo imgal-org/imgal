@@ -7,3 +7,6 @@ edition = "2024"
 [lib]
 name = "imgal_core"
 crate-type = ["rlib"]
+
+[dependencies]
+ndarray = "0.16.0"

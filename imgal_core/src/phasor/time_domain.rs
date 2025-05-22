@@ -1,7 +1,60 @@
 use std::f64;
 
+use ndarray::{Array3, s};
+
 use crate::integrate::midpoint;
 use crate::parameters;
+
+/// Compute the real and imaginary (G, S) coordinates of a
+/// 3D decay image.
+///
+/// # Description
+///
+/// S = ∫(I(t) * sin(nωt) * dt) / ∫(I(t) * dt)
+/// G = ∫(I(t) * cos(nωt) * dt) / ∫(I(t) * dt)
+///
+/// # Arguments
+///
+/// * `i_data` - I(t), the decay data image (time, row, col).
+/// * `period` - The period in seconds.
+/// * `harmonic` - The harmonic value, default = 1.0.
+/// * `omega` - The angular frequency, default = computed from the period.
+///
+/// # Returns
+///
+/// * `Array3<f64>`: The real and imaginary coordinates as a 3D (ch, row, col) image,
+///     where G and S are indexed at 0 and 1 respectively on the _channel_ axis.
+pub fn image(
+    i_data: &Array3<f64>,
+    period: f64,
+    harmonic: Option<f64>,
+    omega: Option<f64>,
+) -> Array3<f64> {
+    // initialize output array
+    let shape = i_data.dim();
+    let mut output = Array3::<f64>::zeros((2, shape.1, shape.2));
+
+    // compute G and S along time axis
+    // TODO: parallelize this!
+    for r in 0..shape.1 {
+        for c in 0..shape.1 {
+            // set real and imaginary (G, S) on output
+            output[[0, r, c]] = real(
+                &i_data.slice(s![.., r, c]).to_vec(),
+                period,
+                harmonic,
+                omega,
+            );
+            output[[1, r, c]] = imaginary(
+                &i_data.slice(s![.., r, c]).to_vec(),
+                period,
+                harmonic,
+                omega,
+            );
+        }
+    }
+    output
+}
 
 /// Compute the imaginary S component of lifetime data.
 ///
