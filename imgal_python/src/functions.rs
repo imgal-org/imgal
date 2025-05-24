@@ -1,3 +1,4 @@
+use numpy::{IntoPyArray, PyArray3, PyArrayMethods};
 use pyo3::prelude::*;
 
 use imgal_core::integrate;
@@ -41,6 +42,23 @@ pub fn py_fn_parameters_abbe_diffraction_limit(wavelength: f64, na: f64) -> f64 
 #[pyo3(name = "omega")]
 pub fn py_fn_parameters_omega(period: f64) -> f64 {
     parameters::omega(period)
+}
+
+/// Python binding for phasor::time_domain::image.
+#[pyfunction]
+#[pyo3(name = "image")]
+#[pyo3(signature = (i_data, period, harmonic=None, omega=None))]
+pub fn py_fn_phasor_time_domain_image<'py>(
+    py: Python<'py>,
+    i_data: Bound<'py, PyArray3<f64>>,
+    period: f64,
+    harmonic: Option<f64>,
+    omega: Option<f64>,
+) -> PyResult<Bound<'py, PyArray3<f64>>> {
+    let ro_array = i_data.readonly();
+    let data = ro_array.as_array();
+    let output = phasor::time_domain::image(&data, period, harmonic, omega);
+    Ok(output.into_pyarray(py))
 }
 
 /// Python binding for phasor::time_domain::imaginary.

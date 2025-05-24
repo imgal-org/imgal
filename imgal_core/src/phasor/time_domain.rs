@@ -1,6 +1,6 @@
 use std::f64;
 
-use ndarray::{Array3, s};
+use ndarray::{Array3, ArrayView3, s};
 
 use crate::integrate::midpoint;
 use crate::parameters;
@@ -25,7 +25,7 @@ use crate::parameters;
 /// * `Array3<f64>`: The real and imaginary coordinates as a 3D (ch, row, col) image,
 ///     where G and S are indexed at 0 and 1 respectively on the _channel_ axis.
 pub fn image(
-    i_data: &Array3<f64>,
+    i_data: &ArrayView3<f64>,
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,

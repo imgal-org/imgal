@@ -60,6 +60,10 @@ pub fn register_phasor_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
 
     // add phasor::time_domain submodule functions
     time_domain_module.add_function(wrap_pyfunction!(
+        functions::py_fn_phasor_time_domain_image,
+        &time_domain_module
+    )?)?;
+    time_domain_module.add_function(wrap_pyfunction!(
         functions::py_fn_phasor_time_domain_imaginary,
         &time_domain_module
     )?)?;
