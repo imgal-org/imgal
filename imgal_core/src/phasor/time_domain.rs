@@ -1,6 +1,6 @@
 use std::f64;
 
-use ndarray::{Array3, ArrayView3, s};
+use ndarray::{Array2, Array3, ArrayView3, Axis, stack, Zip};
 
 use crate::integrate::midpoint;
 use crate::parameters;
@@ -30,30 +30,63 @@ pub fn image(
     harmonic: Option<f64>,
     omega: Option<f64>,
 ) -> Array3<f64> {
+    // set optional parameters if needed
+    let h: f64 = harmonic.unwrap_or(1.0);
+    let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
+
+    // initialize phasor parameters
+    let n: usize = i_data.len_of(Axis(2));
+    let dt: f64 = period / (n as f64);
+    let h_w_dt: f64 = h * w * dt;
+
+    // initialize buffers
+    let mut w_cos_buf: Vec<f64> = Vec::with_capacity(n);
+    let mut w_sin_buf: Vec<f64> = Vec::with_capacity(n);
+
     // initialize output array
     let shape = i_data.dim();
-    let mut output = Array3::<f64>::zeros((2, shape.1, shape.2));
+    let mut g_arr = Array2::<f64>::zeros((shape.0, shape.1));
+    let mut s_arr = Array2::<f64>::zeros((shape.0, shape.1));
 
-    // compute G and S along time axis
-    // TODO: parallelize this!
-    for r in 0..shape.1 {
-        for c in 0..shape.1 {
-            // set real and imaginary (G, S) on output
-            output[[0, r, c]] = real(
-                &i_data.slice(s![.., r, c]).to_vec(),
-                period,
-                harmonic,
-                omega,
-            );
-            output[[1, r, c]] = imaginary(
-                &i_data.slice(s![.., r, c]).to_vec(),
-                period,
-                harmonic,
-                omega,
-            );
-        }
+    // load the waveform buffers
+    for i in 0..n {
+        w_cos_buf.push(f64::cos(h_w_dt * (i as f64)));
+        w_sin_buf.push(f64::sin(h_w_dt * (i as f64)));
     }
-    output
+
+    // compute phasor coordinates per lane
+    let lanes = i_data.lanes(Axis(2));
+    Zip::from(&mut g_arr)
+        .and(&mut s_arr)
+        .and(lanes)
+        .for_each(|g, s, ln| {
+            let mut iv: f64 = 0.0;
+            let mut gv: f64 = 0.0;
+            let mut sv: f64 = 0.0;
+            let l = ln.as_slice().unwrap();
+            l.iter()
+                .zip(w_cos_buf.iter())
+                .zip(w_sin_buf.iter())
+                .for_each(|((v, cosv), sinv)| {
+                    // midpoint integration, sum the midpoints
+                    iv += v;
+                    gv += v * cosv;
+                    sv += v * sinv;
+                });
+            // midpoint integration, multiply by width between data points
+            iv *= dt;
+            gv *= dt;
+            sv *= dt;
+            // normalize by intensity integral
+            gv /= iv;
+            sv /= iv;
+            // write G and S values to arrays
+            *g = gv;
+            *s = sv;
+        });
+
+    // stack G and S arrays, (row, col, ch)
+    stack(Axis(2), &[g_arr.view(), s_arr.view()]).unwrap()
 }
 
 /// Compute the imaginary S component of lifetime data.

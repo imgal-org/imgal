@@ -9,4 +9,5 @@ name = "imgal_core"
 crate-type = ["rlib"]
 
 [dependencies]
-ndarray = "0.16.0"
+rayon = "1.10.0"
+ndarray = { version = "0.16.0", features = ["rayon"] }
