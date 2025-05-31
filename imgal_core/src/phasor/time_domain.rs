@@ -77,12 +77,9 @@ pub fn image(
             iv *= dt;
             gv *= dt;
             sv *= dt;
-            // normalize by intensity integral
-            gv /= iv;
-            sv /= iv;
-            // write G and S values to arrays
-            *g = gv;
-            *s = sv;
+            // normalize and write G/S values to arrays
+            *g = gv / iv;
+            *s = sv / iv;
         });
 
     // stack G and S arrays, (row, col, ch)
