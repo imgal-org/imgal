@@ -59,7 +59,7 @@ pub fn image(
     Zip::from(&mut g_arr)
         .and(&mut s_arr)
         .and(lanes)
-        .for_each(|g, s, ln| {
+        .par_for_each(|g, s, ln| {
             let mut iv: f64 = 0.0;
             let mut gv: f64 = 0.0;
             let mut sv: f64 = 0.0;
