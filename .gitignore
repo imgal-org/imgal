@@ -8,5 +8,8 @@ target/
 .idea/
 *.iml
 
+# uv #
+uv.lock
+
 # Vim #
 *.swp
