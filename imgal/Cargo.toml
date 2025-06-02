@@ -1,0 +1,8 @@
+[package]
+name = "imgal"
+version = "0.1.0"
+authors = ["Edward Evans"]
+edition = "2024"
+
+[dependencies]
+imgal_core = { path = "../imgal_core" }
