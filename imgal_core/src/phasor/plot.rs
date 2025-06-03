@@ -15,10 +15,10 @@ use std::f64;
 ///
 /// # Arguments
 ///
-/// * `g` - The real, G, component.
-/// * `s` - The imaginary, S, component.
-/// * `modulation` - The modulation of the phasor coordinate.
-/// * `phi` - The phi, φ, polar angle of the phasor coordinate.
+/// * `g`: The real, G, component.
+/// * `s`: The imaginary, S, component.
+/// * `modulation`: The modulation of the phasor coordinate.
+/// * `phi`: The phi, φ, polar angle of the phasor coordinate.
 ///
 /// # Returns
 ///
@@ -45,14 +45,14 @@ pub fn calibrate_imaginary(g: f64, s: f64, modulation: f64, phi: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `g` - The real, G, component.
-/// * `s` - The imaginary, S, component.
-/// * `modulation` - The modulation of the phasor coordinate.
-/// * `phi` - The phi, φ, polar angle of the phasor coordinate.
+/// * `g`: The real, G, component.
+/// * `s`: The imaginary, S, component.
+/// * `modulation`: The modulation of the phasor coordinate.
+/// * `phi`: The phi, φ, polar angle of the phasor coordinate.
 ///
 /// # Returns
 ///
-/// * `f64` - The rotated and scaled (calibrated) real, G, component.
+/// * `f64`: The rotated and scaled (calibrated) real, G, component.
 pub fn calibrate_real(g: f64, s: f64, modulation: f64, phi: f64) -> f64 {
     // compute modulation and theta translations
     let g_trans = modulation * phi.cos();
@@ -71,12 +71,12 @@ pub fn calibrate_real(g: f64, s: f64, modulation: f64, phi: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `g` - The real, G, component.
-/// * `s` - The imaginary, S, component.
+/// * `g`: The real, G, component.
+/// * `s`: The imaginary, S, component.
 ///
 /// # Returns
 ///
-/// * `f64` - The modulation of the G and S phasor coordinates.
+/// * `f64`: The modulation of the G and S phasor coordinates.
 ///
 /// # Reference
 ///
@@ -100,12 +100,12 @@ pub fn multi_component_modulation(g: f64, s: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `g` - The real, G, component.
-/// * `s` - The imaginary, S, component.
+/// * `g`: The real, G, component.
+/// * `s`: The imaginary, S, component.
 ///
 /// # Returns
 ///
-/// * `f64` - The phi, φ, polar angle of the G and S phasor coordinate.
+/// * `f64`: The phi, φ, polar angle of the G and S phasor coordinate.
 ///
 /// # Reference
 ///
@@ -125,11 +125,11 @@ pub fn multi_component_phi(g: f64, s: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `phi` - The phi, φ, polar angle of the phasor coordinate.
+/// * `phi`: The phi, φ, polar angle of the phasor coordinate.
 ///
 /// # Returns
 ///
-/// * `f64` - Modulation of a single-component phasor (g, s) coordiate.
+/// * `f64`: Modulation of a single-component phasor (g, s) coordiate.
 ///
 /// # Reference
 ///
@@ -149,12 +149,12 @@ pub fn single_component_modulation(phi: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `omega` - The omega, ω, angular frequency in radians.
-/// * `tau` - The tau, τ, lifetime in seconds.
+/// * `omega`: The omega, ω, angular frequency in radians.
+/// * `tau`: The tau, τ, lifetime in seconds.
 ///
 /// # Returns
 ///
-/// * `f64` - Phi, φ, the polar angle of a single-component phasor (g, s) coordinate.
+/// * `f64`: Phi, φ, the polar angle of a single-component phasor (g, s) coordinate.
 ///
 /// # Reference
 ///

@@ -15,10 +15,10 @@ use crate::parameters;
 ///
 /// # Arguments
 ///
-/// * `i_data` - I(t), the decay data image (time, row, col).
-/// * `period` - The period in seconds.
-/// * `harmonic` - The harmonic value, default = 1.0.
-/// * `omega` - The angular frequency, default = computed from the period.
+/// * `i_data`: I(t), the decay data image (time, row, col).
+/// * `period`: The period in seconds.
+/// * `harmonic`: The harmonic value, default = 1.0.
+/// * `omega`: The angular frequency, default = computed from the period.
 ///
 /// # Returns
 ///
@@ -99,14 +99,14 @@ pub fn image(
 ///
 /// # Arguments
 ///
-/// * `i_data` - I(t), the decay data slice.
-/// * `period` - The period in seconds.
-/// * `harmonic` - The harmonic value, default = 1.0.
-/// * `omega` - The angular frequency, default = computed from the period.
+/// * `i_data`: I(t), the decay data slice.
+/// * `period`: The period in seconds.
+/// * `harmonic`: The harmonic value, default = 1.0.
+/// * `omega`: The angular frequency, default = computed from the period.
 ///
 /// # Returns
 ///
-/// * `f64` - The imaginary, S, component.
+/// * `f64`: The imaginary, S, component.
 pub fn imaginary(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Option<f64>) -> f64 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
@@ -138,14 +138,14 @@ pub fn imaginary(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Opti
 ///
 /// # Arguments
 ///
-/// * `i_data` - I(t), the decay data slice.
-/// * `period` - The period in seconds.
-/// * `harmonic` - The harmonic value, default = 1.0.
-/// * `omega` - The angular frequency, default = computed from the period.
+/// * `i_data`: I(t), the decay data slice.
+/// * `period`: The period in seconds.
+/// * `harmonic`: The harmonic value, default = 1.0.
+/// * `omega`: The angular frequency, default = computed from the period.
 ///
 /// # Returns
 ///
-/// * `f64` - The real, G, component.
+/// * `f64`: The real, G, component.
 pub fn real(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Option<f64>) -> f64 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);

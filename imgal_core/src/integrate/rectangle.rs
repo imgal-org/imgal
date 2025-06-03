@@ -11,12 +11,12 @@ use crate::statistics::sum;
 ///
 /// # Arguments
 ///
-/// * `y` - Slice of the data to integrate.
-/// * `h` - The width between data points, default = 1.0.
+/// * `y`: Slice of the data to integrate.
+/// * `h`: The width between data points, default = 1.0.
 ///
 /// # Returns
 ///
-/// * `f64` - The computed integral
+/// * `f64`: The computed integral.
 pub fn midpoint(y: &[f64], h: Option<f64>) -> f64 {
     h.unwrap_or(1.0) * sum(y)
 }

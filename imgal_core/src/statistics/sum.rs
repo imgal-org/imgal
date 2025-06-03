@@ -1,10 +1,18 @@
 use std::iter::Sum;
 
-/// Compute the sum of the input array.
+/// Compute the sum of the input slice.
+///
+/// # Description
+///
+/// Computes the sum of numbers in the given slice.
 ///
 /// # Arguments
 ///
-/// * `input` - A slice of numbers.
+/// * `input`: A slice of numbers.
+///
+/// # Returns
+///
+/// * `f64`: The sum.
 ///
 /// # Examples
 ///

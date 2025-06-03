@@ -1,19 +1,23 @@
 use std::f64::consts;
 
-/// Compute the angular frequency (Omega) value.
+/// Compute the angular frequency (omega) value.
 ///
-/// This function computes the angular frequency, Omega,
+/// # Description
+///
+/// This function computes the angular frequency, omega (ω),
 /// using the following equation:
 ///
 /// ω = 2π/T
 ///
+/// Where T is the period.
+///
 /// # Arguments
 ///
-/// * `period` - The period in seconds.
+/// * `period`: The period in seconds.
 ///
 /// # Returns
 ///
-/// The Omega value.
+/// * `f64`: The omega (ω) value.
 pub fn omega(period: f64) -> f64 {
     (2.0 * consts::PI) / period
 }
