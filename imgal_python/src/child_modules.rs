@@ -74,11 +74,11 @@ pub fn register_phasor_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
 
     // add phasor::plot submodule functions
     plot_module.add_function(wrap_pyfunction!(
-        functions::py_fn_phasor_plot_calibrate_imaginary,
+        functions::py_fn_phasor_calibration_imaginary,
         &plot_module
     )?)?;
     plot_module.add_function(wrap_pyfunction!(
-        functions::py_fn_phasor_plot_calibrate_real,
+        functions::py_fn_phasor_calibration_real,
         &plot_module
     )?)?;
     plot_module.add_function(wrap_pyfunction!(

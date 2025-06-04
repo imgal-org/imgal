@@ -87,18 +87,18 @@ pub fn py_fn_phasor_time_domain_real(
     phasor::time_domain::real(&i_data, period, harmonic, omega)
 }
 
-/// Python binding for phasor::plot::calibrate_imaginary.
+/// Python binding for phasor::calibration::imaginary.
 #[pyfunction]
-#[pyo3(name = "calibrate_imaginary")]
-pub fn py_fn_phasor_plot_calibrate_imaginary(g: f64, s: f64, modulation: f64, phi: f64) -> f64 {
-    phasor::plot::calibrate_imaginary(g, s, modulation, phi)
+#[pyo3(name = "imaginary")]
+pub fn py_fn_phasor_calibration_imaginary(g: f64, s: f64, modulation: f64, phi: f64) -> f64 {
+    phasor::calibration::imaginary(g, s, modulation, phi)
 }
 
-/// Python binding for phasor::plot::calibrate_real.
+/// Python binding for phasor::calibration::real.
 #[pyfunction]
-#[pyo3(name = "calibrate_real")]
-pub fn py_fn_phasor_plot_calibrate_real(g: f64, s: f64, modulation: f64, phi: f64) -> f64 {
-    phasor::plot::calibrate_real(g, s, modulation, phi)
+#[pyo3(name = "real")]
+pub fn py_fn_phasor_calibration_real(g: f64, s: f64, modulation: f64, phi: f64) -> f64 {
+    phasor::calibration::real(g, s, modulation, phi)
 }
 
 /// Python binding for phasor::plot::multi_component_modulation.
