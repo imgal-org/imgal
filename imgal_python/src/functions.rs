@@ -40,8 +40,9 @@ pub fn py_fn_parameters_abbe_diffraction_limit(wavelength: f64, na: f64) -> f64 
 /// Python binding for parameters::omega.
 #[pyfunction]
 #[pyo3(name = "omega")]
-pub fn py_fn_parameters_omega(period: f64) -> f64 {
-    parameters::omega(period)
+pub fn py_fn_parameters_omega(period: Bound<PyAny>) -> PyResult<f64> {
+    let p: f64 = period.extract()?;
+    Ok(parameters::omega(p))
 }
 
 /// Python binding for phasor::time_domain::image.
