@@ -65,6 +65,10 @@ from tifffile import imread
 # read some FLIM data
 data = imread("/path/to/flim_data.tif")
 
+# TEMP: this is needed until time_domain.image
+# implements generics.
+data = data.astype(np.float64)
+
 # transpose lifetime axis to last position
 # (contigous memory with C-order)
 data = data.transpose(1, 2, 0).copy()
