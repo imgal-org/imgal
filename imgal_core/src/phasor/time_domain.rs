@@ -4,7 +4,7 @@ use ndarray::{Array2, Array3, ArrayView3, Axis, Zip, stack};
 
 use crate::integrate::midpoint;
 use crate::parameters;
-use crate::traits::numeric::FloatLike;
+use crate::traits::numeric::ToFloat64;
 
 /// Compute the real and imaginary (G, S) coordinates of a
 /// 3D decay image.
@@ -27,21 +27,21 @@ use crate::traits::numeric::FloatLike;
 ///     where G and S are indexed at 0 and 1 respectively on the _channel_ axis.
 pub fn image<T>(
     i_data: &ArrayView3<T>,
-    period: T,
-    harmonic: Option<T>,
-    omega: Option<T>,
+    period: f64,
+    harmonic: Option<f64>,
+    omega: Option<f64>,
 ) -> Array3<f64>
 where
-    T: FloatLike,
+    T: ToFloat64,
 {
     // set optional parameters if needed
-    let h = harmonic.unwrap_or(T::from_f64(1.0));
-    let w = omega.unwrap_or_else(|| T::from_f64(parameters::omega(period)));
+    let h = harmonic.unwrap_or(1.0);
+    let w = omega.unwrap_or_else(|| parameters::omega(period));
 
     // initialize phasor parameters
     let n: usize = i_data.len_of(Axis(2));
-    let dt: f64 = period.into() / n as f64;
-    let h_w_dt: f64 = h.into() * w.into() * dt;
+    let dt: f64 = period / n as f64;
+    let h_w_dt: f64 = h * w * dt;
 
     // initialize buffers
     let mut w_cos_buf: Vec<f64> = Vec::with_capacity(n);
