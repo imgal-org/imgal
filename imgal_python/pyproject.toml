@@ -8,7 +8,7 @@ version = "0.1.0.dev0"
 description = "Python wrapper for imgal_core"
 authors = [{ name = "Edward Evans", email = "elevans2@wisc.edu" }]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "maturin>=1.8.3",
 ]
