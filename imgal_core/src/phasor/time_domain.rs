@@ -5,6 +5,7 @@ use ndarray::{Array2, Array3, ArrayView3, Axis, Zip, stack};
 
 use crate::integrate::midpoint;
 use crate::parameters;
+use crate::traits::numeric::FloatLike;
 
 /// Compute the real and imaginary (G, S) coordinates of a
 /// 3D decay image.
@@ -32,16 +33,7 @@ pub fn image<T>(
     omega: Option<T>,
 ) -> Array3<f64>
 where
-    T: Copy
-        + Add<Output = T>
-        + Div<Output = T>
-        + Mul<Output = T>
-        + Sub<Output = T>
-        + AddAssign
-        + MulAssign
-        + Into<f64>
-        + From<f64>
-        + Sync,
+    T: FloatLike,
 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(T::from(1.0)).into();
