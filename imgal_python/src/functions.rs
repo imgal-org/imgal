@@ -60,16 +60,21 @@ pub fn py_fn_phasor_time_domain_image<'py>(
     if let Ok(array) = i_data.extract::<PyReadonlyArray3<f32>>() {
         let ro_array = array.readonly();
         let data = ro_array.as_array();
-        let output = phasor::time_domain::image(&data, period as f32, harmonic.map(|v| v as f32), omega.map(|v| v as f32));
+        let output = phasor::time_domain::image(
+            &data,
+            period as f32,
+            harmonic.map(|v| v as f32),
+            omega.map(|v| v as f32),
+        );
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = i_data.extract::<PyReadonlyArray3<f64>>() {
         let ro_array = array.readonly();
         let data = ro_array.as_array();
         let output = phasor::time_domain::image(&data, period, harmonic, omega);
-        return Ok(output.into_pyarray(py))
+        return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-            "Unsopported array dtype."
+            "Unsopported array dtype.",
         ));
     };
 }
