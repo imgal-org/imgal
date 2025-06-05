@@ -1,6 +1,7 @@
 use std::f64;
+use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Sub};
 
-use ndarray::{Array2, Array3, ArrayView3, Axis, stack, Zip};
+use ndarray::{Array2, Array3, ArrayView3, Axis, Zip, stack};
 
 use crate::integrate::midpoint;
 use crate::parameters;
@@ -24,19 +25,31 @@ use crate::parameters;
 ///
 /// * `Array3<f64>`: The real and imaginary coordinates as a 3D (ch, row, col) image,
 ///     where G and S are indexed at 0 and 1 respectively on the _channel_ axis.
-pub fn image(
-    i_data: &ArrayView3<f64>,
-    period: f64,
-    harmonic: Option<f64>,
-    omega: Option<f64>,
-) -> Array3<f64> {
+pub fn image<T>(
+    i_data: &ArrayView3<T>,
+    period: T,
+    harmonic: Option<T>,
+    omega: Option<T>,
+) -> Array3<f64>
+where
+    T: Copy
+        + Add<Output = T>
+        + Div<Output = T>
+        + Mul<Output = T>
+        + Sub<Output = T>
+        + AddAssign
+        + MulAssign
+        + Into<f64>
+        + From<f64>
+        + Sync,
+{
     // set optional parameters if needed
-    let h: f64 = harmonic.unwrap_or(1.0);
-    let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
+    let h: f64 = harmonic.unwrap_or(T::from(1.0)).into();
+    let w: f64 = omega.unwrap_or_else(|| T::from(parameters::omega(period))).into();
 
     // initialize phasor parameters
     let n: usize = i_data.len_of(Axis(2));
-    let dt: f64 = period / (n as f64);
+    let dt: f64 = period.into() / n as f64;
     let h_w_dt: f64 = h * w * dt;
 
     // initialize buffers
@@ -67,11 +80,13 @@ pub fn image(
             l.iter()
                 .zip(w_cos_buf.iter())
                 .zip(w_sin_buf.iter())
-                .for_each(|((v, cosv), sinv)| {
+                .for_each(|(( v, cosv), sinv)| {
+                    // deref value, "v", and convert to f64 for compute
+                    let vf: f64 = (*v).into();
                     // midpoint integration, sum the midpoints
-                    iv += v;
-                    gv += v * cosv;
-                    sv += v * sinv;
+                    iv += vf;
+                    gv += vf * cosv;
+                    sv += vf * sinv;
                 });
             // midpoint integration, multiply by width between data points
             iv *= dt;

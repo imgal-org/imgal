@@ -18,7 +18,6 @@ use std::f64::consts;
 /// # Returns
 ///
 /// * `f64`: The omega (ω) value.
-pub fn omega<T: Into<f64>>(period: T) -> f64
-{
+pub fn omega<T: Into<f64>>(period: T) -> f64 {
     2.0 * consts::PI / T::into(period)
 }
