@@ -1,4 +1,21 @@
-use std::ops::{Add, Div, Mul, Sub, AddAssign, MulAssign};
+use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Sub};
+
+/// These traits enable a lossy f64 to f32 conversion.
+pub trait ConvertFromF64 {
+    fn from_f64(x: f64) -> Self;
+}
+
+impl ConvertFromF64 for f32 {
+    fn from_f64(x: f64) -> Self {
+        x as f32
+    }
+}
+
+impl ConvertFromF64 for f64 {
+    fn from_f64(x: f64) -> Self {
+        x
+    }
+}
 
 pub trait FloatLike:
     Copy
@@ -7,11 +24,12 @@ pub trait FloatLike:
     + Mul<Output = Self>
     + Sub<Output = Self>
     + AddAssign
+    + ConvertFromF64
     + MulAssign
     + Into<f64>
-    + From<f64>
     + Sync
-{}
+{
+}
 
 impl<T> FloatLike for T where
     T: Copy
@@ -20,8 +38,9 @@ impl<T> FloatLike for T where
         + Mul<Output = T>
         + Sub<Output = T>
         + AddAssign
+        + ConvertFromF64
         + MulAssign
         + Into<f64>
-        + From<f64>
         + Sync
-{}
+{
+}

@@ -1,4 +1,4 @@
-use numpy::{IntoPyArray, PyArray3, PyArrayMethods};
+use numpy::{IntoPyArray, PyArray3, PyArrayMethods, PyReadonlyArray3};
 use pyo3::prelude::*;
 
 use imgal_core::integrate;
@@ -51,15 +51,27 @@ pub fn py_fn_parameters_omega(period: Bound<PyAny>) -> PyResult<f64> {
 #[pyo3(signature = (i_data, period, harmonic=None, omega=None))]
 pub fn py_fn_phasor_time_domain_image<'py>(
     py: Python<'py>,
-    i_data: Bound<'py, PyArray3<f64>>,
+    i_data: Bound<'py, PyAny>,
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
 ) -> PyResult<Bound<'py, PyArray3<f64>>> {
-    let ro_array = i_data.readonly();
-    let data = ro_array.as_array();
-    let output = phasor::time_domain::image(&data, period, harmonic, omega);
-    Ok(output.into_pyarray(py))
+    // try and extract allowed array types
+    if let Ok(array) = i_data.extract::<PyReadonlyArray3<f32>>() {
+        let ro_array = array.readonly();
+        let data = ro_array.as_array();
+        let output = phasor::time_domain::image(&data, period as f32, harmonic.map(|v| v as f32), omega.map(|v| v as f32));
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(array) = i_data.extract::<PyReadonlyArray3<f64>>() {
+        let ro_array = array.readonly();
+        let data = ro_array.as_array();
+        let output = phasor::time_domain::image(&data, period, harmonic, omega);
+        return Ok(output.into_pyarray(py))
+    } else {
+        return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "Unsopported array dtype."
+        ));
+    };
 }
 
 /// Python binding for phasor::time_domain::imaginary.

@@ -1,5 +1,4 @@
 use std::f64;
-use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Sub};
 
 use ndarray::{Array2, Array3, ArrayView3, Axis, Zip, stack};
 
@@ -36,13 +35,13 @@ where
     T: FloatLike,
 {
     // set optional parameters if needed
-    let h: f64 = harmonic.unwrap_or(T::from(1.0)).into();
-    let w: f64 = omega.unwrap_or_else(|| T::from(parameters::omega(period))).into();
+    let h = harmonic.unwrap_or(T::from_f64(1.0));
+    let w = omega.unwrap_or_else(|| T::from_f64(parameters::omega(period)));
 
     // initialize phasor parameters
     let n: usize = i_data.len_of(Axis(2));
     let dt: f64 = period.into() / n as f64;
-    let h_w_dt: f64 = h * w * dt;
+    let h_w_dt: f64 = h.into() * w.into() * dt;
 
     // initialize buffers
     let mut w_cos_buf: Vec<f64> = Vec::with_capacity(n);
@@ -72,7 +71,7 @@ where
             l.iter()
                 .zip(w_cos_buf.iter())
                 .zip(w_sin_buf.iter())
-                .for_each(|(( v, cosv), sinv)| {
+                .for_each(|((v, cosv), sinv)| {
                     // deref value, "v", and convert to f64 for compute
                     let vf: f64 = (*v).into();
                     // midpoint integration, sum the midpoints
