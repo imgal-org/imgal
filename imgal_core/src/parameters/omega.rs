@@ -1,5 +1,7 @@
 use std::f64::consts;
 
+use crate::traits::numeric::ToFloat64;
+
 /// Compute the angular frequency (omega) value.
 ///
 /// # Description
@@ -18,6 +20,6 @@ use std::f64::consts;
 /// # Returns
 ///
 /// * `f64`: The omega (ω) value.
-pub fn omega<T: Into<f64>>(period: T) -> f64 {
+pub fn omega<T: ToFloat64>(period: T) -> f64 {
     2.0 * consts::PI / T::into(period)
 }
