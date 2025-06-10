@@ -15,7 +15,7 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Arguments
 ///
-/// * `period`: The period in seconds.
+/// * `period`: The time period.
 ///
 /// # Returns
 ///

@@ -1,4 +1,4 @@
-use std::ops::{Add, Div, Mul, Sub, AddAssign, MulAssign};
+use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Sub};
 
 pub trait ToFloat64:
     Copy
@@ -10,8 +10,8 @@ pub trait ToFloat64:
     + MulAssign
     + Into<f64>
     + Sync
-
-{}
+{
+}
 
 impl<T> ToFloat64 for T where
     T: Copy
@@ -23,4 +23,5 @@ impl<T> ToFloat64 for T where
         + MulAssign
         + Into<f64>
         + Sync
-{}
+{
+}
