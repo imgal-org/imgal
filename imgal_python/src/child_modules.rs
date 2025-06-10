@@ -104,6 +104,26 @@ pub fn register_phasor_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
     parent_module.add_submodule(&phasor_module)
 }
 
+/// Python bindings for the "simulation" submodule.
+pub fn register_simulation_module(parent_module: &Bound<'_, PyModule>) -> PyResult<()> {
+    let simulation_module = PyModule::new(parent_module.py(), "simulation")?;
+    let decay_module = PyModule::new(parent_module.py(), "decay")?;
+
+    // add module to python's sys.modules
+    py_import_module("simulation");
+    py_import_module("simulation.decay");
+
+    // add simulation::decay submodule functions
+    decay_module.add_function(wrap_pyfunction!(
+        functions::py_fun_simulation_decay_fluorescence_decay_1d,
+        &decay_module
+    )?)?;
+
+    // attach simulation submodule before attaching to the parent module
+    simulation_module.add_submodule(&decay_module)?;
+    parent_module.add_submodule(&simulation_module)
+}
+
 /// Python binding for the "statistics" submodule.
 pub fn register_statistics_module(parent_module: &Bound<'_, PyModule>) -> PyResult<()> {
     let statistics_module = PyModule::new(parent_module.py(), "statistics")?;
