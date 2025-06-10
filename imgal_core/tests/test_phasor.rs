@@ -25,7 +25,7 @@ fn create_phasor_test_data() -> (Array1<f64>, f64) {
 
     // create time array and compute the decay curve
     let t: Array1<f64> = Array1::linspace(0.0, (samples as f64 - 1.0) * period, samples);
-    let decay: Array1<f64> = t.mapv(|ti| ii * (-ti / tau).exp());
+    let decay: Array1<f64> = t.map(|ti| ii * (-ti / tau).exp());
 
     // return decay array and period
     (decay, period)
