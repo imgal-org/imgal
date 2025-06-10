@@ -1,6 +1,6 @@
 use std::f64;
 
-use ndarray::{Array2, Array3, ArrayView3, Axis, Zip, stack};
+use ndarray::{stack, Array2, Array3, ArrayView3, Axis, Zip};
 
 use crate::integrate::midpoint;
 use crate::parameters;
@@ -30,6 +30,7 @@ pub fn image<T>(
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
+    axis: Option<usize>,
 ) -> Array3<f64>
 where
     T: ToFloat64,
@@ -37,9 +38,10 @@ where
     // set optional parameters if needed
     let h = harmonic.unwrap_or(1.0);
     let w = omega.unwrap_or_else(|| parameters::omega(period));
+    let a = axis.unwrap_or(2);
 
     // initialize phasor parameters
-    let n: usize = i_data.len_of(Axis(2));
+    let n: usize = i_data.len_of(Axis(a));
     let dt: f64 = period / n as f64;
     let h_w_dt: f64 = h * w * dt;
 
@@ -48,9 +50,15 @@ where
     let mut w_sin_buf: Vec<f64> = Vec::with_capacity(n);
 
     // initialize output array
-    let shape = i_data.dim();
-    let mut g_arr = Array2::<f64>::zeros((shape.0, shape.1));
-    let mut s_arr = Array2::<f64>::zeros((shape.0, shape.1));
+    let in_shape = i_data.dim();
+    let out_shape = match a {
+        0 => Some((in_shape.1, in_shape.2)),
+        1 => Some((in_shape.0, in_shape.2)),
+        2 => Some((in_shape.0, in_shape.1)),
+        _ => None,
+    };
+    let mut g_arr = Array2::<f64>::zeros(out_shape.unwrap());
+    let mut s_arr = Array2::<f64>::zeros(out_shape.unwrap());
 
     // load the waveform buffers
     for i in 0..n {
@@ -59,7 +67,7 @@ where
     }
 
     // compute phasor coordinates per lane
-    let lanes = i_data.lanes(Axis(2));
+    let lanes = i_data.lanes(Axis(a));
     Zip::from(&mut g_arr)
         .and(&mut s_arr)
         .and(lanes)
@@ -67,18 +75,32 @@ where
             let mut iv: f64 = 0.0;
             let mut gv: f64 = 0.0;
             let mut sv: f64 = 0.0;
-            let l = ln.as_slice().unwrap();
-            l.iter()
-                .zip(w_cos_buf.iter())
-                .zip(w_sin_buf.iter())
-                .for_each(|((v, cosv), sinv)| {
-                    // deref value, "v", and convert to f64 for compute
-                    let vf: f64 = (*v).into();
-                    // midpoint integration, sum the midpoints
-                    iv += vf;
-                    gv += vf * cosv;
-                    sv += vf * sinv;
-                });
+            // use a slice if the data is contiguous
+            if let Some(l) = ln.as_slice() {
+                l.iter()
+                    .zip(w_cos_buf.iter())
+                    .zip(w_sin_buf.iter())
+                    .for_each(|((v, cosv), sinv)| {
+                        // deref value, "v", and convert to f64
+                        let vf: f64 = (*v).into();
+                        // midpoint integration
+                        iv += vf;
+                        gv += vf * cosv;
+                        sv += vf * sinv;
+                    });
+            } else {
+                ln.iter()
+                    .zip(w_cos_buf.iter())
+                    .zip(w_sin_buf.iter())
+                    .for_each(|((v, cosv), sinv)| {
+                        // deref value, "v", and convert to f64
+                        let vf: f64 = (*v).into();
+                        // midpoint integration
+                        iv += vf;
+                        gv += vf * cosv;
+                        sv += vf * sinv;
+                    });
+            }
             // midpoint integration, multiply by width between data points
             iv *= dt;
             gv *= dt;
