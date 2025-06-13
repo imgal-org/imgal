@@ -2,7 +2,7 @@ use std::f64;
 
 use ndarray::{stack, Array2, Array3, ArrayView3, Axis, Zip};
 
-use crate::integrate::midpoint;
+use crate::integration::midpoint;
 use crate::parameters;
 use crate::traits::numeric::ToFloat64;
 
