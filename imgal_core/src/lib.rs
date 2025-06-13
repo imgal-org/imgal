@@ -1,4 +1,4 @@
-pub mod integrate;
+pub mod integration;
 pub mod parameters;
 pub mod phasor;
 pub mod simulation;
