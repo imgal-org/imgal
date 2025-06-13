@@ -5,7 +5,7 @@ use crate::utils::py_import_module;
 
 /// Python binding for the "integrate" submodule.
 pub fn register_integration_module(parent_module: &Bound<'_, PyModule>) -> PyResult<()> {
-    let integration_module = PyModule::new(parent_module.py(), "integrate")?;
+    let integration_module = PyModule::new(parent_module.py(), "integration")?;
 
     // add module to python's sys.modules
     py_import_module("integration");
