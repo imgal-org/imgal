@@ -1,10 +1,10 @@
 use std::iter::Sum;
 
-/// Compute the sum of the input slice.
+/// Compute the sum of the slice of numbers.
 ///
 /// # Description
 ///
-/// Computes the sum of numbers in the given slice.
+/// Computes the sum of numbers in the input slice.
 ///
 /// # Arguments
 ///

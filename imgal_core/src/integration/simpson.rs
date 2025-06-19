@@ -1,48 +1,50 @@
-/// Perform numerical integration using Simpson's 1/3 rule
-/// and the trapizoid rule (for odd number subintervals).
+/// Integrate a curve with Simpson's 1/3 rule and the trapezoid rule.
 ///
 /// # Description
 ///
-/// Simpson's 1/3 rule apporximates the integral of a function
-/// with an even number of subintervals using:
+/// Approximates the definite integral using Simpson's 1/3 rule and
+/// the trapezoid rule (for odd number of subintervals) with pre-computed
+/// x-values:
 ///
 /// ∫(f(x)dx) ≈ (Δx/3) * [f(x₀) + 4f(x₁) + 2f(x₂) + 4f(x₃) + ... + 2f(xₙ₋₂) + 4f(xₙ₋₁) + f(xₙ)]
 ///
-/// Where "n" is the number of evenly spaced points in the data. If there is an odd number of
-/// subintervals, the final subinterval is integrated using the trapezoid rule:
+/// Where "n" is the number of evenly spaced points in the data. If there is an
+/// odd number of subintervals, the final subinterval is integrated using the
+/// trapezoid rule:
+///
 /// ∫(f(x)dx) ≈ (Δx/2) * [f(x₀) + f(x₁)]
 ///
 /// # Arguments
 ///
-/// * `y`: Slice of the data to integrate.
-/// * `delta_x`: The width between data points.
+/// * `x`: The 1-dimensional data to integrate.
+/// * `delta_x`: The width between data points, default = 1.0.
 ///
 /// # Returns
 ///
 /// * `f64`: The computed integral.
-pub fn composite_simpson(y: &[f64], delta_x: Option<f64>) -> f64 {
+pub fn composite_simpson(x: &[f64], delta_x: Option<f64>) -> f64 {
     // set default delta x if necessary
     let d_x: f64 = delta_x.unwrap_or(1.0);
     // find the number of subintervals
-    let n: usize = y.len() - 1;
+    let n: usize = x.len() - 1;
     // check for even number of subintervals
     if n % 2 == 0 {
-        simpson(y, delta_x).unwrap()
+        simpson(x, delta_x).unwrap()
     } else {
         // compute the even subintervals with Simpson's rule
-        let integral: f64 = simpson(&y[..n], delta_x).unwrap();
+        let integral: f64 = simpson(&x[..n], delta_x).unwrap();
         // compute the last subinterval with a trapizoid
-        let trap: f64 = (d_x / 2.0) * (y[n - 1] + y[n]);
+        let trap: f64 = (d_x / 2.0) * (x[n - 1] + x[n]);
         integral + trap
     }
 }
 
-/// Perform numerical integration using Simpson's 1/3 rule.
+/// Integrate a curve with Simpson's 1/3 rule.
 ///
 /// # Description
 ///
-/// Simpson's 1/3 rule apporximates the integral of a function
-/// with an even number of subintervals using:
+/// Approximates the definite integral using Simpson's 1/3 rule and
+/// with pre-computed x-values:
 ///
 /// ∫(f(x)dx) ≈ (Δx/3) * [f(x₀) + 4f(x₁) + 2f(x₂) + 4f(x₃) + ... + 2f(xₙ₋₂) + 4f(xₙ₋₁) + f(xₙ)]
 ///
@@ -50,26 +52,26 @@ pub fn composite_simpson(y: &[f64], delta_x: Option<f64>) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `y`: Slice of the data to integrate.
-/// * `delta_x`: The width between data points.
+/// * `x`: The 1-dimensional data to integrate with an even number of subintervals.
+/// * `delta_x`: The width between data points, default = 1.0.
 ///
 /// # Returns
 ///
 /// * `Ok(f64)`: The computed integral.
 /// * `Err(&str)`: Error message if the number of subintervals is odd.
-pub fn simpson(y: &[f64], delta_x: Option<f64>) -> Result<f64, &'static str> {
+pub fn simpson(x: &[f64], delta_x: Option<f64>) -> Result<f64, &'static str> {
     // set default delta x if necessary
     let d_x: f64 = delta_x.unwrap_or(1.0);
     // find the number of subintervals
-    let n: usize = y.len() - 1;
+    let n: usize = x.len() - 1;
     // check for even number of subintervals
     if n % 2 == 0 {
         // compute integal with Simpson's rule
         let mut coef: f64;
-        let mut integral: f64 = y[0] + y[n];
+        let mut integral: f64 = x[0] + x[n];
         for i in 1..n {
             coef = if i % 2 == 1 { 4.0 } else { 2.0 };
-            integral += coef * y[i];
+            integral += coef * x[i];
         }
         Ok((d_x / 3.0) * integral)
     } else {

@@ -6,21 +6,24 @@ use crate::integration::midpoint;
 use crate::parameters;
 use crate::traits::numeric::ToFloat64;
 
-/// Compute the real and imaginary (G, S) coordinates of a
-/// 3D decay image.
+/// Compute the real and imaginary (G, S) coordinates of a 3-dimensional decay
+/// image.
 ///
 /// # Description
 ///
-/// S = ∫(I(t) * sin(nωt) * dt) / ∫(I(t) * dt)
+/// The real (G) and imaginary (S) components are calculated using the normalized
+/// sine and cosine Fourier transforms:
+///
+/// S = ∫(I(t) * sin(nωt) * dt) / ∫(I(t) * dt)\
 /// G = ∫(I(t) * cos(nωt) * dt) / ∫(I(t) * dt)
 ///
 /// # Arguments
 ///
-/// * `i_data`: I(t), the decay data image (time, row, col).
-/// * `period`: The period in seconds.
+/// * `i_data`: I(t), the decay data image.
+/// * `period`: The period.
 /// * `harmonic`: The harmonic value, default = 1.0.
-/// * `omega`: The angular frequency, default = computed from the period.
-///
+/// * `omega`: The angular frequency.
+/// * `axis`: The decay or lifetime axis, default = 2.
 /// # Returns
 ///
 /// * `Array3<f64>`: The real and imaginary coordinates as a 3D (ch, row, col) image,
@@ -114,12 +117,12 @@ where
     stack(Axis(2), &[g_arr.view(), s_arr.view()]).unwrap()
 }
 
-/// Compute the imaginary S component of lifetime data.
+/// Compute the imaginary (S) component of a 1-dimensional decay curve.
 ///
 /// # Description
 ///
-/// The imaginary component, S, time domain equation is calculated
-/// using:
+/// The imaginary (S) component is calculated using the normalized sine Fourier
+/// transform:
 ///
 /// S = ∫(I(t) * sin(nωt) * dt) / ∫(I(t) * dt)
 ///
@@ -127,14 +130,14 @@ where
 ///
 /// # Arguments
 ///
-/// * `i_data`: I(t), the decay data slice.
-/// * `period`: The period in seconds.
+/// * `i_data`: I(t), the 1-dimensonal decay curve.
+/// * `period`: The period.
 /// * `harmonic`: The harmonic value, default = 1.0.
-/// * `omega`: The angular frequency, default = computed from the period.
+/// * `omega`: The angular frequency.
 ///
 /// # Returns
 ///
-/// * `f64`: The imaginary, S, component.
+/// * `f64`: The imaginary component, S.
 pub fn imaginary(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Option<f64>) -> f64 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
@@ -153,12 +156,12 @@ pub fn imaginary(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Opti
     i_sin_integral / i_integral
 }
 
-/// Compute the real G component of lifetime data.
+/// Compute the real (G) component of a 1-dimensional decay curve.
 ///
 /// # Description
 ///
-/// The real component, G, time domain equation is calculated
-/// using:
+/// The real (G) component is calculated using the normalized cosine Fourier
+/// transform:
 ///
 /// G = ∫(I(t) * cos(nωt) * dt) / ∫(I(t) * dt)
 ///
@@ -166,14 +169,14 @@ pub fn imaginary(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Opti
 ///
 /// # Arguments
 ///
-/// * `i_data`: I(t), the decay data slice.
-/// * `period`: The period in seconds.
+/// * `i_data`: I(t), the 1-dimensional decay curve.
+/// * `period`: The period.
 /// * `harmonic`: The harmonic value, default = 1.0.
-/// * `omega`: The angular frequency, default = computed from the period.
+/// * `omega`: The angular frequency.
 ///
 /// # Returns
 ///
-/// * `f64`: The real, G, component.
+/// * `f64`: The real component, G.
 pub fn real(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Option<f64>) -> f64 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);

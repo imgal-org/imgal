@@ -3,7 +3,22 @@ use pyo3::prelude::*;
 
 use imgal_core::phasor;
 
-/// Python binding for phasor::time_domain::image.
+/// Compute the real and imaginary (G, S) coordinates of a 3-dimensional decay
+/// image.
+///
+/// The real (G) and imaginary (S) components are calculated using the normalized
+/// sine and cosine Fourier transforms:
+///
+/// S = ∫(I(t) * sin(nωt) * dt) / ∫(I(t) * dt)
+/// G = ∫(I(t) * cos(nωt) * dt) / ∫(I(t) * dt)
+///
+/// :param i_data: I(t), the decay data image.
+/// :param period: The period.
+/// :param harmonic: The harmonic value, default = 1.0.
+/// :param omega: The angular frequency.
+/// :param axis: The decay or lifetime axis, default = 2.
+/// :return: The real and imaginary coordinates as a 3-dimensional (row, col, ch)
+///     image, where G and S are indexed at 0 and 1 respectively on the channel axis.
 #[pyfunction]
 #[pyo3(name = "image")]
 #[pyo3(signature = (i_data, period, harmonic=None, omega=None, axis=None))]
@@ -38,7 +53,20 @@ pub fn time_domain_image<'py>(
     };
 }
 
-/// Python binding for phasor::time_domain::imaginary.
+/// Compute the imaginary (S) component of a 1-dimensional decay curve.
+///
+/// The imaginary (S) component is calculated using the normalized sine Fourier
+/// transform:
+///
+/// S = ∫(I(t) * sin(nωt) * dt) / ∫(I(t) * dt)
+///
+/// Where 'n' and 'ω' are harmonic and omega values respectively.
+///
+/// :param i_data: I(t), the 1-dimensional decay curve.
+/// :param period: The period.
+/// :param harmonic: The harmonic value, default = 1.0.
+/// :param omega: The angular frequency.
+/// :return: The imaginary component, S.
 #[pyfunction]
 #[pyo3(name = "imaginary")]
 #[pyo3(signature = (i_data, period, harmonic=None, omega=None))]
@@ -51,7 +79,20 @@ pub fn time_domain_imaginary(
     phasor::time_domain::imaginary(&i_data, period, harmonic, omega)
 }
 
-/// Python binding for phasor::time_domain::real.
+/// Compute the real (G) component of a 1-dimensional decay curve.
+///
+/// The real (G) component is calculated using the normalized cosine Fourier
+/// transform:
+///
+/// G = ∫(I(t) * cos(nωt) * dt) / ∫(I(t) * dt)
+///
+/// Where 'n' and 'ω' are harmonic and omega values respectively.
+///
+/// :param i_data: I(t), the 1-dimensional decay curve.
+/// :param period: The period.
+/// :param harmonic: The harmonic value, default = 1.0.
+/// :param omega: The angular frequency.
+/// :return: The real component, G.
 #[pyfunction]
 #[pyo3(name = "real")]
 #[pyo3(signature = (i_data, period, harmonic=None, omega=None))]

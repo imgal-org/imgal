@@ -6,12 +6,11 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Description
 ///
-/// This function computes the angular frequency, omega (ω),
-/// using the following equation:
+/// Compute the angular frequency, omega (ω), using the following equation:
 ///
 /// ω = 2π/T
 ///
-/// Where T is the period.
+/// Where "T" is the period.
 ///
 /// # Arguments
 ///

@@ -1,6 +1,6 @@
 use ndarray::Array1;
 
-/// Simulate a 1D fluorescence decay curve.
+/// Simulate a 1-dimensional fluorescence decay curve.
 ///
 /// # Description
 ///
@@ -8,18 +8,19 @@ use ndarray::Array1;
 ///
 /// I(t) = Io * e^(-t/τ)
 ///
-/// Where "Io" is the initial fluoresnce value and "t" is time (the `bins` paramter).
+/// Where "Io" is the initial fluorescence value and "t" is time (the `bins`
+/// parameter).
 ///
 /// # Arguments
 /// 
 /// * `samples`: The number of descrete points that make up the decay curve (i.e. time).
-/// * `period`: The period in the same unit as tau.
-/// * `tau`: The lifetime in the same unit as the period.
-/// * `initial_value`: The initial flourescence value, default=0.0.
+/// * `period`: The period in the same unit as tau (e.g. nanoseconds).
+/// * `tau`: The lifetime in the same unit as the period (e.g. nanoseconds).
+/// * `initial_value`: The initial fluorescence value, default=0.0.
 ///
 /// # Returns
 ///
-/// * `Array1<f64>`: A 1D decay curve.
+/// * `Array1<f64>`: The 1-dimensional decay curve.
 ///
 /// # Reference
 ///
