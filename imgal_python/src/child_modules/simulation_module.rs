@@ -3,7 +3,6 @@ use pyo3::prelude::*;
 use crate::functions::simulation_functions;
 use crate::utils::py_import_module;
 
-
 /// Python bindings for the "simulation" submodule.
 pub fn register_simulation_module(parent_module: &Bound<'_, PyModule>) -> PyResult<()> {
     let simulation_module = PyModule::new(parent_module.py(), "simulation")?;
@@ -16,6 +15,10 @@ pub fn register_simulation_module(parent_module: &Bound<'_, PyModule>) -> PyResu
     // add simulation::decay submodule functions
     decay_module.add_function(wrap_pyfunction!(
         simulation_functions::decay_fluorescence_decay_1d,
+        &decay_module
+    )?)?;
+    decay_module.add_function(wrap_pyfunction!(
+        simulation_functions::decay_fluorescence_decay_3d,
         &decay_module
     )?)?;
 

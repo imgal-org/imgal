@@ -1,4 +1,4 @@
-use ndarray::Array1;
+use ndarray::{Array1, Array3};
 
 /// Simulate a 1-dimensional fluorescence decay curve.
 ///
@@ -12,7 +12,7 @@ use ndarray::Array1;
 /// parameter).
 ///
 /// # Arguments
-/// 
+///
 /// * `samples`: The number of descrete points that make up the decay curve (i.e. time).
 /// * `period`: The period in the same unit as tau (e.g. nanoseconds).
 /// * `tau`: The lifetime in the same unit as the period (e.g. nanoseconds).
@@ -34,4 +34,18 @@ pub fn fluorescence_decay_1d(
     // create time array and compute the decay curve
     let t: Array1<f64> = Array1::linspace(0.0, (samples as f64 - 1.0) * period, samples);
     t.map(|ti| initial_value * (-ti / tau).exp())
+}
+
+/// Simulate a 3-dimensional fluorescence decay curve.
+pub fn fluorescence_decay_3d(
+    samples: usize,
+    period: f64,
+    tau: f64,
+    initial_value: f64,
+    shape: (usize, usize),
+) -> Array3<f64> {
+    // create 1-dimensional decay curve and broadcast
+    let d = fluorescence_decay_1d(samples, period, tau, initial_value);
+    let new_shape = (shape.0, shape.1, samples);
+    d.broadcast(new_shape).unwrap().to_owned()
 }
