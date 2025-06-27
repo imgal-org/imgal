@@ -1,6 +1,6 @@
 use std::f64;
 
-use ndarray::{stack, Array2, Array3, ArrayView3, Axis, Zip};
+use ndarray::{Array2, Array3, ArrayView3, Axis, Zip, stack};
 
 use crate::integration::midpoint;
 use crate::parameters;

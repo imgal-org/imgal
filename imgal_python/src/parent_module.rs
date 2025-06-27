@@ -1,6 +1,8 @@
 use pyo3::prelude::*;
 
-use super::child_modules::{integration_module, parameters_module, phasor_module, simulation_module, statistics_module};
+use super::child_modules::{
+    integration_module, parameters_module, phasor_module, simulation_module, statistics_module,
+};
 
 /// Python binding for the imgal parent module.
 #[pymodule(name = "imgal_python")]
