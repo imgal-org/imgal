@@ -8,15 +8,15 @@ use ndarray::{Array1, Array3};
 ///
 /// I(t) = Io * e^(-t/τ)
 ///
-/// Where "Io" is the initial fluorescence value and "t" is time (the `bins`
-/// parameter).
+/// Where "Io" is the initial fluorescence value and "t" is time (_i.e._ the
+/// number of samples).
 ///
 /// # Arguments
 ///
 /// * `samples`: The number of descrete points that make up the decay curve (i.e. time).
 /// * `period`: The period in the same unit as tau (e.g. nanoseconds).
 /// * `tau`: The lifetime in the same unit as the period (e.g. nanoseconds).
-/// * `initial_value`: The initial fluorescence value, default=0.0.
+/// * `initial_value`: The initial fluorescence value.
 ///
 /// # Returns
 ///
@@ -37,6 +37,30 @@ pub fn fluorescence_decay_1d(
 }
 
 /// Simulate a 3-dimensional fluorescence decay curve.
+///
+/// A fluorescence decay curve is computed as:
+///
+/// I(t) = Io * e^(-t/τ)
+///
+/// Where "Io" is the initial fluorescence value and "t" is the time (_i.e._ the
+/// number of samples). The decay curve is then broadcasted to the specified input
+/// shape with the number of samples along the last axis.
+///
+/// # Arguments
+///
+/// * `samples`: The number of descrete points that make up the decay curve (i.e. time).
+/// * `period`: The period in the same unit as tau (e.g. nanoseconds).
+/// * `tau`: The lifetime in the same unit as the period (e.g. nanoseconds).
+/// * `initial_value`: The initial fluorescence value.
+/// * `shape`: The row and col shape to broadcast the decay curve into.
+///
+/// # Return
+///
+/// * `Array3<f64>`: The 3-dimensional decay curve.
+///
+/// # Reference
+///
+/// <https://doi.org/10.1111/j.1749-6632.1969.tb56231.x>
 pub fn fluorescence_decay_3d(
     samples: usize,
     period: f64,
