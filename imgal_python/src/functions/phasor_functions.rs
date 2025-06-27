@@ -105,18 +105,28 @@ pub fn time_domain_real(
     phasor::time_domain::real(&i_data, period, harmonic, omega)
 }
 
-/// Python binding for phasor::calibration::imaginary.
+/// Calibrate a real and imaginary (G, S) coordinate pair.
+///
+/// Calibrate the real and imaginary (e.g. G and S) coordinate pair by rotating
+/// and scaling by phase (φ) and modulation (M) respectively using:
+///
+/// g = M * cos(φ)
+/// s = M * sin(φ)
+/// S' = G * s + S * g
+/// G' = G * g - S * s
+///
+/// Where G' and S' are the calibrated real and imaginary values after rotation
+/// and scaling.
+///
+/// :param g: The real component (G) to calibrate.
+/// :param s: The imaginary component (S) to calibrate.
+/// :param modulation: The modulation to scale the input (G, S) coordinates.
+/// :param phi: The phi, φ, polar angle to rotate the input (G, S) coordinates.
+/// :return: The calibrated coordinate pair, (G, S).
 #[pyfunction]
-#[pyo3(name = "imaginary")]
-pub fn calibration_imaginary(g: f64, s: f64, modulation: f64, phi: f64) -> f64 {
-    phasor::calibration::imaginary(g, s, modulation, phi)
-}
-
-/// Python binding for phasor::calibration::real.
-#[pyfunction]
-#[pyo3(name = "real")]
-pub fn calibration_real(g: f64, s: f64, modulation: f64, phi: f64) -> f64 {
-    phasor::calibration::real(g, s, modulation, phi)
+#[pyo3(name = "coordinate_pair")]
+pub fn calibration_coordinate_pair(g: f64, s: f64, modulation: f64, phi: f64) -> (f64, f64) {
+    phasor::calibration::coordinate_pair(g, s, modulation, phi)
 }
 
 /// Python binding for phasor::plot::multi_component_modulation.
