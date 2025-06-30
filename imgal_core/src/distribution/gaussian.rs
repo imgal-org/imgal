@@ -47,7 +47,7 @@ pub fn gaussian(sigma: f64, bins: usize, range: f64, center: f64) -> Array1<f64>
     });
 
     // normalize the gaussian distribution
-    let g_sum = sum(g.as_slice().unwrap());
+    let g_sum = sum(g.view());
     g.iter_mut().for_each(|v| {
         *v /= g_sum;
     });

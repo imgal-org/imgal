@@ -1,3 +1,5 @@
+use ndarray::{ArrayView1, s};
+
 /// Integrate a curve with Simpson's 1/3 rule and the trapezoid rule.
 ///
 /// # Description
@@ -22,7 +24,7 @@
 /// # Returns
 ///
 /// * `f64`: The computed integral.
-pub fn composite_simpson(x: &[f64], delta_x: Option<f64>) -> f64 {
+pub fn composite_simpson(x: ArrayView1<f64>, delta_x: Option<f64>) -> f64 {
     // set default delta x if necessary
     let d_x: f64 = delta_x.unwrap_or(1.0);
     // find the number of subintervals
@@ -32,7 +34,7 @@ pub fn composite_simpson(x: &[f64], delta_x: Option<f64>) -> f64 {
         simpson(x, delta_x).unwrap()
     } else {
         // compute the even subintervals with Simpson's rule
-        let integral: f64 = simpson(&x[..n], delta_x).unwrap();
+        let integral: f64 = simpson(x.slice(s![..n]), delta_x).unwrap();
         // compute the last subinterval with a trapizoid
         let trap: f64 = (d_x / 2.0) * (x[n - 1] + x[n]);
         integral + trap
@@ -59,7 +61,7 @@ pub fn composite_simpson(x: &[f64], delta_x: Option<f64>) -> f64 {
 ///
 /// * `Ok(f64)`: The computed integral.
 /// * `Err(&str)`: Error message if the number of subintervals is odd.
-pub fn simpson(x: &[f64], delta_x: Option<f64>) -> Result<f64, &'static str> {
+pub fn simpson(x: ArrayView1<f64>, delta_x: Option<f64>) -> Result<f64, &'static str> {
     // set default delta x if necessary
     let d_x: f64 = delta_x.unwrap_or(1.0);
     // find the number of subintervals

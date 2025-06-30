@@ -34,10 +34,10 @@ pub fn gaussian_fluorescence_1d(
     initial_value: f64,
     irf_width: f64,
     irf_center: f64,
-) -> Vec<f64> {
+) -> Array1<f64> {
     let irf = instrument::gaussian_irf_1d(samples, period, irf_width, irf_center);
     let decay = ideal_fluorescence_1d(samples, period, tau, initial_value);
-    fft_convolve(decay.as_slice().unwrap(), irf.as_slice().unwrap())
+    fft_convolve(decay.view(), irf.view())
 }
 
 /// Simulate a 3-dimensional Gaussian IRF convolved decay curve.
@@ -75,14 +75,7 @@ pub fn gaussian_fluorescence_3d(
     shape: (usize, usize),
 ) -> Array3<f64> {
     // create 1-dimensional gaussian IRF convolved curve and broadcast
-    let d = Array1::from_vec(gaussian_fluorescence_1d(
-        samples,
-        period,
-        tau,
-        initial_value,
-        irf_width,
-        irf_center,
-    ));
+    let d = gaussian_fluorescence_1d(samples, period, tau, initial_value, irf_width, irf_center);
     let new_shape = (shape.0, shape.1, samples);
     d.broadcast(new_shape).unwrap().to_owned()
 }

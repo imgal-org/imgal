@@ -1,5 +1,7 @@
 use std::iter::Sum;
 
+use ndarray::ArrayView1;
+
 /// Compute the sum of the slice of numbers.
 ///
 /// # Description
@@ -25,6 +27,6 @@ use std::iter::Sum;
 /// let float_data = [1.82, 3.35, 7.13, 9.25];
 /// assert_eq!(sum(&float_data), 21.55);
 /// ```
-pub fn sum<T: Copy + Sum>(input: &[T]) -> T {
+pub fn sum<T: Copy + Sum>(input: ArrayView1<T>) -> T {
     input.iter().copied().sum()
 }

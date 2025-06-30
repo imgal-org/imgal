@@ -23,21 +23,23 @@ use imgal_core::simulation;
 #[pyfunction]
 #[pyo3(name = "gaussian_fluorescence_1d")]
 pub fn decay_gaussian_fluorescence_1d(
+    py: Python,
     samples: usize,
     period: f64,
     tau: f64,
     initial_value: f64,
     irf_width: f64,
     irf_center: f64,
-) -> Vec<f64> {
-    simulation::decay::gaussian_fluorescence_1d(
+) -> PyResult<Bound<PyArray1<f64>>> {
+    let output = simulation::decay::gaussian_fluorescence_1d(
         samples,
         period,
         tau,
         initial_value,
         irf_width,
         irf_center,
-    )
+    );
+    Ok(output.into_pyarray(py))
 }
 
 /// Simulate a 3-dimensional Gaussian IRF convolved decay curve.

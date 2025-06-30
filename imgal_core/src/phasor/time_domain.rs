@@ -1,6 +1,6 @@
 use std::f64;
 
-use ndarray::{Array2, Array3, ArrayView3, Axis, Zip, stack};
+use ndarray::{Array1, Array2, Array3, ArrayView1, ArrayView3, Axis, Zip, stack};
 
 use crate::integration::midpoint;
 use crate::parameters;
@@ -138,7 +138,12 @@ where
 /// # Returns
 ///
 /// * `f64`: The imaginary component, S.
-pub fn imaginary(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Option<f64>) -> f64 {
+pub fn imaginary(
+    i_data: ArrayView1<f64>,
+    period: f64,
+    harmonic: Option<f64>,
+    omega: Option<f64>,
+) -> f64 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
     let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
@@ -151,8 +156,8 @@ pub fn imaginary(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Opti
     for i in 0..n {
         buf.push(i_data[i] * f64::sin(h_w_dt * (i as f64)));
     }
-    let i_sin_integral: f64 = midpoint(&buf, Some(dt));
-    let i_integral: f64 = midpoint(&i_data, Some(dt));
+    let i_sin_integral: f64 = midpoint(Array1::from_vec(buf).view(), Some(dt));
+    let i_integral: f64 = midpoint(i_data, Some(dt));
     i_sin_integral / i_integral
 }
 
@@ -177,7 +182,12 @@ pub fn imaginary(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Opti
 /// # Returns
 ///
 /// * `f64`: The real component, G.
-pub fn real(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Option<f64>) -> f64 {
+pub fn real(
+    i_data: ArrayView1<f64>,
+    period: f64,
+    harmonic: Option<f64>,
+    omega: Option<f64>,
+) -> f64 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
     let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
@@ -190,7 +200,7 @@ pub fn real(i_data: &[f64], period: f64, harmonic: Option<f64>, omega: Option<f6
     for i in 0..n {
         buf.push(i_data[i] * f64::cos(h_w_dt * (i as f64)));
     }
-    let i_cos_integral: f64 = midpoint(&buf, Some(dt));
-    let i_integral: f64 = midpoint(&i_data, Some(dt));
+    let i_cos_integral: f64 = midpoint(Array1::from_vec(buf).view(), Some(dt));
+    let i_integral: f64 = midpoint(i_data, Some(dt));
     i_cos_integral / i_integral
 }

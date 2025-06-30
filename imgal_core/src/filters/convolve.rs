@@ -1,6 +1,8 @@
+use ndarray::{Array1, ArrayView1};
 use rustfft::{FftPlanner, num_complex::Complex, num_traits::Zero};
 
-pub fn fft_convolve(a: &[f64], b: &[f64]) -> Vec<f64> {
+/// Docs
+pub fn fft_convolve(a: ArrayView1<f64>, b: ArrayView1<f64>) -> Array1<f64> {
     // compute FFT size
     let n_a = a.len();
     let n_b = b.len();
@@ -42,5 +44,5 @@ pub fn fft_convolve(a: &[f64], b: &[f64]) -> Vec<f64> {
     result.iter_mut().enumerate().for_each(|(i, v)| {
         *v = a_fft_buf[i].re * scale;
     });
-    result
+    Array1::from_vec(result)
 }

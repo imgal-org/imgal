@@ -1,3 +1,4 @@
+use numpy::ndarray::Array1;
 use pyo3::prelude::*;
 
 use imgal_core::statistics;
@@ -9,5 +10,6 @@ use imgal_core::statistics;
 #[pyfunction]
 #[pyo3(name = "sum")]
 pub fn statistics_sum(input: Vec<f64>) -> f64 {
-    statistics::sum(&input)
+    let input_arr = Array1::from_vec(input);
+    statistics::sum(input_arr.view())
 }
