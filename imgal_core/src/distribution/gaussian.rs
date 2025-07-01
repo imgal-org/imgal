@@ -14,7 +14,7 @@ use crate::statistics::sum;
 /// ```text
 /// f(x) = exp(-((x - μ)² / (2σ²)))
 /// ```
-/// where:
+/// Where:
 /// - `x` is the position along the range
 /// - `μ` is the center (mean)
 /// - `σ` is the sigma (standard deviation)
@@ -28,7 +28,7 @@ use crate::statistics::sum;
 ///
 /// # Returns
 ///
-/// * `Array<f64>`: The normalized Gaussian distribution.
+/// * `Array1<f64>`: The normalized Gaussian distribution.
 pub fn gaussian(sigma: f64, bins: usize, range: f64, center: f64) -> Array1<f64> {
     // create data range (i.e. time) and gaussian arrays
     let mut r = Array1::<f64>::zeros(bins);

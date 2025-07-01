@@ -1,7 +1,25 @@
 use ndarray::{Array1, ArrayView1};
 use rustfft::{FftPlanner, num_complex::Complex, num_traits::Zero};
 
-/// Docs
+/// Convolve two 1-dimensional signals using the Fast Fourier Transform (FFT).
+///
+/// # Description
+///
+/// Compute the convolution of two discrete signals (`a` and `b`) by transforming
+/// them to the frequency domain, multiplying them, and then transforming the
+/// result back into a signal.
+///
+/// # Arguments
+///
+/// * `a`: The first input signal to FFT convolve. Typically the "data" signal
+///   or the longest of the two signals.
+/// * `b`: The second input signal to FFT convolve. Typically a kernel or instrument
+///   response function to convolve with.
+///
+/// # Returns
+///
+/// * `Array1<f64>`: The FFT convolved result of the same length as input signal
+///   `a`.
 pub fn fft_convolve(a: ArrayView1<f64>, b: ArrayView1<f64>) -> Array1<f64> {
     // compute FFT size
     let n_a = a.len();
@@ -26,7 +44,7 @@ pub fn fft_convolve(a: ArrayView1<f64>, b: ArrayView1<f64>) -> Array1<f64> {
     let fft = planner.plan_fft_forward(fft_size);
     let ifft = planner.plan_fft_inverse(fft_size);
 
-    // compute foward FFts
+    // compute foward FFTs
     fft.process(&mut a_fft_buf);
     fft.process(&mut b_fft_buf);
 
@@ -35,7 +53,7 @@ pub fn fft_convolve(a: ArrayView1<f64>, b: ArrayView1<f64>) -> Array1<f64> {
         *v = *v * b_fft_buf[i];
     });
 
-    // inverse FFT
+    // compute inverse FFT
     ifft.process(&mut a_fft_buf);
 
     // extract real component, scale and trim to input length

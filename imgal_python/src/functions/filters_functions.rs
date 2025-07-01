@@ -3,7 +3,17 @@ use pyo3::prelude::*;
 
 use imgal_core::filters;
 
-/// FFT convolution filter
+/// Convolve two 1-dimensional signals using the Fast Fourier Transform (FFT).
+///
+/// Compute the convolution of two discrete signals ("a" and "b") by transforming
+/// them to the frequency domain, multiplying them, and then transforming the
+/// result back into a signal.
+///
+/// :param a: The first input signal to FFT convolve. Typically the data signal
+///     or the longest of the two signals.
+/// :param b: The second input signal to FFT convolve. Typically the kernel or
+///     instrument response function to convolve with.
+/// :return: The FFT convolved result of the same length as the input signal "a".
 #[pyfunction]
 #[pyo3(name = "fft_convolve")]
 pub fn filters_fft_convolve(
