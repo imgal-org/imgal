@@ -1,22 +1,22 @@
 use std::f64;
 
-/// Compute the modulation of a multi-component phasor coordinate.
+/// Compute the modulation of a multi-component phasor coordinate pair.
 ///
 /// # Description
 ///
-/// The modulation of a multi-component phasor coordinate is calculated
-/// using:
+/// The modulation of a multi-component (_i.e._ inside the universal circle) phasor
+/// coordinate pair is calculated using:
 ///
 /// M = √(G² + S²)
 ///
 /// # Arguments
 ///
-/// * `g`: The real, G, component.
-/// * `s`: The imaginary, S, component.
+/// * `g`: The real component, G.
+/// * `s`: The imaginary component, S.
 ///
 /// # Returns
 ///
-/// * `f64`: The modulation of the G and S phasor coordinates.
+/// * `f64`: The modulation (M) of the (G, S) phasor coordinate pair.
 ///
 /// # Reference
 ///
@@ -27,12 +27,12 @@ pub fn multi_component_modulation(g: f64, s: f64) -> f64 {
     f64::sqrt(g_sqr + s_sqr)
 }
 
-/// Compute the phi polar angle of a multi-component phasor coordinate.
+/// Compute the phi polar angle of a multi-component phasor coordinate pair.
 ///
 /// # Description
 ///
-/// The phi, φ, of a multi-component phasor coordinate is calculated
-/// using:
+/// The phi (φ) of a multi-component (_i.e._ inside the universal circle) phasor
+/// coordinate pair is calculated using:
 ///
 /// φ = tan⁻¹(S / G)
 ///
@@ -40,12 +40,12 @@ pub fn multi_component_modulation(g: f64, s: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `g`: The real, G, component.
-/// * `s`: The imaginary, S, component.
+/// * `g`: The real component, G.
+/// * `s`: The imaginary component, S.
 ///
 /// # Returns
 ///
-/// * `f64`: The phi, φ, polar angle of the G and S phasor coordinate.
+/// * `f64`: The phi (φ) angle of the (G, S) phasor coordinate pair.
 ///
 /// # Reference
 ///
@@ -54,22 +54,22 @@ pub fn multi_component_phi(g: f64, s: f64) -> f64 {
     s.atan2(g)
 }
 
-/// Compute the modulation of a single-component phasor coordinate.
+/// Compute the modulation of a single-component phasor coordinate pair.
 ///
 /// # Description
 ///
-/// The modulation of a single-component phasor coordinate is calculated
-/// using:
+/// The modulation (M) of a single-component (_i.e._ on the universal circle) phasor
+/// coordinate pair is calculated using:
 ///
 /// M = cos(φ)
 ///
 /// # Arguments
 ///
-/// * `phi`: The phi, φ, polar angle of the phasor coordinate.
+/// * `phi`: The phi (φ) angle of the (G, S) phasor coordinate pair.
 ///
 /// # Returns
 ///
-/// * `f64`: Modulation of a single-component phasor (g, s) coordiate.
+/// * `f64`: The modulation (M) of the (G, S) phasor coordiate pair.
 ///
 /// # Reference
 ///
@@ -78,23 +78,23 @@ pub fn single_component_modulation(phi: f64) -> f64 {
     f64::cos(phi)
 }
 
-/// Compute the phi polar angle of a single-component phasor coordinate.
+/// Compute the phi angle of a single-component phasor coordinate pair.
 ///
 /// # Description
 ///
-/// The phi, φ, polar angle of a single-component phasor coordinate is
-/// calculated using:
+/// The phi (φ) angle of a single-component (_i.e_ on the universal circle) phasor
+/// coordinate pair is calculated using:
 ///
 ///  φ = tan⁻¹(ω * τ)
 ///
 /// # Arguments
 ///
-/// * `omega`: The omega, ω, angular frequency in radians.
-/// * `tau`: The tau, τ, lifetime in seconds.
+/// * `omega`: The omega (ω), angular frequency.
+/// * `tau`: The tau (τ), lifetime.
 ///
 /// # Returns
 ///
-/// * `f64`: Phi, φ, the polar angle of a single-component phasor (g, s) coordinate.
+/// * `f64`: The phi (φ) angle of the (G, S) phasor coordinate pair.
 ///
 /// # Reference
 ///

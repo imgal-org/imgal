@@ -131,28 +131,65 @@ pub fn calibration_coordinate_pair(g: f64, s: f64, modulation: f64, phi: f64) ->
     phasor::calibration::coordinate_pair(g, s, modulation, phi)
 }
 
-/// Python binding for phasor::plot::multi_component_modulation.
+/// Compute the modulation of a multi-component phasor coordinate pair.
+///
+/// The modulation of a multi-component (i.e. inside the universal circle) phasor
+/// coordinate pair is calculated using:
+///
+/// M = √(G² + S²)
+///
+/// :param g: The real component, G.
+/// :param s: The imaginary component, S.
+/// :return: The modulation (M) of the (G, S) phasor coordinate pair.
 #[pyfunction]
 #[pyo3(name = "multi_component_modulation")]
 pub fn plot_multi_component_modulation(g: f64, s: f64) -> f64 {
     phasor::plot::multi_component_modulation(g, s)
 }
 
-/// Python binding for phasor::plot::multi_component_phi.
+/// Compute the phi angle of a multi-component phasor coordinate pair.
+///
+/// The phi (φ) of a multi-component (i.e. inside the universal circle) phasor
+/// coordinate pair is calculated using:
+///
+/// φ = tan⁻¹(S / G)
+///
+/// Computes atan(S/G) in all four quadrants using atan2.
+///
+/// :param g: The real component, G.
+/// :param s: The imaginary component, S.
+/// :return: The phi (φ) angle of the (G, S) phasor coordinate pair.
 #[pyfunction]
 #[pyo3(name = "multi_component_phi")]
 pub fn plot_multi_component_phi(g: f64, s: f64) -> f64 {
     phasor::plot::multi_component_phi(g, s)
 }
 
-/// Python binding for phasor::plot::single_component_modulation.
+/// Compute the modulation of a single-component phasor coordinate pair.
+///
+/// The modulation (M) of a single-component (i.e. on the universal circle) phasor
+/// coordinate pair is calculated using:
+///
+/// M = cos(φ)
+///
+/// :param phi: The phi (φ) angle of the (G, S) phasor coordinate pair.
+/// :return: The modulation (M) of the (G, S) phasor coordinate pair.
 #[pyfunction]
 #[pyo3(name = "single_component_modulation")]
 pub fn plot_single_component_modulation(phi: f64) -> f64 {
     phasor::plot::single_component_modulation(phi)
 }
 
-/// Python binding for phasor::plot::single_component_phi.
+/// Compute the phi angle of a single-component phasor coordinate pair.
+///
+/// The phi (φ) angle of a single-component (i.e. on the universal circle) phasor
+/// coordinate pair is calculated using:
+///
+///  φ = tan⁻¹(ω * τ)
+///
+/// :param omega: The omega (ω), angular frequency.
+/// :param tau: The tau (τ), lifetime.
+/// :return: The phi (φ) angle of the (G, S) phasor coordinate pair.
 #[pyfunction]
 #[pyo3(name = "single_component_phi")]
 pub fn plot_single_component_phi(omega: f64, tau: f64) -> f64 {
