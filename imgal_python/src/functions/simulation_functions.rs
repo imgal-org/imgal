@@ -1,4 +1,4 @@
-use numpy::{IntoPyArray, PyArray1, PyArray3};
+use numpy::{IntoPyArray, PyArray1, PyArray3, PyArrayMethods, PyReadonlyArray1};
 use pyo3::prelude::*;
 
 use imgal_core::simulation;
@@ -174,4 +174,51 @@ pub fn instrument_gaussian_irf_1d(
 ) -> PyResult<Bound<PyArray1<f64>>> {
     let output = simulation::instrument::gaussian_irf_1d(bins, time_range, irf_width, irf_center);
     Ok(output.into_pyarray(py))
+}
+
+/// Simulate Poisson noise on a 1-dimensional array.
+///
+/// Apply Poisson noise (i.e. shot noise) on a 1-dimensonal array of data. Here,
+/// "data" typically represents signal data.
+///
+/// :param data: The input 1-dimensional array of signal values.
+/// :param scale: The scale factor.
+/// :param seed: The random number generator seed for reproducible results. If "None"
+///     the default seed value is 0.
+/// :return: The 1-dimensonal array with Poisson noise applied.
+#[pyfunction]
+#[pyo3(name = "noise_poisson")]
+#[pyo3(signature = (data, scale, seed=None))]
+pub fn poisson<'py>(
+    py: Python<'py>,
+    data: Bound<'py, PyAny>,
+    scale: f64,
+    seed: Option<u64>,
+) -> PyResult<Bound<'py, PyArray1<f64>>> {
+    // pattern match and extract allowed array types
+    if let Ok(array) = data.extract::<PyReadonlyArray1<f32>>() {
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array().to_owned();
+        let output = simulation::noise::poisson(arr, scale, seed);
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(array) = data.extract::<PyReadonlyArray1<f64>>() {
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array().to_owned();
+        let output = simulation::noise::poisson(arr, scale, seed);
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(array) = data.extract::<PyReadonlyArray1<u16>>() {
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array().to_owned();
+        let output = simulation::noise::poisson(arr, scale, seed);
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(array) = data.extract::<PyReadonlyArray1<u8>>() {
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array().to_owned();
+        let output = simulation::noise::poisson(arr, scale, seed);
+        return Ok(output.into_pyarray(py))
+    } else {
+        return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "Unsupported array dtype.",
+        ));
+    }
 }
