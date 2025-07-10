@@ -1,4 +1,4 @@
-use numpy::{IntoPyArray, ndarray::Array1, PyArray1};
+use numpy::{IntoPyArray, PyArray1, ndarray::Array1};
 use pyo3::prelude::*;
 
 use imgal_core::filters;

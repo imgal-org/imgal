@@ -27,7 +27,7 @@ use crate::traits::numeric::ToFloat64;
 /// # Returns
 ///
 /// * `Array3<f64>`: The real and imaginary coordinates as a 3D (ch, row, col) image,
-///     where G and S are indexed at 0 and 1 respectively on the _channel_ axis.
+///    where G and S are indexed at 0 and 1 respectively on the _channel_ axis.
 pub fn image<T>(
     i_data: &ArrayView3<T>,
     period: f64,

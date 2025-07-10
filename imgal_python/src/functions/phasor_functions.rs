@@ -1,4 +1,4 @@
-use numpy::{IntoPyArray, ndarray::Array1, PyArray3, PyArrayMethods, PyReadonlyArray3};
+use numpy::{IntoPyArray, PyArray3, PyArrayMethods, PyReadonlyArray3, ndarray::Array1};
 use pyo3::prelude::*;
 
 use imgal_core::phasor;
