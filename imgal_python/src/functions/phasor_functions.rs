@@ -30,21 +30,21 @@ pub fn time_domain_image<'py>(
     omega: Option<f64>,
     axis: Option<usize>,
 ) -> PyResult<Bound<'py, PyArray3<f64>>> {
-    // try and extract allowed array types
+    // pattern match and extract allowed array types
     if let Ok(array) = i_data.extract::<PyReadonlyArray3<f32>>() {
-        let ro_array = array.readonly();
-        let data = ro_array.as_array();
-        let output = phasor::time_domain::image(&data, period, harmonic, omega, axis);
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array();
+        let output = phasor::time_domain::image(&arr, period, harmonic, omega, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = i_data.extract::<PyReadonlyArray3<f64>>() {
-        let ro_array = array.readonly();
-        let data = ro_array.as_array();
-        let output = phasor::time_domain::image(&data, period, harmonic, omega, axis);
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array();
+        let output = phasor::time_domain::image(&arr, period, harmonic, omega, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = i_data.extract::<PyReadonlyArray3<u16>>() {
-        let ro_array = array.readonly();
-        let data = ro_array.as_array();
-        let output = phasor::time_domain::image(&data, period, harmonic, omega, axis);
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array();
+        let output = phasor::time_domain::image(&arr, period, harmonic, omega, axis);
         return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
