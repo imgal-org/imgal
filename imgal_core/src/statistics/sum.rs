@@ -1,6 +1,6 @@
-use std::iter::Sum;
+use ndarray::{ArrayBase, Data, Ix1};
 
-use ndarray::ArrayView1;
+use crate::traits::numeric::ToFloat64;
 
 /// Compute the sum of the slice of numbers.
 ///
@@ -27,6 +27,11 @@ use ndarray::ArrayView1;
 /// let float_data = [1.82, 3.35, 7.13, 9.25];
 /// assert_eq!(sum(&float_data), 21.55);
 /// ```
-pub fn sum<T: Copy + Sum>(input: ArrayView1<T>) -> T {
-    input.iter().copied().sum()
+pub fn sum<T, S>(data: &ArrayBase<S, Ix1>) -> T
+where
+    T: ToFloat64,
+    S: Data<Elem = T>,
+{
+    let d = data.as_slice().unwrap();
+    d.iter().copied().sum()
 }

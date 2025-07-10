@@ -1,4 +1,5 @@
 use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Sub};
+use std::iter::Sum;
 
 pub trait ToFloat64:
     Copy
@@ -8,6 +9,7 @@ pub trait ToFloat64:
     + Sub<Output = Self>
     + AddAssign
     + MulAssign
+    + Sum
     + Into<f64>
     + Sync
 {
@@ -21,6 +23,7 @@ impl<T> ToFloat64 for T where
         + Sub<Output = T>
         + AddAssign
         + MulAssign
+        + Sum
         + Into<f64>
         + Sync
 {

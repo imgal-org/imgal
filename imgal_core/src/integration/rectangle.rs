@@ -20,5 +20,5 @@ use crate::statistics::sum;
 ///
 /// * `f64`: The computed integral.
 pub fn midpoint(x: ArrayView1<f64>, delta_x: Option<f64>) -> f64 {
-    delta_x.unwrap_or(1.0) * sum(x)
+    delta_x.unwrap_or(1.0) * sum(&x)
 }

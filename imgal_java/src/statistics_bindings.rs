@@ -1,5 +1,7 @@
 use std::slice;
 
+use ndarray::ArrayView1;
+
 use imgal_core::statistics;
 
 // C ABI inteface for imgal_core::statistics::sum.
@@ -11,5 +13,6 @@ pub extern "C" fn sum(ptr: *const f64, len: usize) -> f64 {
     }
     // create a slice and compute sum
     let s = unsafe { slice::from_raw_parts(ptr, len) };
-    statistics::sum(&s)
+    let arr = ArrayView1::from(s);
+    statistics::sum(&arr)
 }

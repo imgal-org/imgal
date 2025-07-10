@@ -10,3 +10,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 imgal_core = { path = "../imgal_core" }
+ndarray = "0.16.0"
