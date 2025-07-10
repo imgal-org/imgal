@@ -8,11 +8,13 @@ pub fn register_simulation_module(parent_module: &Bound<'_, PyModule>) -> PyResu
     let simulation_module = PyModule::new(parent_module.py(), "simulation")?;
     let decay_module = PyModule::new(parent_module.py(), "decay")?;
     let instrument_module = PyModule::new(parent_module.py(), "instrument")?;
+    let noise_module = PyModule::new(parent_module.py(), "noise")?;
 
     // add module to python's sys.modules
     py_import_module("simulation");
     py_import_module("simulation.decay");
     py_import_module("simulation.instrument");
+    py_import_module("simulation.noise");
 
     // add simulation::decay submodule functions
     decay_module.add_function(wrap_pyfunction!(
@@ -38,8 +40,15 @@ pub fn register_simulation_module(parent_module: &Bound<'_, PyModule>) -> PyResu
         &instrument_module
     )?)?;
 
+    // add simulation::noise submodule functions
+    noise_module.add_function(wrap_pyfunction!(
+        simulation_functions::noise_poisson_1d,
+        &noise_module
+    )?)?;
+
     // attach simulation submodule before attaching to the parent module
     simulation_module.add_submodule(&decay_module)?;
     simulation_module.add_submodule(&instrument_module)?;
+    simulation_module.add_submodule(&noise_module)?;
     parent_module.add_submodule(&simulation_module)
 }

@@ -22,7 +22,7 @@ use crate::traits::numeric::ToFloat64;
 /// # Returns
 ///
 /// * `Array1<f64>`: The 1-dimensonal array with Poisson noise applied.
-pub fn poisson<T>(data: Array1<T>, scale: f64, seed: Option<u64>) -> Array1<f64>
+pub fn poisson_1d<T>(data: Array1<T>, scale: f64, seed: Option<u64>) -> Array1<f64>
 where
     T: ToFloat64,
 {

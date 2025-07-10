@@ -187,9 +187,9 @@ pub fn instrument_gaussian_irf_1d(
 ///     the default seed value is 0.
 /// :return: The 1-dimensonal array with Poisson noise applied.
 #[pyfunction]
-#[pyo3(name = "noise_poisson")]
+#[pyo3(name = "poisson_1d")]
 #[pyo3(signature = (data, scale, seed=None))]
-pub fn poisson<'py>(
+pub fn noise_poisson_1d<'py>(
     py: Python<'py>,
     data: Bound<'py, PyAny>,
     scale: f64,
@@ -199,22 +199,22 @@ pub fn poisson<'py>(
     if let Ok(array) = data.extract::<PyReadonlyArray1<f32>>() {
         let ro_arr = array.readonly();
         let arr = ro_arr.as_array().to_owned();
-        let output = simulation::noise::poisson(arr, scale, seed);
+        let output = simulation::noise::poisson_1d(arr, scale, seed);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray1<f64>>() {
         let ro_arr = array.readonly();
         let arr = ro_arr.as_array().to_owned();
-        let output = simulation::noise::poisson(arr, scale, seed);
+        let output = simulation::noise::poisson_1d(arr, scale, seed);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray1<u16>>() {
         let ro_arr = array.readonly();
         let arr = ro_arr.as_array().to_owned();
-        let output = simulation::noise::poisson(arr, scale, seed);
+        let output = simulation::noise::poisson_1d(arr, scale, seed);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray1<u8>>() {
         let ro_arr = array.readonly();
         let arr = ro_arr.as_array().to_owned();
-        let output = simulation::noise::poisson(arr, scale, seed);
+        let output = simulation::noise::poisson_1d(arr, scale, seed);
         return Ok(output.into_pyarray(py))
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
