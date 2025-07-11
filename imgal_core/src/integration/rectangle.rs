@@ -1,6 +1,7 @@
-use ndarray::ArrayView1;
+use ndarray::{ArrayBase, Data, Ix1};
 
 use crate::statistics::sum;
+use crate::traits::numeric::ToFloat64;
 
 /// Integrate a curve with the midpoint rule.
 ///
@@ -19,6 +20,10 @@ use crate::statistics::sum;
 /// # Returns
 ///
 /// * `f64`: The computed integral.
-pub fn midpoint(x: ArrayView1<f64>, delta_x: Option<f64>) -> f64 {
-    delta_x.unwrap_or(1.0) * sum(&x)
+pub fn midpoint<T, S>(x: &ArrayBase<S, Ix1>, delta_x: Option<f64>) -> f64
+where
+    T: ToFloat64,
+    S: Data<Elem = T>,
+{
+    delta_x.unwrap_or(1.0) * sum(&x).into()
 }

@@ -1,4 +1,4 @@
-use ndarray::Array1;
+use ndarray::{Array1, ArrayBase, Data, Ix1};
 use rand::SeedableRng;
 use rand::rngs::StdRng;
 use rand_distr::{Distribution, Poisson};
@@ -22,9 +22,10 @@ use crate::traits::numeric::ToFloat64;
 /// # Returns
 ///
 /// * `Array1<f64>`: The 1-dimensonal array with Poisson noise applied.
-pub fn poisson_1d<T>(data: Array1<T>, scale: f64, seed: Option<u64>) -> Array1<f64>
+pub fn poisson_1d<T, S>(data: ArrayBase<S, Ix1>, scale: f64, seed: Option<u64>) -> Array1<f64>
 where
     T: ToFloat64,
+    S: Data<Elem = T>,
 {
     // set optional parameters if needed
     let s = seed.unwrap_or(0);

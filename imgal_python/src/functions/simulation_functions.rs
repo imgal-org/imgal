@@ -215,7 +215,7 @@ pub fn noise_poisson_1d<'py>(
         let ro_arr = array.readonly();
         let arr = ro_arr.as_array().to_owned();
         let output = simulation::noise::poisson_1d(arr, scale, seed);
-        return Ok(output.into_pyarray(py))
+        return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
             "Unsupported array dtype.",

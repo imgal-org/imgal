@@ -1,4 +1,4 @@
-use std::f64::consts;
+use std::f64::consts::PI;
 
 use crate::traits::numeric::ToFloat64;
 
@@ -19,6 +19,9 @@ use crate::traits::numeric::ToFloat64;
 /// # Returns
 ///
 /// * `f64`: The omega (ω) value.
-pub fn omega<T: ToFloat64>(period: T) -> f64 {
-    2.0 * consts::PI / T::into(period)
+pub fn omega<T>(period: T) -> f64
+where
+    T: ToFloat64,
+{
+    2.0 * PI / period.into()
 }

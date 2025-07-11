@@ -76,8 +76,8 @@ pub fn time_domain_imaginary(
     harmonic: Option<f64>,
     omega: Option<f64>,
 ) -> f64 {
-    let i_data_arr = Array1::from_vec(i_data);
-    phasor::time_domain::imaginary(i_data_arr.view(), period, harmonic, omega)
+    let arr = Array1::from_vec(i_data);
+    phasor::time_domain::imaginary(&arr, period, harmonic, omega)
 }
 
 /// Compute the real (G) component of a 1-dimensional decay curve.
@@ -103,8 +103,8 @@ pub fn time_domain_real(
     harmonic: Option<f64>,
     omega: Option<f64>,
 ) -> f64 {
-    let i_data_arr = Array1::from_vec(i_data);
-    phasor::time_domain::real(i_data_arr.view(), period, harmonic, omega)
+    let arr = Array1::from_vec(i_data);
+    phasor::time_domain::real(&arr, period, harmonic, omega)
 }
 
 /// Calibrate a real and imaginary (G, S) coordinate pair.

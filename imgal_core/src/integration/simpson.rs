@@ -1,4 +1,6 @@
-use ndarray::{ArrayView1, s};
+use ndarray::{ArrayBase, Data, Ix1, s};
+
+use crate::traits::numeric::ToFloat64;
 
 /// Integrate a curve with Simpson's 1/3 rule and the trapezoid rule.
 ///
@@ -24,7 +26,11 @@ use ndarray::{ArrayView1, s};
 /// # Returns
 ///
 /// * `f64`: The computed integral.
-pub fn composite_simpson(x: ArrayView1<f64>, delta_x: Option<f64>) -> f64 {
+pub fn composite_simpson<T, S>(x: &ArrayBase<S, Ix1>, delta_x: Option<f64>) -> f64
+where
+    T: ToFloat64,
+    S: Data<Elem = T>,
+{
     // set default delta x if necessary
     let d_x: f64 = delta_x.unwrap_or(1.0);
     // find the number of subintervals
@@ -34,9 +40,9 @@ pub fn composite_simpson(x: ArrayView1<f64>, delta_x: Option<f64>) -> f64 {
         simpson(x, delta_x).unwrap()
     } else {
         // compute the even subintervals with Simpson's rule
-        let integral: f64 = simpson(x.slice(s![..n]), delta_x).unwrap();
+        let integral: f64 = simpson(&x.slice(s![..n]), delta_x).unwrap();
         // compute the last subinterval with a trapizoid
-        let trap: f64 = (d_x / 2.0) * (x[n - 1] + x[n]);
+        let trap: f64 = (d_x / 2.0) * (x[n - 1] + x[n]).into();
         integral + trap
     }
 }
@@ -61,7 +67,11 @@ pub fn composite_simpson(x: ArrayView1<f64>, delta_x: Option<f64>) -> f64 {
 ///
 /// * `Ok(f64)`: The computed integral.
 /// * `Err(&str)`: Error message if the number of subintervals is odd.
-pub fn simpson(x: ArrayView1<f64>, delta_x: Option<f64>) -> Result<f64, &'static str> {
+pub fn simpson<T, S>(x: &ArrayBase<S, Ix1>, delta_x: Option<f64>) -> Result<f64, &'static str>
+where
+    T: ToFloat64,
+    S: Data<Elem = T>,
+{
     // set default delta x if necessary
     let d_x: f64 = delta_x.unwrap_or(1.0);
     // find the number of subintervals
@@ -70,10 +80,10 @@ pub fn simpson(x: ArrayView1<f64>, delta_x: Option<f64>) -> Result<f64, &'static
     if n % 2 == 0 {
         // compute integal with Simpson's rule
         let mut coef: f64;
-        let mut integral: f64 = x[0] + x[n];
+        let mut integral: f64 = (x[0] + x[n]).into();
         for i in 1..n {
             coef = if i % 2 == 1 { 4.0 } else { 2.0 };
-            integral += coef * x[i];
+            integral += coef * x[i].into();
         }
         Ok((d_x / 3.0) * integral)
     } else {

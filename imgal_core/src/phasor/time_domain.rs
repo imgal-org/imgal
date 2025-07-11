@@ -1,6 +1,6 @@
 use std::f64;
 
-use ndarray::{Array1, Array2, Array3, ArrayView1, ArrayView3, Axis, Zip, stack};
+use ndarray::{Array1, Array2, Array3, ArrayBase, Axis, Data, Ix1, Ix3, Zip, stack};
 
 use crate::integration::midpoint;
 use crate::parameters;
@@ -28,8 +28,8 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// * `Array3<f64>`: The real and imaginary coordinates as a 3D (ch, row, col) image,
 ///    where G and S are indexed at 0 and 1 respectively on the _channel_ axis.
-pub fn image<T>(
-    i_data: &ArrayView3<T>,
+pub fn image<T, S>(
+    i_data: &ArrayBase<S, Ix3>,
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
@@ -37,6 +37,7 @@ pub fn image<T>(
 ) -> Array3<f64>
 where
     T: ToFloat64,
+    S: Data<Elem = T>,
 {
     // set optional parameters if needed
     let h = harmonic.unwrap_or(1.0);
@@ -138,12 +139,16 @@ where
 /// # Returns
 ///
 /// * `f64`: The imaginary component, S.
-pub fn imaginary(
-    i_data: ArrayView1<f64>,
+pub fn imaginary<T, S>(
+    i_data: &ArrayBase<S, Ix1>,
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
-) -> f64 {
+) -> f64
+where
+    T: ToFloat64,
+    S: Data<Elem = T>,
+{
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
     let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
@@ -154,10 +159,10 @@ pub fn imaginary(
     let h_w_dt: f64 = h * w * dt;
     let mut buf = Vec::with_capacity(n);
     for i in 0..n {
-        buf.push(i_data[i] * f64::sin(h_w_dt * (i as f64)));
+        buf.push(i_data[i].into() * f64::sin(h_w_dt * (i as f64)));
     }
-    let i_sin_integral: f64 = midpoint(Array1::from_vec(buf).view(), Some(dt));
-    let i_integral: f64 = midpoint(i_data, Some(dt));
+    let i_sin_integral: f64 = midpoint(&Array1::from_vec(buf), Some(dt));
+    let i_integral: f64 = midpoint(&i_data, Some(dt));
     i_sin_integral / i_integral
 }
 
@@ -182,12 +187,16 @@ pub fn imaginary(
 /// # Returns
 ///
 /// * `f64`: The real component, G.
-pub fn real(
-    i_data: ArrayView1<f64>,
+pub fn real<T, S>(
+    i_data: &ArrayBase<S, Ix1>,
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
-) -> f64 {
+) -> f64
+where
+    T: ToFloat64,
+    S: Data<Elem = T>,
+{
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
     let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
@@ -198,9 +207,9 @@ pub fn real(
     let h_w_dt: f64 = h * w * dt;
     let mut buf = Vec::with_capacity(n);
     for i in 0..n {
-        buf.push(i_data[i] * f64::cos(h_w_dt * (i as f64)));
+        buf.push(i_data[i].into() * f64::cos(h_w_dt * (i as f64)));
     }
-    let i_cos_integral: f64 = midpoint(Array1::from_vec(buf).view(), Some(dt));
-    let i_integral: f64 = midpoint(i_data, Some(dt));
+    let i_cos_integral: f64 = midpoint(&Array1::from_vec(buf), Some(dt));
+    let i_integral: f64 = midpoint(&i_data, Some(dt));
     i_cos_integral / i_integral
 }

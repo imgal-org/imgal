@@ -10,7 +10,7 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Arguments
 ///
-/// * `input`: A slice of numbers.
+/// * `data`: A slice of numbers.
 ///
 /// # Returns
 ///

@@ -1,5 +1,5 @@
-use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Sub};
 use std::iter::Sum;
+use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Sub};
 
 pub trait ToFloat64:
     Copy
