@@ -1,3 +1,6 @@
+use ndarray::{Axis, Array3};
+use rayon::prelude::*;
+
 /// Calibrate a real and imaginary (G, S) coordinate pair.
 ///
 /// # Description
@@ -24,9 +27,36 @@
 ///
 /// * `f64`: The calibrated coordinate pair, (G, S).
 pub fn coordinate_pair(g: f64, s: f64, modulation: f64, phi: f64) -> (f64, f64) {
-    let g_trans: f64 = modulation * phi.cos();
-    let s_trans: f64 = modulation * phi.sin();
-    let g_cal: f64 = g * g_trans - s * s_trans;
-    let s_cal: f64 = g * s_trans + s * g_trans;
+    let g_trans = modulation * phi.cos();
+    let s_trans = modulation * phi.sin();
+    let g_cal = g * g_trans - s * s_trans;
+    let s_cal = g * s_trans + s * g_trans;
     (g_cal, s_cal)
+}
+
+/// Calibrate an image
+///
+/// # Description
+///
+/// Mutates the input array.
+pub fn image_mut(
+    data: Array3<f64>,
+    modulation: f64,
+    phi: f64,
+    axis: Option<usize>,
+) {
+    // set optional axis parameter if needed
+    let a = axis.unwrap_or(2);
+
+    // initialize calibration parameters
+    let g_trans = modulation * phi.cos();
+    let s_trans = modulation * phi.sin();
+
+    // let g_arr = data.index_axis(Axis(a), 0);
+    // let s_arr = data.index_axis(Axis(a), 1);
+    let lanes = data.lanes(Axis(a));
+    lanes.into_iter().par_bridge().for_each(|ln| {
+        ln.iter().for_each(|x| {
+        });
+    });
 }
