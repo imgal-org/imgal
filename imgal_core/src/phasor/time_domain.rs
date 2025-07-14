@@ -24,6 +24,7 @@ use crate::traits::numeric::ToFloat64;
 /// * `harmonic`: The harmonic value, default = 1.0.
 /// * `omega`: The angular frequency.
 /// * `axis`: The decay or lifetime axis, default = 2.
+///
 /// # Returns
 ///
 /// * `Array3<f64>`: The real and imaginary coordinates as a 3D (ch, row, col) image,
