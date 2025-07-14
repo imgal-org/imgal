@@ -54,6 +54,35 @@ pub fn multi_component_phi(g: f64, s: f64) -> f64 {
     s.atan2(g)
 }
 
+/// Compute a coordinate pair for a single component decay.
+///
+/// # Description
+///
+/// The function computes a coordinate pair for a single component decay given
+/// as:
+///
+/// G = 1 / 1 + (ωτ)²\
+/// S = ωτ / 1 + (ωτ)²
+///
+/// # Arguments
+///
+/// * `tau`: The lifetime of a single component decay.
+/// * `omega`: The angular frequency.
+///
+/// # Returns
+///
+/// * `(f64, f64)`: The single component decay coordinate pair, (G, S).
+///
+/// # Reference
+///
+/// <https://doi.org/10.1117/1.JBO.25.7.071203>
+pub fn single_component_coordinate_pair(tau: f64, omega: f64) -> (f64, f64) {
+    let denom = 1.0 + (omega * tau).powi(2);
+    let g = 1.0 / denom;
+    let s = (omega * tau) / denom;
+    (g, s)
+}
+
 /// Compute the modulation of a single-component phasor coordinate pair.
 ///
 /// # Description

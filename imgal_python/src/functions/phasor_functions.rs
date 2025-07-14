@@ -1,4 +1,6 @@
-use numpy::{IntoPyArray, PyArray3, PyArrayMethods, PyReadonlyArray3, ndarray::Array1};
+use numpy::{
+    IntoPyArray, PyArray3, PyArrayMethods, PyReadonlyArray3, PyReadwriteArray3, ndarray::Array1,
+};
 use pyo3::prelude::*;
 
 use imgal_core::phasor;
@@ -131,6 +133,39 @@ pub fn calibration_coordinate_pair(g: f64, s: f64, modulation: f64, phi: f64) ->
     phasor::calibration::coordinate_pair(g, s, modulation, phi)
 }
 
+/// Calibrate the real and imaginary (G, S) coordinates of a 3-dimensional phasor
+/// image.
+///
+/// This function calibrates an input 3-dimensonal phasor image by rotating and
+/// scaling G and S coordinates by phase (φ) and modulation (M) respectively using:
+///
+/// g = M * cos(φ)
+/// s = M * sin(φ)
+/// G' = G * g - S * s
+/// S' = G * s + S * g
+///
+/// Where G' and S' are the calibrated real and imaginary values after rotation
+/// and scaling. This function mutates the input data and does not create a new
+/// array.
+///
+/// :param data: The 3-dimensonal phasor image, where G and S are channels 0 and 1
+///     respectively.
+/// :param modulation: The modulation to scale the input (G, S) coordinates.
+/// :param phi: The phi, , polar angle to rotate the intput (G, S) coorindates.
+/// :param axis: The channel axis, default = 2.
+#[pyfunction]
+#[pyo3(name = "image_mut")]
+#[pyo3(signature = (data, modulation, phi, axis=None))]
+pub fn calibration_image_mut(
+    mut data: PyReadwriteArray3<f64>,
+    modulation: f64,
+    phi: f64,
+    axis: Option<usize>,
+) {
+    let arr = data.as_array_mut();
+    phasor::calibration::image_mut(arr, modulation, phi, axis);
+}
+
 /// Compute the modulation of a multi-component phasor coordinate pair.
 ///
 /// The modulation of a multi-component (i.e. inside the universal circle) phasor
@@ -163,6 +198,23 @@ pub fn plot_multi_component_modulation(g: f64, s: f64) -> f64 {
 #[pyo3(name = "multi_component_phi")]
 pub fn plot_multi_component_phi(g: f64, s: f64) -> f64 {
     phasor::plot::multi_component_phi(g, s)
+}
+
+/// Compute a coordinate pair for a single component decay.
+///
+/// This function computes a coordinate pair for a single component decay given
+/// as:
+///
+/// G = 1 / 1 + (ωτ)²
+/// S = ωτ / 1 + (ωτ)²
+///
+/// :param tau: The lifetime of a single component decay.
+/// :param omega: The angular frequency.
+/// :return: The single component decay coordinate pair, (G, S).
+#[pyfunction]
+#[pyo3(name = "single_component_coordinate_pair")]
+pub fn plot_single_component_coordinate_pair(tau: f64, omega: f64) -> (f64, f64) {
+    phasor::plot::single_component_coordinate_pair(tau, omega)
 }
 
 /// Compute the modulation of a single-component phasor coordinate pair.
