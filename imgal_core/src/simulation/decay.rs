@@ -11,7 +11,9 @@ use crate::simulation::instrument;
 /// (1-dimensional) by FFT convolving the IRF with a decay cruve. The ideal
 /// decay curve is computed as:
 ///
+/// ```text
 /// I(t) = Io * e^(-t/τ)
+/// ```
 ///
 /// The ideal decay curve is then convolved with a Guassian IRF.
 ///
@@ -48,7 +50,9 @@ pub fn gaussian_fluorescence_1d(
 /// (3-dimensional) by FFT convolving the IRF with a decay cruve. The ideal
 /// decay curve is computed as:
 ///
+/// ```text
 /// I(t) = Io * e^(-t/τ)
+/// ```
 ///
 /// The ideal decay curve is then convolved with a Guassian IRF.
 ///
@@ -86,7 +90,9 @@ pub fn gaussian_fluorescence_3d(
 ///
 /// A fluorescence decay curve is computed as:
 ///
+/// ```text
 /// I(t) = Io * e^(-t/τ)
+/// ```
 ///
 /// Where "Io" is the initial fluorescence value and "t" is time (_i.e._ the
 /// number of samples).
@@ -120,7 +126,9 @@ pub fn ideal_fluorescence_1d(
 ///
 /// A fluorescence decay curve is computed as:
 ///
+/// ```text
 /// I(t) = Io * e^(-t/τ)
+/// ```
 ///
 /// Where "Io" is the initial fluorescence value and "t" is the time (_i.e._ the
 /// number of samples). The decay curve is then broadcasted to the specified input

@@ -8,7 +8,7 @@ use crate::statistics::sum;
 ///
 /// This function creates a discrete Gaussian distribution by sampling the continuous
 /// Gaussian probability density function at evenly spaced points across a given range.
-/// The resulting distribution is normalized so that all values sum to 1.0.i
+/// The resulting distribution is normalized so that all values sum to 1.0.
 /// The function implements the Gaussian probability density function:
 ///
 /// ```text

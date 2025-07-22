@@ -10,10 +10,12 @@ use crate::phasor::plot;
 /// Calibrate the real and imaginary (_e.g._ G and S) coordinate pair by rotating
 /// and scaling by phase (φ) and modulation (M) respectively using:
 ///
-/// g = M * cos(φ)\
-/// s = M * sin(φ)\
-/// G' = G * g - S * s\
+/// ```text
+/// g = M * cos(φ)
+/// s = M * sin(φ)
+/// G' = G * g - S * s
 /// S' = G * s + S * g
+/// ```
 ///
 /// Where G' and S' are the calibrated real and imaginary values after rotation
 /// and scaling.
@@ -44,10 +46,12 @@ pub fn coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64
 /// This function calibrates an input 3-dimensonal phasor image by rotating and
 /// scaling G and S coordinates by phase (φ) and modulation (M) respectively using:
 ///
-/// g = M * cos(φ)\
-/// s = M * sin(φ)\
-/// G' = G * g - S * s\
+/// ```text
+/// g = M * cos(φ)
+/// s = M * sin(φ)
+/// G' = G * g - S * s
 /// S' = G * s + S * g
+/// ```
 ///
 /// Where G' and S' are the calibrated real and imaginary values after rotation
 /// and scaling. This function mutates the input data and does not create a new

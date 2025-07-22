@@ -7,7 +7,9 @@ use crate::traits::numeric::ToFloat64;
 /// This function computes Ernst Abbe's diffraction limit
 /// for a microscope using:
 ///
+/// ```text
 /// d = wavelength / 2 * NA
+/// ```
 ///
 /// Where NA is the numerical aperture of the objective.
 ///

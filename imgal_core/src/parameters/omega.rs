@@ -8,7 +8,9 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// Compute the angular frequency, omega (ω), using the following equation:
 ///
+/// ```text
 /// ω = 2π/T
+/// ```
 ///
 /// Where "T" is the period.
 ///

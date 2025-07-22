@@ -10,7 +10,9 @@ use crate::traits::numeric::ToFloat64;
 /// Approximates the definite integral using the midpoint rule
 /// with pre-computed x-values:
 ///
+/// ```text
 /// ∫f(x) dx ≈ Δx * [f(x₁) + f(x₂) + ... + f(xₙ)]
+/// ```
 ///
 /// # Arguments
 ///

@@ -14,8 +14,10 @@ use crate::traits::numeric::ToFloat64;
 /// The real (G) and imaginary (S) components are calculated using the normalized
 /// sine and cosine Fourier transforms:
 ///
-/// S = ∫(I(t) * sin(nωt) * dt) / ∫(I(t) * dt)\
+/// ```text
 /// G = ∫(I(t) * cos(nωt) * dt) / ∫(I(t) * dt)
+/// S = ∫(I(t) * sin(nωt) * dt) / ∫(I(t) * dt)
+/// ```
 ///
 /// # Arguments
 ///
@@ -126,7 +128,9 @@ where
 /// The imaginary (S) component is calculated using the normalized sine Fourier
 /// transform:
 ///
+/// ```text
 /// S = ∫(I(t) * sin(nωt) * dt) / ∫(I(t) * dt)
+/// ```
 ///
 /// Where 'n' and 'ω' are harmonic and omega values respectively.
 ///
@@ -174,7 +178,9 @@ where
 /// The real (G) component is calculated using the normalized cosine Fourier
 /// transform:
 ///
+/// ```text
 /// G = ∫(I(t) * cos(nωt) * dt) / ∫(I(t) * dt)
+/// ```
 ///
 /// Where 'n' and 'ω' are harmonic and omega values respectively.
 ///

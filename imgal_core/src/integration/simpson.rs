@@ -10,13 +10,17 @@ use crate::traits::numeric::ToFloat64;
 /// the trapezoid rule (for odd number of subintervals) with pre-computed
 /// x-values:
 ///
+/// ```text
 /// ∫(f(x)dx) ≈ (Δx/3) * [f(x₀) + 4f(x₁) + 2f(x₂) + 4f(x₃) + ... + 2f(xₙ₋₂) + 4f(xₙ₋₁) + f(xₙ)]
+/// ```
 ///
 /// Where "n" is the number of evenly spaced points in the data. If there is an
 /// odd number of subintervals, the final subinterval is integrated using the
 /// trapezoid rule:
 ///
+/// ```text
 /// ∫(f(x)dx) ≈ (Δx/2) * [f(x₀) + f(x₁)]
+/// ```
 ///
 /// # Arguments
 ///
@@ -54,7 +58,9 @@ where
 /// Approximates the definite integral using Simpson's 1/3 rule and
 /// with pre-computed x-values:
 ///
+/// ```text
 /// ∫(f(x)dx) ≈ (Δx/3) * [f(x₀) + 4f(x₁) + 2f(x₂) + 4f(x₃) + ... + 2f(xₙ₋₂) + 4f(xₙ₋₁) + f(xₙ)]
+/// ```
 ///
 /// Where "n" is the number of evenly spaced points in the data.
 ///

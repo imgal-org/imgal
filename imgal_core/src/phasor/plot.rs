@@ -7,7 +7,9 @@ use std::f64;
 /// This function calculates the modulation (M) of a phasor coordinate pair
 /// using the pythagorean theorem to find the hypotenuse (i.e. the modulation):
 ///
+/// ```text
 /// M = √(G² + S²)
+/// ````
 ///
 /// # Arguments
 ///
@@ -31,7 +33,9 @@ pub fn modulation(g: f64, s: f64) -> f64 {
 /// This function calculates the phase or phi (φ) of a phasor coordinate pair
 /// using:
 ///
+/// ```text
 /// φ = tan⁻¹(S / G)
+/// ````
 ///
 /// This implementation uses atan2 and computes the four quadrant arctangent of
 /// the phasor coordinate pair.
@@ -55,8 +59,10 @@ pub fn phase(g: f64, s: f64) -> f64 {
 /// The function computes a coordinate pair for a single component decay given
 /// as:
 ///
-/// G = 1 / 1 + (ωτ)²\
+/// ```text
+/// G = 1 / 1 + (ωτ)²
 /// S = ωτ / 1 + (ωτ)²
+/// ```
 ///
 /// # Arguments
 ///
