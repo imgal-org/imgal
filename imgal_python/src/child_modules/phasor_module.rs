@@ -39,6 +39,10 @@ pub fn register_phasor_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
         phasor_functions::calibration_image_mut,
         &calibration_module
     )?)?;
+    calibration_module.add_function(wrap_pyfunction!(
+        phasor_functions::calibration_modulation_and_phase,
+        &calibration_module
+    )?)?;
 
     // add phasor::plot submodule functions
     plot_module.add_function(wrap_pyfunction!(
