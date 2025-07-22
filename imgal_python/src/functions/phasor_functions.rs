@@ -125,12 +125,12 @@ pub fn time_domain_real(
 /// :param g: The real component (G) to calibrate.
 /// :param s: The imaginary component (S) to calibrate.
 /// :param modulation: The modulation to scale the input (G, S) coordinates.
-/// :param phi: The phi, φ, polar angle to rotate the input (G, S) coordinates.
+/// :param phase: The phase, φ angle, to rotate the input (G, S) coordinates.
 /// :return: The calibrated coordinate pair, (G, S).
 #[pyfunction]
 #[pyo3(name = "coordinate_pair")]
-pub fn calibration_coordinate_pair(g: f64, s: f64, modulation: f64, phi: f64) -> (f64, f64) {
-    phasor::calibration::coordinate_pair(g, s, modulation, phi)
+pub fn calibration_coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64) {
+    phasor::calibration::coordinate_pair(g, s, modulation, phase)
 }
 
 /// Calibrate the real and imaginary (G, S) coordinates of a 3-dimensional phasor
@@ -151,15 +151,15 @@ pub fn calibration_coordinate_pair(g: f64, s: f64, modulation: f64, phi: f64) ->
 /// :param data: The 3-dimensonal phasor image, where G and S are channels 0 and 1
 ///     respectively.
 /// :param modulation: The modulation to scale the input (G, S) coordinates.
-/// :param phi: The phi, , polar angle to rotate the intput (G, S) coorindates.
+/// :param phase: The phase, φ angle, to rotate the intput (G, S) coorindates.
 /// :param axis: The channel axis, default = 2.
 #[pyfunction]
 #[pyo3(name = "image_mut")]
-#[pyo3(signature = (data, modulation, phi, axis=None))]
+#[pyo3(signature = (data, modulation, phase, axis=None))]
 pub fn calibration_image_mut(
     mut data: PyReadwriteArray3<f64>,
     modulation: f64,
-    phi: f64,
+    phase: f64,
     axis: Option<usize>,
 ) {
     let arr = data.as_array_mut();
@@ -182,9 +182,9 @@ pub fn plot_modulation(g: f64, s: f64) -> f64 {
     phasor::plot::modulation(g, s)
 }
 
-/// Compute the phi angle of a phasor coordinate pair.
+/// Compute the phase of a phasor coordinate pair.
 ///
-/// This function calculates the phi (φ) of a phasor coordinate pair is
+/// This function calculates the phase or phi (φ) of a phasor coordinate pair
 /// using:
 ///
 /// φ = tan⁻¹(S / G)
@@ -194,11 +194,11 @@ pub fn plot_modulation(g: f64, s: f64) -> f64 {
 ///
 /// :param g: The real component, G.
 /// :param s: The imaginary component, S.
-/// :return: The phi (φ) angle of the (G, S) phasor coordinate pair.
+/// :return: The phase (phi, φ) angle of the (G, S) phasor coordinate pair.
 #[pyfunction]
-#[pyo3(name = "phi")]
-pub fn plot_phi(g: f64, s: f64) -> f64 {
-    phasor::plot::phi(g, s)
+#[pyo3(name = "phase")]
+pub fn plot_phase(g: f64, s: f64) -> f64 {
+    phasor::plot::phase(g, s)
 }
 
 /// Compute a coordinate pair for a single component decay.
@@ -217,4 +217,3 @@ pub fn plot_phi(g: f64, s: f64) -> f64 {
 pub fn plot_single_component_coordinate_pair(tau: f64, omega: f64) -> (f64, f64) {
     phasor::plot::single_component_coordinate_pair(tau, omega)
 }
-

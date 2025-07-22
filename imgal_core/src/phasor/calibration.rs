@@ -1,5 +1,7 @@
-use ndarray::{ArrayViewMut3, Axis};
+use ndarray::{ArrayView3, ArrayViewMut3, Axis};
 use rayon::prelude::*;
+
+use crate::phasor::plot;
 
 /// Calibrate a real and imaginary (G, S) coordinate pair.
 ///
@@ -21,14 +23,14 @@ use rayon::prelude::*;
 /// * `g`: The real component (G) to calibrate.
 /// * `s`: The imaginary (S) to calibrate.
 /// * `modulation`: The modulation to scale the input (G, S) coordinates.
-/// * `phi`: The phi, φ, polar angle to rotate the input (G, S) coordinates.
+/// * `phase`: The phase, φ angle, to rotate the input (G, S) coordinates.
 ///
 /// # Returns
 ///
 /// * `(f64, f64)`: The calibrated coordinate pair, (G, S).
-pub fn coordinate_pair(g: f64, s: f64, modulation: f64, phi: f64) -> (f64, f64) {
-    let g_trans = modulation * phi.cos();
-    let s_trans = modulation * phi.sin();
+pub fn coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64) {
+    let g_trans = modulation * phase.cos();
+    let s_trans = modulation * phase.sin();
     let g_cal = g * g_trans - s * s_trans;
     let s_cal = g * s_trans + s * g_trans;
     (g_cal, s_cal)
@@ -56,15 +58,15 @@ pub fn coordinate_pair(g: f64, s: f64, modulation: f64, phi: f64) -> (f64, f64) 
 /// * `data`: The 3-dimensonal phasor image, where G and S are channels 0 and 1
 ///    respectively.
 /// * `modulation`: The modulation to scale the input (G, S) coordinates.
-/// * `phi`: The phi, φ, polar angle to rotate the input (G, S) coordinates.
+/// * `phase`: The phase, φ angle, to rotate the input (G, S) coordinates.
 /// * `axis`: The channel axis, default = 2.
-pub fn image_mut(mut data: ArrayViewMut3<f64>, modulation: f64, phi: f64, axis: Option<usize>) {
+pub fn image_mut(mut data: ArrayViewMut3<f64>, modulation: f64, phase: f64, axis: Option<usize>) {
     // set optional axis parameter if needed
     let a = axis.unwrap_or(2);
 
     // initialize calibration parameters
-    let g_trans = modulation * phi.cos();
-    let s_trans = modulation * phi.sin();
+    let g_trans = modulation * phase.cos();
+    let s_trans = modulation * phase.sin();
 
     let lanes = data.lanes_mut(Axis(a));
     lanes.into_iter().par_bridge().for_each(|mut ln| {

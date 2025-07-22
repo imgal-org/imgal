@@ -24,11 +24,11 @@ pub fn modulation(g: f64, s: f64) -> f64 {
     f64::sqrt(g_sqr + s_sqr)
 }
 
-/// Compute the phi angle of a phasor coordinate pair.
+/// Compute the phase of a phasor coordinate pair.
 ///
 /// # Description
 ///
-/// This function calculates the phi (φ) of a phasor coordinate pair
+/// This function calculates the phase or phi (φ) of a phasor coordinate pair
 /// using:
 ///
 /// φ = tan⁻¹(S / G)
@@ -43,8 +43,8 @@ pub fn modulation(g: f64, s: f64) -> f64 {
 ///
 /// # Returns
 ///
-/// * `f64`: The phi (φ) angle of the (G, S) phasor coordinate pair.
-pub fn phi(g: f64, s: f64) -> f64 {
+/// * `f64`: The phase (phi, φ)  of the (G, S) phasor coordinate pair.
+pub fn phase(g: f64, s: f64) -> f64 {
     s.atan2(g)
 }
 
@@ -76,4 +76,3 @@ pub fn single_component_coordinate_pair(tau: f64, omega: f64) -> (f64, f64) {
     let s = (omega * tau) / denom;
     (g, s)
 }
-
