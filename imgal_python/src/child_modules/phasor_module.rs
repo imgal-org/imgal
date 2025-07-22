@@ -42,23 +42,15 @@ pub fn register_phasor_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
 
     // add phasor::plot submodule functions
     plot_module.add_function(wrap_pyfunction!(
-        phasor_functions::plot_multi_component_modulation,
+        phasor_functions::plot_modulation,
         &plot_module
     )?)?;
     plot_module.add_function(wrap_pyfunction!(
-        phasor_functions::plot_multi_component_phi,
+        phasor_functions::plot_phi,
         &plot_module
     )?)?;
     plot_module.add_function(wrap_pyfunction!(
         phasor_functions::plot_single_component_coordinate_pair,
-        &plot_module
-    )?)?;
-    plot_module.add_function(wrap_pyfunction!(
-        phasor_functions::plot_single_component_modulation,
-        &plot_module
-    )?)?;
-    plot_module.add_function(wrap_pyfunction!(
-        phasor_functions::plot_single_component_phi,
         &plot_module
     )?)?;
 
