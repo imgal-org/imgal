@@ -69,7 +69,7 @@ pub fn image_mut(mut data: ArrayViewMut3<f64>, modulation: f64, phi: f64, axis: 
     let lanes = data.lanes_mut(Axis(a));
     lanes.into_iter().par_bridge().for_each(|mut ln| {
         let g_cal = ln[0] * g_trans - ln[1] * s_trans;
-        let s_cal = ln[0] * s_trans - ln[1] * g_trans;
+        let s_cal = ln[0] * s_trans + ln[1] * g_trans;
         ln[0] = g_cal;
         ln[1] = s_cal;
     });
