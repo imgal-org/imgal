@@ -19,13 +19,17 @@ use crate::traits::numeric::ToFloat64;
 /// # Examples
 ///
 /// ```
+/// use ndarray::Array1;
+/// 
 /// use imgal_core::statistics::sum;
 ///
-/// let int_data = [2, 5, 10, 18];
-/// assert_eq!(sum(&int_data), 35);
+/// // create a 1-dimensional array
+/// let arr = Array1::from_vec(vec![1.82, 3.35, 7.13, 9.25]);
+/// 
+/// // compute the sum of the array
+/// let total = sum(&arr);
 ///
-/// let float_data = [1.82, 3.35, 7.13, 9.25];
-/// assert_eq!(sum(&float_data), 21.55);
+/// assert_eq!(total, 21.55);
 /// ```
 pub fn sum<T, S>(data: &ArrayBase<S, Ix1>) -> T
 where
