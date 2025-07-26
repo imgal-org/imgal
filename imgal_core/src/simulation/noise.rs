@@ -51,6 +51,40 @@ where
     n_data
 }
 
+/// Simulate Poisson noise on a 1-dimensional array.
+///
+/// # Description
+///
+/// This function applies Poisson noise (_i.e._ shot noise) on a 1-dimensional
+/// array of data. An element-wise lambda value (scaled by the `scale` parameter)
+/// is used to simulate the Poisson noise with variable signal strength.
+///
+/// This function mutates the input array and does not create a new array.
+///
+/// # Arguments
+///
+/// * `data`: The input 1-dimensional array to mutate.
+/// * `scale`: The scale factor.
+/// * `seed`: Pseudorandom number generator seed. Set the `seed` value to apply
+///    homogenous noise to the input array. If `None`, then heterogenous noise
+///    is applied to the input array.
+pub fn poisson_1d_mut(mut data: ArrayViewMut1<f64>, scale: f64, seed: Option<u64>) {
+    // set optional parameters if needed
+    let s = seed.unwrap_or(0);
+    let mut rng = StdRng::seed_from_u64(s);
+
+    // mutate the 1d data array
+    data.map_inplace(|x| {
+        if *x > 0.0 {
+            let l = *x * scale;
+            let p = Poisson::new(l).unwrap();
+            *x = p.sample(&mut rng);
+        } else {
+            *x = 0.0;
+        }
+    });
+}
+
 /// Simulate Poisson noise on a 3-dimensional array.
 ///
 /// # Description
@@ -129,40 +163,6 @@ where
     }
 
     n_data
-}
-
-/// Simulate Poisson noise on a 1-dimensional array.
-///
-/// # Description
-///
-/// This function applies Poisson noise (_i.e._ shot noise) on a 1-dimensional
-/// array of data. An element-wise lambda value (scaled by the `scale` parameter)
-/// is used to simulate the Poisson noise with variable signal strength.
-///
-/// This function mutates the input array and does not create a new array.
-///
-/// # Arguments
-///
-/// * `data`: The input 1-dimensional array to mutate.
-/// * `scale`: The scale factor.
-/// * `seed`: Pseudorandom number generator seed. Set the `seed` value to apply
-///    homogenous noise to the input array. If `None`, then heterogenous noise
-///    is applied to the input array.
-pub fn poisson_1d_mut(mut data: ArrayViewMut1<f64>, scale: f64, seed: Option<u64>) {
-    // set optional parameters if needed
-    let s = seed.unwrap_or(0);
-    let mut rng = StdRng::seed_from_u64(s);
-
-    // mutate the 1d data array
-    data.map_inplace(|x| {
-        if *x > 0.0 {
-            let l = *x * scale;
-            let p = Poisson::new(l).unwrap();
-            *x = p.sample(&mut rng);
-        } else {
-            *x = 0.0;
-        }
-    });
 }
 
 /// Simulate Poisson noise on a 3-dimensional array.
