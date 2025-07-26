@@ -45,6 +45,18 @@ pub fn register_simulation_module(parent_module: &Bound<'_, PyModule>) -> PyResu
         simulation_functions::noise_poisson_1d,
         &noise_module
     )?)?;
+    noise_module.add_function(wrap_pyfunction!(
+        simulation_functions::noise_poisson_1d_mut,
+        &noise_module
+    )?)?;
+    noise_module.add_function(wrap_pyfunction!(
+        simulation_functions::noise_poisson_3d,
+        &noise_module
+    )?)?;
+    noise_module.add_function(wrap_pyfunction!(
+        simulation_functions::noise_poisson_3d_mut,
+        &noise_module
+    )?)?;
 
     // attach simulation submodule before attaching to the parent module
     simulation_module.add_submodule(&decay_module)?;

@@ -1,4 +1,7 @@
-use numpy::{IntoPyArray, PyArray1, PyArray3, PyArrayMethods, PyReadonlyArray1};
+use numpy::{
+    IntoPyArray, PyArray1, PyArray3, PyArrayMethods, PyReadonlyArray1, PyReadonlyArray3,
+    PyReadwriteArray1, PyReadwriteArray3,
+};
 use pyo3::prelude::*;
 
 use imgal_core::simulation;
@@ -178,14 +181,18 @@ pub fn instrument_gaussian_irf_1d(
 
 /// Simulate Poisson noise on a 1-dimensional array.
 ///
-/// Apply Poisson noise (i.e. shot noise) on a 1-dimensonal array of data. Here,
-/// "data" typically represents signal data.
+/// The function applies Poisson noise (i.e. shot noise) on a 1-dimensional
+/// array of data. An element-wise lambda value (scaled by the "scale" parameter)
+/// is used to simulate the Poisson noise with variable signal strength.
 ///
-/// :param data: The input 1-dimensional array of signal values.
+/// The function creates a new array and does not mutate the input array.f
+///
+/// :param data: The input 1-dimensional array.
 /// :param scale: The scale factor.
-/// :param seed: The random number generator seed for reproducible results. If "None"
-///     the default seed value is 0.
-/// :return: The 1-dimensonal array with Poisson noise applied.
+/// :param seed: Pseudorandom number generator seed. Set the "seed" value to apply
+///     homogenous noise to the input array. If "None", then heterogenous noise
+///     is applied to the input array.
+/// :return: A 1-dimensonal array of the input data with Poisson noise applied.
 #[pyfunction]
 #[pyo3(name = "poisson_1d")]
 #[pyo3(signature = (data, scale, seed=None))]
@@ -198,27 +205,130 @@ pub fn noise_poisson_1d<'py>(
     // pattern match and extract allowed array types
     if let Ok(array) = data.extract::<PyReadonlyArray1<f32>>() {
         let ro_arr = array.readonly();
-        let arr = ro_arr.as_array().to_owned();
-        let output = simulation::noise::poisson_1d(arr, scale, seed);
+        let arr = ro_arr.as_array();
+        let output = simulation::noise::poisson_1d(&arr, scale, seed);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray1<f64>>() {
         let ro_arr = array.readonly();
-        let arr = ro_arr.as_array().to_owned();
-        let output = simulation::noise::poisson_1d(arr, scale, seed);
-        return Ok(output.into_pyarray(py));
-    } else if let Ok(array) = data.extract::<PyReadonlyArray1<u16>>() {
-        let ro_arr = array.readonly();
-        let arr = ro_arr.as_array().to_owned();
-        let output = simulation::noise::poisson_1d(arr, scale, seed);
+        let arr = ro_arr.as_array();
+        let output = simulation::noise::poisson_1d(&arr, scale, seed);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray1<u8>>() {
         let ro_arr = array.readonly();
-        let arr = ro_arr.as_array().to_owned();
-        let output = simulation::noise::poisson_1d(arr, scale, seed);
+        let arr = ro_arr.as_array();
+        let output = simulation::noise::poisson_1d(&arr, scale, seed);
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(array) = data.extract::<PyReadonlyArray1<u16>>() {
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array();
+        let output = simulation::noise::poisson_1d(&arr, scale, seed);
         return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
             "Unsupported array dtype.",
         ));
     }
+}
+
+/// Simulate Poisson noise on a 1-dimensional array.
+///
+/// The function applies Poisson noise (i.e. shot noise) on a 1-dimensional
+/// array of data. An element-wise lambda value (scaled by the "scale" parameter)
+/// is used to simulate the Poisson noise with variable signal strength.
+///
+/// This function mutates the input array and does not create a new array.
+///
+/// :param data: The input 1-dimensonal array to mutate.
+/// :param scale: The scale factor.
+/// :param seed: Pseudorandom number generator seed. Set the "seed" value to apply
+///     homogenous noise to the input array. If "None", then heterogenous noise
+///     is applied to the input array.
+#[pyfunction]
+#[pyo3(name = "poisson_1d_mut")]
+#[pyo3(signature= (data, scale, seed=None))]
+pub fn noise_poisson_1d_mut(mut data: PyReadwriteArray1<f64>, scale: f64, seed: Option<u64>) {
+    let arr = data.as_array_mut();
+    simulation::noise::poisson_1d_mut(arr, scale, seed);
+}
+
+/// Simulate Poisson noise on a 3-dimensional array.
+///
+/// This function applies Poisson noise (i.e. shot noise) on a 3-dimensional
+/// array of data. An element-wise lambda value (scaled by the "scale" parameter)
+/// is used to simulate Poisson noise with variable signal strength.
+///
+/// This function creates a new array and does not mutate the input array.
+///
+///
+/// :param data: The input 3-dimensional array.
+/// :param scale: The scale factor.
+/// :param seed: Pseudorandom number generator seed. Set the "seed" value to apply
+///     homogenous noise to the input array. If "None", then heterogenous noise
+///     is applied to the input array.
+/// :param axis: The signal data axis, default = 2.
+/// :return: A 3-dimensional array of the input data with Poisson noise
+///     applied.
+#[pyfunction]
+#[pyo3(name = "poisson_3d")]
+#[pyo3(signature = (data, scale, seed=None, axis=None))]
+pub fn noise_poisson_3d<'py>(
+    py: Python<'py>,
+    data: Bound<'py, PyAny>,
+    scale: f64,
+    seed: Option<u64>,
+    axis: Option<usize>,
+) -> PyResult<Bound<'py, PyArray3<f64>>> {
+    // pattern match and extract allowed array types
+    if let Ok(array) = data.extract::<PyReadonlyArray3<f32>>() {
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array();
+        let output = simulation::noise::poisson_3d(&arr, scale, seed, axis);
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(array) = data.extract::<PyReadonlyArray3<f64>>() {
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array();
+        let output = simulation::noise::poisson_3d(&arr, scale, seed, axis);
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(array) = data.extract::<PyReadonlyArray3<u8>>() {
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array();
+        let output = simulation::noise::poisson_3d(&arr, scale, seed, axis);
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(array) = data.extract::<PyReadonlyArray3<u16>>() {
+        let ro_arr = array.readonly();
+        let arr = ro_arr.as_array();
+        let output = simulation::noise::poisson_3d(&arr, scale, seed, axis);
+        return Ok(output.into_pyarray(py));
+    } else {
+        return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "Unsupported array dtype.",
+        ));
+    }
+}
+
+/// Simulate Poisson noise on a 3-dimensional array.
+///
+/// This function applies Poisson noise (i.e. shot noise) on a 3-dimensional
+/// array of data. An element-wise lambda value (scaled by the "scale" parameter)
+/// is used to simulate Poisson noise with variable signal strength.
+///
+/// This function mutates the input array and does not create a new array.
+///
+/// :param data: The input 3-dimensional array to mutate.
+/// :param scale: The scale factor.
+/// :param seed: Pseudorandom number generator seed. Set the "seed" value to apply
+///     homogenous noise to the input array. If "None", then heterogenous noise
+///     is applied to the input array.
+/// :param axis: The signal data axis, default = 2.
+#[pyfunction]
+#[pyo3(name = "poisson_3d_mut")]
+#[pyo3(signature = (data, scale, seed=None, axis=None))]
+pub fn noise_poisson_3d_mut(
+    mut data: PyReadwriteArray3<f64>,
+    scale: f64,
+    seed: Option<u64>,
+    axis: Option<usize>,
+) {
+    let arr = data.as_array_mut();
+    simulation::noise::poisson_3d_mut(arr, scale, seed, axis);
 }
