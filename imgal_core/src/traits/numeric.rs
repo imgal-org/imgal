@@ -11,6 +11,7 @@ pub trait ToFloat64:
     + MulAssign
     + Sum
     + Into<f64>
+    + Send
     + Sync
 {
 }
@@ -25,6 +26,7 @@ impl<T> ToFloat64 for T where
         + MulAssign
         + Sum
         + Into<f64>
+        + Send
         + Sync
 {
 }
