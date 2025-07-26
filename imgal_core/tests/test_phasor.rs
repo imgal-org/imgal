@@ -1,5 +1,5 @@
-use imgal_core::simulation::decay;
 use imgal_core::phasor::time_domain;
+use imgal_core::simulation::decay;
 
 #[test]
 fn test_time_domain_imaginary() {

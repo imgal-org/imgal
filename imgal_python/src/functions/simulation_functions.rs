@@ -156,10 +156,9 @@ pub fn decay_ideal_fluorescence_3d(
 /// (FWHM) parameters into a normalized Gaussian distribution. The FWHM is
 /// converted to standard deviation using the relationship:
 ///
-/// ```text
 /// σ = FWHM / (2 × √(2 × ln(2)))
-/// ```
-/// where `ln(2) ≈ 0.693147` is the natural logarithm of 2.
+///
+/// where ln(2) ≈ 0.693147 is the natural logarithm of 2.
 ///
 /// :param bins: The number of discrete points to sample the Gaussian distribution.
 /// :param time_range: The total time range over which to simulate the IRF.

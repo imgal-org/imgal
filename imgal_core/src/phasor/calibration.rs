@@ -54,8 +54,9 @@ pub fn coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64
 /// ```
 ///
 /// Where G' and S' are the calibrated real and imaginary values after rotation
-/// and scaling. This function mutates the input data and does not create a new
-/// array.
+/// and scaling.
+///
+/// This function mutates the input array and does not create a new array.
 ///
 /// # Arguments
 ///

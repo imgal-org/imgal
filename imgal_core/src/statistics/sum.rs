@@ -20,12 +20,12 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// ```
 /// use ndarray::Array1;
-/// 
+///
 /// use imgal_core::statistics::sum;
 ///
 /// // create a 1-dimensional array
 /// let arr = Array1::from_vec(vec![1.82, 3.35, 7.13, 9.25]);
-/// 
+///
 /// // compute the sum of the array
 /// let total = sum(&arr);
 ///
