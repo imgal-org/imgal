@@ -148,7 +148,7 @@ pub fn plot_single_component_coordinate_pair(tau: f64, omega: f64) -> (f64, f64)
 /// S = ∫(I(t) * sin(nωt) * dt) / ∫(I(t) * dt)
 /// G = ∫(I(t) * cos(nωt) * dt) / ∫(I(t) * dt)
 ///
-/// :param i_data: I(t), the decay data image.
+/// :param data: I(t), the decay data image.
 /// :param period: The period.
 /// :param harmonic: The harmonic value, default = 1.0.
 /// :param omega: The angular frequency.
@@ -157,27 +157,27 @@ pub fn plot_single_component_coordinate_pair(tau: f64, omega: f64) -> (f64, f64)
 ///     image, where G and S are indexed at 0 and 1 respectively on the channel axis.
 #[pyfunction]
 #[pyo3(name = "image")]
-#[pyo3(signature = (i_data, period, harmonic=None, omega=None, axis=None))]
+#[pyo3(signature = (data, period, harmonic=None, omega=None, axis=None))]
 pub fn time_domain_image<'py>(
     py: Python<'py>,
-    i_data: Bound<'py, PyAny>,
+    data: Bound<'py, PyAny>,
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
     axis: Option<usize>,
 ) -> PyResult<Bound<'py, PyArray3<f64>>> {
     // pattern match and extract allowed array types
-    if let Ok(array) = i_data.extract::<PyReadonlyArray3<f32>>() {
+    if let Ok(array) = data.extract::<PyReadonlyArray3<f32>>() {
         let ro_arr = array.readonly();
         let arr = ro_arr.as_array();
         let output = phasor::time_domain::image(&arr, period, harmonic, omega, axis);
         return Ok(output.into_pyarray(py));
-    } else if let Ok(array) = i_data.extract::<PyReadonlyArray3<f64>>() {
+    } else if let Ok(array) = data.extract::<PyReadonlyArray3<f64>>() {
         let ro_arr = array.readonly();
         let arr = ro_arr.as_array();
         let output = phasor::time_domain::image(&arr, period, harmonic, omega, axis);
         return Ok(output.into_pyarray(py));
-    } else if let Ok(array) = i_data.extract::<PyReadonlyArray3<u16>>() {
+    } else if let Ok(array) = data.extract::<PyReadonlyArray3<u16>>() {
         let ro_arr = array.readonly();
         let arr = ro_arr.as_array();
         let output = phasor::time_domain::image(&arr, period, harmonic, omega, axis);
@@ -198,21 +198,21 @@ pub fn time_domain_image<'py>(
 ///
 /// Where 'n' and 'ω' are harmonic and omega values respectively.
 ///
-/// :param i_data: I(t), the 1-dimensional decay curve.
+/// :param data: I(t), the 1-dimensional decay curve.
 /// :param period: The period.
 /// :param harmonic: The harmonic value, default = 1.0.
 /// :param omega: The angular frequency.
 /// :return: The imaginary component, S.
 #[pyfunction]
 #[pyo3(name = "imaginary")]
-#[pyo3(signature = (i_data, period, harmonic=None, omega=None))]
+#[pyo3(signature = (data, period, harmonic=None, omega=None))]
 pub fn time_domain_imaginary(
-    i_data: Vec<f64>,
+    data: Vec<f64>,
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
 ) -> f64 {
-    let arr = Array1::from_vec(i_data);
+    let arr = Array1::from_vec(data);
     phasor::time_domain::imaginary(&arr, period, harmonic, omega)
 }
 
@@ -225,20 +225,20 @@ pub fn time_domain_imaginary(
 ///
 /// Where 'n' and 'ω' are harmonic and omega values respectively.
 ///
-/// :param i_data: I(t), the 1-dimensional decay curve.
+/// :param data: I(t), the 1-dimensional decay curve.
 /// :param period: The period.
 /// :param harmonic: The harmonic value, default = 1.0.
 /// :param omega: The angular frequency.
 /// :return: The real component, G.
 #[pyfunction]
 #[pyo3(name = "real")]
-#[pyo3(signature = (i_data, period, harmonic=None, omega=None))]
+#[pyo3(signature = (data, period, harmonic=None, omega=None))]
 pub fn time_domain_real(
-    i_data: Vec<f64>,
+    data: Vec<f64>,
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
 ) -> f64 {
-    let arr = Array1::from_vec(i_data);
+    let arr = Array1::from_vec(data);
     phasor::time_domain::real(&arr, period, harmonic, omega)
 }

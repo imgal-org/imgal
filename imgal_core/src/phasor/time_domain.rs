@@ -21,7 +21,7 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Arguments
 ///
-/// * `i_data`: I(t), the decay data image.
+/// * `data`: I(t), the decay data image.
 /// * `period`: The period.
 /// * `harmonic`: The harmonic value, default = 1.0.
 /// * `omega`: The angular frequency.
@@ -32,7 +32,7 @@ use crate::traits::numeric::ToFloat64;
 /// * `Array3<f64>`: The real and imaginary coordinates as a 3D (ch, row, col) image,
 ///    where G and S are indexed at 0 and 1 respectively on the _channel_ axis.
 pub fn image<T, S>(
-    i_data: &ArrayBase<S, Ix3>,
+    data: &ArrayBase<S, Ix3>,
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
@@ -48,7 +48,7 @@ where
     let a = axis.unwrap_or(2);
 
     // initialize phasor parameters
-    let n: usize = i_data.len_of(Axis(a));
+    let n: usize = data.len_of(Axis(a));
     let dt: f64 = period / n as f64;
     let h_w_dt: f64 = h * w * dt;
 
@@ -57,7 +57,7 @@ where
     let mut w_sin_buf: Vec<f64> = Vec::with_capacity(n);
 
     // initialize output array
-    let in_shape = i_data.dim();
+    let in_shape = data.dim();
     let out_shape = match a {
         0 => Some((in_shape.1, in_shape.2)),
         1 => Some((in_shape.0, in_shape.2)),
@@ -74,7 +74,7 @@ where
     }
 
     // compute phasor coordinates per lane
-    let lanes = i_data.lanes(Axis(a));
+    let lanes = data.lanes(Axis(a));
     Zip::from(&mut g_arr)
         .and(&mut s_arr)
         .and(lanes)
@@ -136,7 +136,7 @@ where
 ///
 /// # Arguments
 ///
-/// * `i_data`: I(t), the 1-dimensonal decay curve.
+/// * `data`: I(t), the 1-dimensonal decay curve.
 /// * `period`: The period.
 /// * `harmonic`: The harmonic value, default = 1.0.
 /// * `omega`: The angular frequency.
@@ -145,7 +145,7 @@ where
 ///
 /// * `f64`: The imaginary component, S.
 pub fn imaginary<T, S>(
-    i_data: &ArrayBase<S, Ix1>,
+    data: &ArrayBase<S, Ix1>,
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
@@ -159,15 +159,15 @@ where
     let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
 
     // integrate sine transform (imaginary)
-    let n: usize = i_data.len();
+    let n: usize = data.len();
     let dt: f64 = period / (n as f64);
     let h_w_dt: f64 = h * w * dt;
     let mut buf = Vec::with_capacity(n);
     for i in 0..n {
-        buf.push(i_data[i].into() * f64::sin(h_w_dt * (i as f64)));
+        buf.push(data[i].into() * f64::sin(h_w_dt * (i as f64)));
     }
     let i_sin_integral: f64 = midpoint(&Array1::from_vec(buf), Some(dt));
-    let i_integral: f64 = midpoint(&i_data, Some(dt));
+    let i_integral: f64 = midpoint(&data, Some(dt));
     i_sin_integral / i_integral
 }
 
@@ -186,7 +186,7 @@ where
 ///
 /// # Arguments
 ///
-/// * `i_data`: I(t), the 1-dimensional decay curve.
+/// * `data`: I(t), the 1-dimensional decay curve.
 /// * `period`: The period.
 /// * `harmonic`: The harmonic value, default = 1.0.
 /// * `omega`: The angular frequency.
@@ -195,7 +195,7 @@ where
 ///
 /// * `f64`: The real component, G.
 pub fn real<T, S>(
-    i_data: &ArrayBase<S, Ix1>,
+    data: &ArrayBase<S, Ix1>,
     period: f64,
     harmonic: Option<f64>,
     omega: Option<f64>,
@@ -209,14 +209,14 @@ where
     let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
 
     // integrate cosine transform (real)
-    let n: usize = i_data.len();
+    let n: usize = data.len();
     let dt: f64 = period / (n as f64);
     let h_w_dt: f64 = h * w * dt;
     let mut buf = Vec::with_capacity(n);
     for i in 0..n {
-        buf.push(i_data[i].into() * f64::cos(h_w_dt * (i as f64)));
+        buf.push(data[i].into() * f64::cos(h_w_dt * (i as f64)));
     }
     let i_cos_integral: f64 = midpoint(&Array1::from_vec(buf), Some(dt));
-    let i_integral: f64 = midpoint(&i_data, Some(dt));
+    let i_integral: f64 = midpoint(&data, Some(dt));
     i_cos_integral / i_integral
 }
