@@ -65,26 +65,20 @@ pub fn calibration_image_mut(
 /// Find the modulation and phase calibration values.
 ///
 /// This function calculates the modulation and phase calibration values from
-/// a pair of theoretical single component coordinates and the center of mass
-/// coordinates of the measured real data.
+/// a pair of theoretical single component coordinates (computed from "tau" and
+/// "omega") and a pair of measured coordinates. The output, (M, φ), are the
+/// modulation and phase values to calibrate with.
 ///
-/// :param data: The 3-dimensional phasor image, where G and S are channels 0 and 1
-///     respectively.
+/// :param g: The measured real (G) value.
+/// :param s: The measured imaginary (S) value.
 /// :param tau: The lifetime, τ.
 /// :param omega: The angular frequency, ω.
 /// :param axis: The channel axis, default = 2.
 /// :return: The modulation and phase calibration values, (M, φ).
 #[pyfunction]
 #[pyo3(name = "modulation_and_phase")]
-#[pyo3(signature = (data, tau, omega, axis=None))]
-pub fn calibration_modulation_and_phase(
-    data: PyReadonlyArray3<f64>,
-    tau: f64,
-    omega: f64,
-    axis: Option<usize>,
-) -> (f64, f64) {
-    let arr = data.as_array();
-    phasor::calibration::modulation_and_phase(&arr, tau, omega, axis)
+pub fn calibration_modulation_and_phase(g: f64, s: f64, tau: f64, omega: f64) -> (f64, f64) {
+    phasor::calibration::modulation_and_phase(g, s, tau, omega)
 }
 
 /// Compute the modulation of a phasor coordinate pair.

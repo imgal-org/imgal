@@ -1,4 +1,4 @@
-use ndarray::{ArrayView3, ArrayViewMut3, Axis};
+use ndarray::{ArrayViewMut3, Axis};
 use rayon::prelude::*;
 
 use crate::phasor::plot;
@@ -87,39 +87,29 @@ pub fn image_mut(mut data: ArrayViewMut3<f64>, modulation: f64, phase: f64, axis
 /// # Description
 ///
 /// This function calculates the modulation and phase calibration values from
-/// a pair of theoretical single component coordinates and the center of mass
-/// coordinates of the measured real data.
+/// a pair of theoretical single component coordinates (computed from `tau` and
+/// `omega`) and a pair of measured coordinates. The output, (M, φ), are the
+/// modulation and phase values to calibrate with.
 ///
 /// # Arguments
 ///
-/// * `data`: The 3-dimensional phasor image, where G and S are channels 0 and 1
-///  respectively.
+/// * `g`: The measured real (G) value.
+/// * `s`: The measured imaginary (S) value.
 /// * `tau`: The lifetime, τ.
 /// * `omega`: The angular frequency, ω.
-/// * `axis`: The channel axis, default = 2.
 ///
 /// # Returns
 ///
 /// * `(f64, f64)`: The modulation and phase calibration values, (M, φ).
-pub fn modulation_and_phase(
-    data: &ArrayView3<f64>,
-    tau: f64,
-    omega: f64,
-    axis: Option<usize>,
-) -> (f64, f64) {
-    // set optional axis parameter if needed
-    let a = axis.unwrap_or(2);
-
+pub fn modulation_and_phase(g: f64, s: f64, tau: f64, omega: f64) -> (f64, f64) {
     // get calibration modulation and phase
     let cal_point = plot::single_component_coordinate_pair(tau, omega);
     let cal_mod = plot::modulation(cal_point.0, cal_point.1);
     let cal_phs = plot::phase(cal_point.0, cal_point.1);
 
     // get data modulation and phase
-    let data_center_g = data.index_axis(Axis(a), 0).mean().unwrap_or(0.0);
-    let data_center_s = data.index_axis(Axis(a), 1).mean().unwrap_or(0.0);
-    let data_mod = plot::modulation(data_center_g, data_center_s);
-    let data_phs = plot::phase(data_center_g, data_center_s);
+    let data_mod = plot::modulation(g, s);
+    let data_phs = plot::phase(g, s);
 
     // find delta values
     let d_mod = cal_mod / data_mod;
