@@ -1,7 +1,8 @@
-use ndarray::{ArrayViewMut3, Axis};
+use ndarray::{Array3, ArrayBase, ArrayViewMut3, Axis, Data, Ix3, Zip};
 use rayon::prelude::*;
 
 use crate::phasor::plot;
+use crate::traits::numeric::ToFloat64;
 
 /// Calibrate a real and imaginary (G, S) coordinate pair.
 ///
@@ -38,12 +39,74 @@ pub fn coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64
     (g_cal, s_cal)
 }
 
-/// Calibrate the real and imaginary (G, S) coordinates of a 3-dimensonal phasor
+/// Calibrate the real and imaginary (G, S) coordinates of a 3-dimensional phasor
 /// image.
 ///
 /// # Description
 ///
-/// This function calibrates an input 3-dimensonal phasor image by rotating and
+/// This function calibrates an input 3-dimensional phasor image by rotating and
+/// scaling G and S coordinates by phase (φ) and modulation (M) respectively using:
+///
+/// ```text
+/// g = M * cos(φ)
+/// s = M * sin(φ)
+/// G' = G * g - S * s
+/// S' = G * s + S * g
+/// ```
+///
+/// Where G' and S' are the calibrated real and imaginary values after rotation
+/// and scaling.
+///
+/// This function creates a new array and does not mutate the input array.
+///
+/// # Arguments
+///
+/// * `data`: The 3-dimensional phasor image, where G and S are channels 0 and 1
+///    respectively.
+/// * `modulation`: The modulation to scale the input (G, S) coordinates.
+/// * `phase`: The phase, φ angle, to rotate the input (G, S) coordinates.
+/// * `axis`: The channel axis, default = 2.
+///
+/// # Returns
+///
+/// * `Array3<f64>`: A 3-dimensional array with the calibrated phasor values,
+///    where calibrated G and S are channels 0 and 1 respectively.
+pub fn image<T, S>(
+    data: &ArrayBase<S, Ix3>,
+    modulation: f64,
+    phase: f64,
+    axis: Option<usize>,
+) -> Array3<f64>
+where
+    T: ToFloat64,
+    S: Data<Elem = T>,
+{
+    // set optional parameters if needed
+    let a = axis.unwrap_or(2);
+
+    // allocate new array of the same shape for calibrated data
+    let shape = data.dim();
+    let mut c_data = Array3::<f64>::zeros(shape);
+
+    // read input data and save calibration to the new array
+    let g_trans = modulation * phase.cos();
+    let s_trans = modulation * phase.sin();
+    let src_lanes = data.lanes(Axis(a));
+    let dst_lanes = c_data.lanes_mut(Axis(a));
+    Zip::from(src_lanes).and(dst_lanes).par_for_each(|s_ln, mut d_ln| {
+        d_ln[0] = s_ln[0].into() * g_trans - s_ln[1].into() * s_trans;
+        d_ln[1] = s_ln[0].into() * s_trans + s_ln[1].into() * g_trans;
+    });
+
+    c_data
+}
+
+/// Calibrate the real and imaginary (G, S) coordinates of a 3-dimensional phasor
+/// image.
+///
+/// # Description
+///
+/// This function calibrates an input 3-dimensional phasor image by rotating and
 /// scaling G and S coordinates by phase (φ) and modulation (M) respectively using:
 ///
 /// ```text
@@ -60,7 +123,7 @@ pub fn coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64
 ///
 /// # Arguments
 ///
-/// * `data`: The 3-dimensonal phasor image, where G and S are channels 0 and 1
+/// * `data`: The 3-dimensional phasor image, where G and S are channels 0 and 1
 ///    respectively.
 /// * `modulation`: The modulation to scale the input (G, S) coordinates.
 /// * `phase`: The phase, φ angle, to rotate the input (G, S) coordinates.

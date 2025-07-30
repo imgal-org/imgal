@@ -32,7 +32,62 @@ pub fn calibration_coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) 
 /// Calibrate the real and imaginary (G, S) coordinates of a 3-dimensional phasor
 /// image.
 ///
-/// This function calibrates an input 3-dimensonal phasor image by rotating and
+/// # Description
+///
+/// This function calibrates an input 3-dimensional phasor image by rotating and
+/// scaling G and S coordinates by phase (φ) and modulation (M) respectively using:
+///
+/// g = M * cos(φ)
+/// s = M * sin(φ)
+/// G' = G * g - S * s
+/// S' = G * s + S * g
+///
+/// Where G' and S' are the calibrated real and imaginary values after rotation
+/// and scaling.
+///
+/// This function creates a new array and does not mutate the input array.
+///
+/// :param data: The 3-dimensional phasor image, where G and S are channels 0
+///     and 1 respectively.
+/// :param modulation: The modulation to scale the input (G, S) coordinates.
+/// :param phase: The phase, φ angle, to rotate the input (G, S) coordinates.
+/// :param axis: The channel axis, default = 2.
+/// :return: A 3-dimensional array with the calibrated phasor values, where
+///     calibrated G and S are channels 0 and 1 respectively.
+#[pyfunction]
+#[pyo3(name = "image")]
+#[pyo3(signature = (data, modulation, phase, axis=None))]
+pub fn calibration_image<'py>(
+    py: Python<'py>,
+    data: Bound<'py, PyAny>,
+    modulation: f64,
+    phase: f64,
+    axis: Option<usize>,
+) -> PyResult<Bound<'py, PyArray3<f64>>> {
+    // pattern match and extract allowed array types
+    if let Ok(array) = data.extract::<PyReadonlyArray3<f32>>() {
+        let ro_arr = array.readonly();
+        let output = phasor::calibration::image(&ro_arr.as_array(), modulation, phase, axis);
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(array) = data.extract::<PyReadonlyArray3<f64>>() {
+        let ro_arr = array.readonly();
+        let output = phasor::calibration::image(&ro_arr.as_array(), modulation, phase, axis);
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(array) = data.extract::<PyReadonlyArray3<u16>>() {
+        let ro_arr = array.readonly();
+        let output = phasor::calibration::image(&ro_arr.as_array(), modulation, phase, axis);
+        return Ok(output.into_pyarray(py));
+    } else {
+        return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "Unsupported array dtype.",
+        ));
+    }
+}
+
+/// Calibrate the real and imaginary (G, S) coordinates of a 3-dimensional phasor
+/// image.
+///
+/// This function calibrates an input 3-dimensional phasor image by rotating and
 /// scaling G and S coordinates by phase (φ) and modulation (M) respectively using:
 ///
 /// g = M * cos(φ)
@@ -44,7 +99,7 @@ pub fn calibration_coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) 
 /// and scaling. This function mutates the input data and does not create a new
 /// array.
 ///
-/// :param data: The 3-dimensonal phasor image, where G and S are channels 0 and 1
+/// :param data: The 3-dimensional phasor image, where G and S are channels 0 and 1
 ///     respectively.
 /// :param modulation: The modulation to scale the input (G, S) coordinates.
 /// :param phase: The phase, φ angle, to rotate the intput (G, S) coorindates.
