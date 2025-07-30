@@ -3,7 +3,7 @@ use numpy::{
 };
 use pyo3::prelude::*;
 
-use imgal_core::phasor;
+use imgal_core::phasor::{calibration, plot, time_domain};
 
 /// Calibrate a real and imaginary (G, S) coordinate pair.
 ///
@@ -26,7 +26,7 @@ use imgal_core::phasor;
 #[pyfunction]
 #[pyo3(name = "coordinate_pair")]
 pub fn calibration_coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64) {
-    phasor::calibration::coordinate_pair(g, s, modulation, phase)
+    calibration::coordinate_pair(g, s, modulation, phase)
 }
 
 /// Calibrate the real and imaginary (G, S) coordinates of a 3-dimensional phasor
@@ -67,15 +67,15 @@ pub fn calibration_image<'py>(
     // pattern match and extract allowed array types
     if let Ok(array) = data.extract::<PyReadonlyArray3<f32>>() {
         let ro_arr = array.readonly();
-        let output = phasor::calibration::image(&ro_arr.as_array(), modulation, phase, axis);
+        let output = calibration::image(&ro_arr.as_array(), modulation, phase, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray3<f64>>() {
         let ro_arr = array.readonly();
-        let output = phasor::calibration::image(&ro_arr.as_array(), modulation, phase, axis);
+        let output = calibration::image(&ro_arr.as_array(), modulation, phase, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray3<u16>>() {
         let ro_arr = array.readonly();
-        let output = phasor::calibration::image(&ro_arr.as_array(), modulation, phase, axis);
+        let output = calibration::image(&ro_arr.as_array(), modulation, phase, axis);
         return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
@@ -114,7 +114,7 @@ pub fn calibration_image_mut(
     axis: Option<usize>,
 ) {
     let arr = data.as_array_mut();
-    phasor::calibration::image_mut(arr, modulation, phase, axis);
+    calibration::image_mut(arr, modulation, phase, axis);
 }
 
 /// Find the modulation and phase calibration values.
@@ -133,7 +133,7 @@ pub fn calibration_image_mut(
 #[pyfunction]
 #[pyo3(name = "modulation_and_phase")]
 pub fn calibration_modulation_and_phase(g: f64, s: f64, tau: f64, omega: f64) -> (f64, f64) {
-    phasor::calibration::modulation_and_phase(g, s, tau, omega)
+    calibration::modulation_and_phase(g, s, tau, omega)
 }
 
 /// Compute the modulation of a phasor coordinate pair.
@@ -149,7 +149,7 @@ pub fn calibration_modulation_and_phase(g: f64, s: f64, tau: f64, omega: f64) ->
 #[pyfunction]
 #[pyo3(name = "modulation")]
 pub fn plot_modulation(g: f64, s: f64) -> f64 {
-    phasor::plot::modulation(g, s)
+    plot::modulation(g, s)
 }
 
 /// Compute the phase of a phasor coordinate pair.
@@ -168,7 +168,7 @@ pub fn plot_modulation(g: f64, s: f64) -> f64 {
 #[pyfunction]
 #[pyo3(name = "phase")]
 pub fn plot_phase(g: f64, s: f64) -> f64 {
-    phasor::plot::phase(g, s)
+    plot::phase(g, s)
 }
 
 /// Compute a coordinate pair for a single component decay.
@@ -185,7 +185,7 @@ pub fn plot_phase(g: f64, s: f64) -> f64 {
 #[pyfunction]
 #[pyo3(name = "single_component_coordinate_pair")]
 pub fn plot_single_component_coordinate_pair(tau: f64, omega: f64) -> (f64, f64) {
-    phasor::plot::single_component_coordinate_pair(tau, omega)
+    plot::single_component_coordinate_pair(tau, omega)
 }
 
 /// Compute the real and imaginary (G, S) coordinates of a 3-dimensional decay
@@ -218,22 +218,19 @@ pub fn time_domain_image<'py>(
     // pattern match and extract allowed array types
     if let Ok(array) = data.extract::<PyReadonlyArray3<f32>>() {
         let ro_arr = array.readonly();
-        let arr = ro_arr.as_array();
-        let output = phasor::time_domain::image(&arr, period, harmonic, omega, axis);
+        let output = time_domain::image(&ro_arr.as_array(), period, harmonic, omega, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray3<f64>>() {
         let ro_arr = array.readonly();
-        let arr = ro_arr.as_array();
-        let output = phasor::time_domain::image(&arr, period, harmonic, omega, axis);
+        let output = time_domain::image(&ro_arr.as_array(), period, harmonic, omega, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray3<u16>>() {
         let ro_arr = array.readonly();
-        let arr = ro_arr.as_array();
-        let output = phasor::time_domain::image(&arr, period, harmonic, omega, axis);
+        let output = time_domain::image(&ro_arr.as_array(), period, harmonic, omega, axis);
         return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-            "Unsopported array dtype.",
+            "Unsupported array dtype.",
         ));
     };
 }
@@ -262,7 +259,7 @@ pub fn time_domain_imaginary(
     omega: Option<f64>,
 ) -> f64 {
     let arr = Array1::from_vec(data);
-    phasor::time_domain::imaginary(&arr, period, harmonic, omega)
+    time_domain::imaginary(&arr, period, harmonic, omega)
 }
 
 /// Compute the real (G) component of a 1-dimensional decay curve.
@@ -289,5 +286,5 @@ pub fn time_domain_real(
     omega: Option<f64>,
 ) -> f64 {
     let arr = Array1::from_vec(data);
-    phasor::time_domain::real(&arr, period, harmonic, omega)
+    time_domain::real(&arr, period, harmonic, omega)
 }
