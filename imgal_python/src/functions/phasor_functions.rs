@@ -200,33 +200,31 @@ pub fn plot_single_component_coordinate_pair(tau: f64, omega: f64) -> (f64, f64)
 /// :param data: I(t), the decay data image.
 /// :param period: The period.
 /// :param harmonic: The harmonic value, default = 1.0.
-/// :param omega: The angular frequency.
 /// :param axis: The decay or lifetime axis, default = 2.
 /// :return: The real and imaginary coordinates as a 3-dimensional (row, col, ch)
 ///     image, where G and S are indexed at 0 and 1 respectively on the channel axis.
 #[pyfunction]
 #[pyo3(name = "image")]
-#[pyo3(signature = (data, period, harmonic=None, omega=None, axis=None))]
+#[pyo3(signature = (data, period, harmonic=None, axis=None))]
 pub fn time_domain_image<'py>(
     py: Python<'py>,
     data: Bound<'py, PyAny>,
     period: f64,
     harmonic: Option<f64>,
-    omega: Option<f64>,
     axis: Option<usize>,
 ) -> PyResult<Bound<'py, PyArray3<f64>>> {
     // pattern match and extract allowed array types
     if let Ok(array) = data.extract::<PyReadonlyArray3<f32>>() {
         let ro_arr = array.readonly();
-        let output = time_domain::image(&ro_arr.as_array(), period, harmonic, omega, axis);
+        let output = time_domain::image(&ro_arr.as_array(), period, harmonic, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray3<f64>>() {
         let ro_arr = array.readonly();
-        let output = time_domain::image(&ro_arr.as_array(), period, harmonic, omega, axis);
+        let output = time_domain::image(&ro_arr.as_array(), period, harmonic, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray3<u16>>() {
         let ro_arr = array.readonly();
-        let output = time_domain::image(&ro_arr.as_array(), period, harmonic, omega, axis);
+        let output = time_domain::image(&ro_arr.as_array(), period, harmonic, axis);
         return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(

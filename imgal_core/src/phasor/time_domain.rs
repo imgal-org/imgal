@@ -24,7 +24,6 @@ use crate::traits::numeric::ToFloat64;
 /// * `data`: I(t), the decay data image.
 /// * `period`: The period.
 /// * `harmonic`: The harmonic value, default = 1.0.
-/// * `omega`: The angular frequency.
 /// * `axis`: The decay or lifetime axis, default = 2.
 ///
 /// # Returns
@@ -35,7 +34,6 @@ pub fn image<T, S>(
     data: &ArrayBase<S, Ix3>,
     period: f64,
     harmonic: Option<f64>,
-    omega: Option<f64>,
     axis: Option<usize>,
 ) -> Array3<f64>
 where
@@ -44,7 +42,7 @@ where
 {
     // set optional parameters if needed
     let h = harmonic.unwrap_or(1.0);
-    let w = omega.unwrap_or_else(|| parameters::omega(period));
+    let w = parameters::omega(period);
     let a = axis.unwrap_or(2);
 
     // initialize phasor parameters
