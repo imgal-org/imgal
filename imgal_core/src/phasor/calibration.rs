@@ -93,10 +93,12 @@ where
     let s_trans = modulation * phase.sin();
     let src_lanes = data.lanes(Axis(a));
     let dst_lanes = c_data.lanes_mut(Axis(a));
-    Zip::from(src_lanes).and(dst_lanes).par_for_each(|s_ln, mut d_ln| {
-        d_ln[0] = s_ln[0].into() * g_trans - s_ln[1].into() * s_trans;
-        d_ln[1] = s_ln[0].into() * s_trans + s_ln[1].into() * g_trans;
-    });
+    Zip::from(src_lanes)
+        .and(dst_lanes)
+        .par_for_each(|s_ln, mut d_ln| {
+            d_ln[0] = s_ln[0].into() * g_trans - s_ln[1].into() * s_trans;
+            d_ln[1] = s_ln[0].into() * s_trans + s_ln[1].into() * g_trans;
+        });
 
     c_data
 }
