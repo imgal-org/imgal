@@ -1,10 +1,32 @@
-use ndarray::Axis;
+use ndarray::{Array3, Axis};
 
 use imgal_core::parameters::omega;
 use imgal_core::phasor::calibration;
 use imgal_core::phasor::plot;
 use imgal_core::phasor::time_domain;
 use imgal_core::simulation::decay;
+
+// helper functions
+fn get_data(shape: (usize, usize)) -> Array3<f64> {
+    // set decay simulation parameters
+    let samples = 256;
+    let period = 1.25e-8;
+    let tau = 1.1e-9;
+    let initial_value = 120.0;
+    let irf_width = 7.324e-10;
+    let irf_center = 2.0e-9;
+
+    // create simulated ideal decay data
+    decay::gaussian_fluorescence_3d(
+        samples,
+        period,
+        tau,
+        initial_value,
+        irf_width,
+        irf_center,
+        shape,
+    )
+}
 
 // test the phasor::calibration
 #[test]
@@ -23,28 +45,11 @@ fn calibration_coordinate_pair() {
 
 #[test]
 fn calibration_image() {
-    // set decay simulation parameters
-    let samples = 256;
-    let period = 1.25e-8;
-    let tau = 1.1e-9;
-    let initial_value = 120.0;
-    let irf_width = 7.324e-10;
-    let irf_center = 2.0e-9;
-    let shape = (10, 10);
-
-    // create simulated ideal decay data
-    let sim_data = decay::gaussian_fluorescence_3d(
-        samples,
-        period,
-        tau,
-        initial_value,
-        irf_width,
-        irf_center,
-        shape,
-    );
+    // get simulated data
+    let sim_data = get_data((10, 10));
 
     // calculate the phasor image, (G, S)
-    let gs_arr = time_domain::image(&sim_data, period, None, None);
+    let gs_arr = time_domain::image(&sim_data, 1.25e-8, None, None, None);
 
     // calibrate the phasor image
     let modulation = 1.05;
@@ -61,28 +66,11 @@ fn calibration_image() {
 
 #[test]
 fn calibration_image_mut() {
-    // set decay simulation parameters
-    let samples = 256;
-    let period = 1.25e-8;
-    let tau = 1.1e-9;
-    let initial_value = 120.0;
-    let irf_width = 7.324e-10;
-    let irf_center = 2.0e-9;
-    let shape = (10, 10);
-
-    // create simulated ideal decay data
-    let sim_data = decay::gaussian_fluorescence_3d(
-        samples,
-        period,
-        tau,
-        initial_value,
-        irf_width,
-        irf_center,
-        shape,
-    );
+    // get simulated data
+    let sim_data = get_data((10, 10));
 
     // calculate the phasor image, (G, S)
-    let mut gs_arr = time_domain::image(&sim_data, period, None, None);
+    let mut gs_arr = time_domain::image(&sim_data, 1.25e-8, None, None, None);
 
     // calibrate the phasor image
     let modulation = 1.05;
