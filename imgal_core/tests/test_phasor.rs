@@ -1,4 +1,4 @@
-use ndarray::{Array3, Axis};
+use ndarray::{Array2, Array3, Axis};
 
 use imgal_core::parameters::omega;
 use imgal_core::phasor::calibration;
@@ -7,7 +7,7 @@ use imgal_core::phasor::time_domain;
 use imgal_core::simulation::decay;
 
 // helper functions
-fn get_data(shape: (usize, usize)) -> Array3<f64> {
+fn get_decay_data(shape: (usize, usize)) -> Array3<f64> {
     // set decay simulation parameters
     let samples = 256;
     let period = 1.25e-8;
@@ -28,6 +28,32 @@ fn get_data(shape: (usize, usize)) -> Array3<f64> {
     )
 }
 
+fn get_circle_mask(shape: (usize, usize), center: (isize, isize), radius: isize) -> Array2<bool> {
+    // set circle parameters
+    let (row, col) = shape;
+    let (cx, cy) = center;
+    let r2 = radius * radius;
+    let y_min = (cy - radius).max(0);
+    let y_max = (cy + radius).min(row as isize - 1);
+    let x_min = (cx - radius).max(0);
+    let x_max = (cx + radius).min(col as isize - 1);
+
+    // create empty bool array and draw circle
+    let mut mask = Array2::<bool>::default(shape);
+    for y in y_min..=y_max {
+        for x in x_min..=x_max {
+            let dx = cx - x;
+            let dy = cy - y;
+            // use the squared distance formula for a quick circle mask
+            if dx * dx + dy * dy <= r2 {
+                mask[[y as usize, x as usize]] = true;
+            }
+        }
+    }
+
+    mask
+}
+
 // test the phasor::calibration
 #[test]
 fn calibration_coordinate_pair() {
@@ -46,7 +72,7 @@ fn calibration_coordinate_pair() {
 #[test]
 fn calibration_image() {
     // get simulated data
-    let sim_data = get_data((10, 10));
+    let sim_data = get_decay_data((10, 10));
 
     // calculate the phasor image, (G, S)
     let gs_arr = time_domain::image(&sim_data, 1.25e-8, None, None, None);
@@ -67,7 +93,7 @@ fn calibration_image() {
 #[test]
 fn calibration_image_mut() {
     // get simulated data
-    let sim_data = get_data((10, 10));
+    let sim_data = get_decay_data((10, 10));
 
     // calculate the phasor image, (G, S)
     let mut gs_arr = time_domain::image(&sim_data, 1.25e-8, None, None, None);
@@ -119,6 +145,41 @@ fn plot_single_component_coordinate_pair() {
 }
 
 // test the phasor::time_domain module
+#[test]
+fn time_domain_image() {
+    // get simulated data and circle mask
+    let sim_data = get_decay_data((100, 100));
+    let mask = get_circle_mask((100, 100), (50, 50), 8);
+
+    // compute phasors with and without a mask
+    let gs_no_mask = time_domain::image(&sim_data, 1.25e-8, None, None, None);
+    let gs_with_mask = time_domain::image(&sim_data, 1.25e-8, Some(mask.view()), None, None);
+
+    // assert for G and S values for homogenous sim data
+    // note the slight variance in precision with gs_with_mask
+    assert_eq!(
+        gs_no_mask.index_axis(Axis(2), 0).mean().unwrap(),
+        0.06752705619930609
+    );
+    assert_eq!(
+        gs_no_mask.index_axis(Axis(2), 1).mean().unwrap(),
+        0.862788883482716
+    );
+
+    // assert for G and S values only within the circle mask
+    // note the slight variance in precision with gs_no_mask
+    assert_eq!(
+        gs_with_mask.index_axis(Axis(2), 0)[[45, 52]],
+        0.06752705619930582
+    );
+    assert_eq!(gs_with_mask.index_axis(Axis(2), 0)[[5, 8]], 0.0);
+    assert_eq!(
+        gs_with_mask.index_axis(Axis(2), 1)[[45, 52]],
+        0.8627888834827198
+    );
+    assert_eq!(gs_with_mask.index_axis(Axis(2), 1)[[5, 8]], 0.0);
+}
+
 #[test]
 fn time_domain_imaginary() {
     let data = decay::ideal_fluorescence_1d(256, 1.25e-8, 4.0e-9, 100.0);
