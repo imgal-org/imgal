@@ -7,6 +7,10 @@ use imgal_core::phasor::time_domain;
 use imgal_core::simulation::decay;
 
 // helper functions
+fn ensure_within_tolerance(a: f64, b: f64, tolerance: f64) -> bool {
+    (a - b).abs() < tolerance
+}
+
 fn get_decay_data(shape: (usize, usize)) -> Array3<f64> {
     // set decay simulation parameters
     let samples = 256;
@@ -38,7 +42,7 @@ fn get_circle_mask(shape: (usize, usize), center: (isize, isize), radius: isize)
     let x_min = (cx - radius).max(0);
     let x_max = (cx + radius).min(col as isize - 1);
 
-    // create empty bool array and draw circle
+    // create empty bool array and a filled draw circle
     let mut mask = Array2::<bool>::default(shape);
     for y in y_min..=y_max {
         for x in x_min..=x_max {
@@ -86,8 +90,8 @@ fn calibration_image() {
     let g_mean = cal_gs_arr.index_axis(Axis(2), 0).mean().unwrap();
     let s_mean = cal_gs_arr.index_axis(Axis(2), 1).mean().unwrap();
 
-    assert_eq!(g_mean, 0.7923112328362736);
-    assert_eq!(s_mean, 0.4449453208898232);
+    assert!(ensure_within_tolerance(g_mean, 0.79231123283627, 1e-12));
+    assert!(ensure_within_tolerance(s_mean, 0.44494532088982, 1e-12));
 }
 
 #[test]
@@ -107,8 +111,8 @@ fn calibration_image_mut() {
     let g_mean = gs_arr.index_axis(Axis(2), 0).mean().unwrap();
     let s_mean = gs_arr.index_axis(Axis(2), 1).mean().unwrap();
 
-    assert_eq!(g_mean, 0.7923112328362734);
-    assert_eq!(s_mean, 0.444945320889823);
+    assert!(ensure_within_tolerance(g_mean, 0.79231123283627, 1e-12));
+    assert!(ensure_within_tolerance(s_mean, 0.44494532088982, 1e-12));
 }
 
 #[test]
@@ -155,29 +159,26 @@ fn time_domain_image() {
     let gs_no_mask = time_domain::image(&sim_data, 1.25e-8, None, None, None);
     let gs_with_mask = time_domain::image(&sim_data, 1.25e-8, Some(mask.view()), None, None);
 
-    // assert for G and S values for homogenous sim data
-    // note the slight variance in precision with gs_with_mask
-    assert_eq!(
-        gs_no_mask.index_axis(Axis(2), 0).mean().unwrap(),
-        0.06752705619930609
-    );
-    assert_eq!(
-        gs_no_mask.index_axis(Axis(2), 1).mean().unwrap(),
-        0.862788883482716
-    );
+    // get views of each channel
+    let g_no_mask_view = gs_no_mask.index_axis(Axis(2), 0);
+    let s_no_mask_view = gs_no_mask.index_axis(Axis(2), 1);
+    let g_with_mask_view = gs_with_mask.index_axis(Axis(2), 0);
+    let s_with_mask_view = gs_with_mask.index_axis(Axis(2), 1);
 
-    // assert for G and S values only within the circle mask
-    // note the slight variance in precision with gs_no_mask
-    assert_eq!(
-        gs_with_mask.index_axis(Axis(2), 0)[[45, 52]],
-        0.06752705619930582
-    );
-    assert_eq!(gs_with_mask.index_axis(Axis(2), 0)[[5, 8]], 0.0);
-    assert_eq!(
-        gs_with_mask.index_axis(Axis(2), 1)[[45, 52]],
-        0.8627888834827198
-    );
-    assert_eq!(gs_with_mask.index_axis(Axis(2), 1)[[5, 8]], 0.0);
+    // expected values
+    let exp_g = 0.067527056199306;
+    let exp_s = 0.862788883482716;
+
+    // assert G and S values, no mask
+    assert!(ensure_within_tolerance(g_no_mask_view.mean().unwrap(), exp_g, 1e-12));
+    assert!(ensure_within_tolerance(s_no_mask_view.mean().unwrap(), exp_s, 1e-12));
+
+
+    // assert G, S and 0.0 values, with mask
+    assert!(ensure_within_tolerance(g_with_mask_view[[45, 52]], exp_g, 1e-12));
+    assert!(ensure_within_tolerance(s_with_mask_view[[45, 52]], exp_s, 1e-12));
+    assert!(ensure_within_tolerance(g_with_mask_view[[5, 8]], 0.0, 1e-12));
+    assert!(ensure_within_tolerance(s_with_mask_view[[5, 8]], 0.0, 1e-12));
 }
 
 #[test]
