@@ -55,16 +55,12 @@ where
     let mut w_cos_buf: Vec<f64> = Vec::with_capacity(n);
     let mut w_sin_buf: Vec<f64> = Vec::with_capacity(n);
 
-    // initialize output array
-    let in_shape = data.dim();
-    let out_shape = match a {
-        0 => Some((in_shape.1, in_shape.2)),
-        1 => Some((in_shape.0, in_shape.2)),
-        2 => Some((in_shape.0, in_shape.1)),
-        _ => Some((in_shape.0, in_shape.1)),
-    };
-    let mut g_arr = Array2::<f64>::zeros(out_shape.unwrap());
-    let mut s_arr = Array2::<f64>::zeros(out_shape.unwrap());
+    // drop the specified axis
+    let mut gs_shape = data.shape().to_vec();
+    gs_shape.remove(a);
+
+    let mut g_arr = Array2::<f64>::zeros((gs_shape[0], gs_shape[1]));
+    let mut s_arr = Array2::<f64>::zeros((gs_shape[0], gs_shape[1]));
 
     // load the waveform buffers
     for i in 0..n {
@@ -73,8 +69,8 @@ where
     }
 
     // compute phasor coordinates per lane, optionally only in mask area
+    let lanes = data.lanes(Axis(a));
     if let Some(msk) = mask {
-        let lanes = data.lanes(Axis(a));
         Zip::from(lanes)
             .and(msk)
             .and(&mut g_arr)
@@ -109,7 +105,6 @@ where
             });
     } else {
         // compute phasor coordinates per lane in the entire array, no mask
-        let lanes = data.lanes(Axis(a));
         Zip::from(&mut g_arr)
             .and(&mut s_arr)
             .and(lanes)
