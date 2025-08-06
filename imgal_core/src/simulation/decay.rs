@@ -1,6 +1,6 @@
 use ndarray::{Array1, Array3};
 
-use crate::filters::fft_convolve;
+use crate::filter::fft_convolve;
 use crate::simulation::instrument;
 
 /// Simulate a 1-dimensional gaussian IRF convolved decay curve.

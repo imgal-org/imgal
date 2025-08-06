@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use imgal_core::parameters;
+use imgal_core::parameter;
 
 /// Compute the Abbe diffraction limit.
 ///
@@ -15,8 +15,8 @@ use imgal_core::parameters;
 /// :return: Abbe's diffraction limit.
 #[pyfunction]
 #[pyo3(name = "abbe_diffraction_limit")]
-pub fn parameters_abbe_diffraction_limit(wavelength: f64, na: f64) -> f64 {
-    parameters::abbe_diffraction_limit(wavelength, na)
+pub fn parameter_abbe_diffraction_limit(wavelength: f64, na: f64) -> f64 {
+    parameter::abbe_diffraction_limit(wavelength, na)
 }
 
 /// Compute the angular frequency (omega) value.
@@ -31,7 +31,7 @@ pub fn parameters_abbe_diffraction_limit(wavelength: f64, na: f64) -> f64 {
 /// :return: The omega (ω) value.
 #[pyfunction]
 #[pyo3(name = "omega")]
-pub fn parameters_omega(period: Bound<PyAny>) -> PyResult<f64> {
+pub fn parameter_omega(period: Bound<PyAny>) -> PyResult<f64> {
     let p: f64 = period.extract()?;
-    Ok(parameters::omega(p))
+    Ok(parameter::omega(p))
 }

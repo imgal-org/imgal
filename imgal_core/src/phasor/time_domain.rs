@@ -3,7 +3,7 @@ use std::f64;
 use ndarray::{Array1, Array2, Array3, ArrayBase, ArrayView2, Axis, Data, Ix1, Ix3, Zip, stack};
 
 use crate::integration::midpoint;
-use crate::parameters;
+use crate::parameter;
 use crate::traits::numeric::ToFloat64;
 
 /// Compute the real and imaginary (G, S) coordinates of a 3-dimensional decay
@@ -46,7 +46,7 @@ where
     let a = axis.unwrap_or(2);
 
     // initialize phasor parameters
-    let w = parameters::omega(period);
+    let w = parameter::omega(period);
     let n: usize = data.len_of(Axis(a));
     let dt: f64 = period / n as f64;
     let h_w_dt: f64 = h * w * dt;
@@ -171,7 +171,7 @@ where
 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
-    let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
+    let w: f64 = omega.unwrap_or_else(|| parameter::omega(period));
 
     // integrate sine transform (imaginary)
     let n: usize = data.len();
@@ -221,7 +221,7 @@ where
 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
-    let w: f64 = omega.unwrap_or_else(|| parameters::omega(period));
+    let w: f64 = omega.unwrap_or_else(|| parameter::omega(period));
 
     // integrate cosine transform (real)
     let n: usize = data.len();

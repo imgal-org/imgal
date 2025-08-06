@@ -1,6 +1,6 @@
 use ndarray::{Array2, Array3, Axis};
 
-use imgal_core::parameters::omega;
+use imgal_core::parameter::omega;
 use imgal_core::phasor::calibration;
 use imgal_core::phasor::plot;
 use imgal_core::phasor::time_domain;

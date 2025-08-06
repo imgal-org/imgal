@@ -1,7 +1,7 @@
 use numpy::{IntoPyArray, PyArray1, ndarray::Array1};
 use pyo3::prelude::*;
 
-use imgal_core::filters;
+use imgal_core::filter;
 
 /// Convolve two 1-dimensional signals using the Fast Fourier Transform (FFT).
 ///
@@ -16,13 +16,13 @@ use imgal_core::filters;
 /// :return: The FFT convolved result of the same length as the input signal "a".
 #[pyfunction]
 #[pyo3(name = "fft_convolve")]
-pub fn filters_fft_convolve(
+pub fn filter_fft_convolve(
     py: Python,
     a: Vec<f64>,
     b: Vec<f64>,
 ) -> PyResult<Bound<PyArray1<f64>>> {
     let a_arr = Array1::from_vec(a);
     let b_arr = Array1::from_vec(b);
-    let output = filters::fft_convolve(a_arr.view(), b_arr.view());
+    let output = filter::fft_convolve(a_arr.view(), b_arr.view());
     Ok(output.into_pyarray(py))
 }
