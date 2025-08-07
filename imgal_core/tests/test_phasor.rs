@@ -79,7 +79,7 @@ fn calibration_image() {
     let sim_data = get_decay_data((10, 10));
 
     // calculate the phasor image, (G, S)
-    let gs_arr = time_domain::image(&sim_data, 1.25e-8, None, None, None);
+    let gs_arr = time_domain::image(&sim_data, 1.25e-8, None, None, None).unwrap();
 
     // calibrate the phasor image
     let modulation = 1.05;
@@ -100,7 +100,7 @@ fn calibration_image_mut() {
     let sim_data = get_decay_data((10, 10));
 
     // calculate the phasor image, (G, S)
-    let mut gs_arr = time_domain::image(&sim_data, 1.25e-8, None, None, None);
+    let mut gs_arr = time_domain::image(&sim_data, 1.25e-8, None, None, None).unwrap();
 
     // calibrate the phasor image
     let modulation = 1.05;
@@ -156,8 +156,9 @@ fn time_domain_image() {
     let mask = get_circle_mask((100, 100), (50, 50), 8);
 
     // compute phasors with and without a mask
-    let gs_no_mask = time_domain::image(&sim_data, 1.25e-8, None, None, None);
-    let gs_with_mask = time_domain::image(&sim_data, 1.25e-8, Some(mask.view()), None, None);
+    let gs_no_mask = time_domain::image(&sim_data, 1.25e-8, None, None, None).unwrap();
+    let gs_with_mask =
+        time_domain::image(&sim_data, 1.25e-8, Some(mask.view()), None, None).unwrap();
 
     // get views of each channel
     let g_no_mask_view = gs_no_mask.index_axis(Axis(2), 0);

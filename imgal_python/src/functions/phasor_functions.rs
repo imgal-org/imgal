@@ -2,9 +2,13 @@ use numpy::{
     IntoPyArray, PyArray3, PyArrayMethods, PyReadonlyArray2, PyReadonlyArray3, PyReadwriteArray3,
     ndarray::Array1,
 };
+use pyo3::exceptions::PyIndexError;
 use pyo3::prelude::*;
 
-use imgal_core::phasor::{calibration, plot, time_domain};
+use imgal_core::{
+    error::DimensionError,
+    phasor::{calibration, plot, time_domain},
+};
 
 /// Calibrate a real and imaginary (G, S) coordinate pair.
 ///
@@ -215,54 +219,50 @@ pub fn time_domain_image<'py>(
     harmonic: Option<f64>,
     axis: Option<usize>,
 ) -> PyResult<Bound<'py, PyArray3<f64>>> {
-    // pattern match and extract allowed array types
-    if let Ok(d_arr) = data.extract::<PyReadonlyArray3<f32>>() {
+    // create dimension error closure for mapping the dim error
+    let dim_error = |err: DimensionError| match err {
+        DimensionError::InvalidAxis { axis, dim_len } => PyIndexError::new_err(format!(
+            "Axis {} is out of bounds for dimension length {}.",
+            axis, dim_len
+        )),
+    };
+
+    // pattern matc hand extract allowed array types
+    if let Ok(arr) = data.extract::<PyReadonlyArray3<f32>>() {
         if let Some(m) = mask {
-            let output = time_domain::image(
-                &d_arr.as_array(),
-                period,
-                Some(m.as_array()),
-                harmonic,
-                axis,
-            );
-            return Ok(output.into_pyarray(py));
+            return time_domain::image(&arr.as_array(), period, Some(m.as_array()), harmonic, axis)
+                .map(|output| output.into_pyarray(py))
+                .map_err(dim_error);
         } else {
-            let output = time_domain::image(&d_arr.as_array(), period, None, harmonic, axis);
-            return Ok(output.into_pyarray(py));
+            return time_domain::image(&arr.as_array(), period, None, harmonic, axis)
+                .map(|output| output.into_pyarray(py))
+                .map_err(dim_error);
         }
-    } else if let Ok(d_arr) = data.extract::<PyReadonlyArray3<f64>>() {
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray3<f64>>() {
         if let Some(m) = mask {
-            let output = time_domain::image(
-                &d_arr.as_array(),
-                period,
-                Some(m.as_array()),
-                harmonic,
-                axis,
-            );
-            return Ok(output.into_pyarray(py));
+            return time_domain::image(&arr.as_array(), period, Some(m.as_array()), harmonic, axis)
+                .map(|output| output.into_pyarray(py))
+                .map_err(dim_error);
         } else {
-            let output = time_domain::image(&d_arr.as_array(), period, None, harmonic, axis);
-            return Ok(output.into_pyarray(py));
+            return time_domain::image(&arr.as_array(), period, None, harmonic, axis)
+                .map(|output| output.into_pyarray(py))
+                .map_err(dim_error);
         }
-    } else if let Ok(d_arr) = data.extract::<PyReadonlyArray3<u16>>() {
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray3<u16>>() {
         if let Some(m) = mask {
-            let output = time_domain::image(
-                &d_arr.as_array(),
-                period,
-                Some(m.as_array()),
-                harmonic,
-                axis,
-            );
-            return Ok(output.into_pyarray(py));
+            return time_domain::image(&arr.as_array(), period, Some(m.as_array()), harmonic, axis)
+                .map(|output| output.into_pyarray(py))
+                .map_err(dim_error);
         } else {
-            let output = time_domain::image(&d_arr.as_array(), period, None, harmonic, axis);
-            return Ok(output.into_pyarray(py));
+            return time_domain::image(&arr.as_array(), period, None, harmonic, axis)
+                .map(|output| output.into_pyarray(py))
+                .map_err(dim_error);
         }
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
             "Unsupported array dtype.",
         ));
-    };
+    }
 }
 
 /// Compute the imaginary (S) component of a 1-dimensional decay curve.

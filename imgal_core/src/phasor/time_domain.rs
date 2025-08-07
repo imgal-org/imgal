@@ -2,6 +2,7 @@ use std::f64;
 
 use ndarray::{Array1, Array2, Array3, ArrayBase, ArrayView2, Axis, Data, Ix1, Ix3, Zip, stack};
 
+use crate::error::DimensionError;
 use crate::integration::midpoint;
 use crate::parameter;
 use crate::traits::numeric::ToFloat64;
@@ -36,7 +37,7 @@ pub fn image<T, S>(
     mask: Option<ArrayView2<bool>>,
     harmonic: Option<f64>,
     axis: Option<usize>,
-) -> Array3<f64>
+) -> Result<Array3<f64>, DimensionError>
 where
     T: ToFloat64,
     S: Data<Elem = T>,
@@ -44,6 +45,16 @@ where
     // set optional parameters if needed
     let h = harmonic.unwrap_or(1.0);
     let a = axis.unwrap_or(2);
+
+    // check if axis parameter is valid
+    let mut gs_shape = data.shape().to_vec();
+    let sl = gs_shape.len();
+    if a >= sl {
+        return Err(DimensionError::InvalidAxis {
+            axis: a,
+            dim_len: sl,
+        });
+    }
 
     // initialize phasor parameters
     let w = parameter::omega(period);
@@ -55,10 +66,8 @@ where
     let mut w_cos_buf: Vec<f64> = Vec::with_capacity(n);
     let mut w_sin_buf: Vec<f64> = Vec::with_capacity(n);
 
-    // drop the specified axis
-    let mut gs_shape = data.shape().to_vec();
+    // drop specified axis and create new G and S output arrays with new shape
     gs_shape.remove(a);
-
     let mut g_arr = Array2::<f64>::zeros((gs_shape[0], gs_shape[1]));
     let mut s_arr = Array2::<f64>::zeros((gs_shape[0], gs_shape[1]));
 
@@ -133,7 +142,7 @@ where
     }
 
     // stack G and S arrays, (row, col, ch)
-    stack(Axis(2), &[g_arr.view(), s_arr.view()]).unwrap()
+    Ok(stack(Axis(2), &[g_arr.view(), s_arr.view()]).unwrap())
 }
 
 /// Compute the imaginary (S) component of a 1-dimensional decay curve.

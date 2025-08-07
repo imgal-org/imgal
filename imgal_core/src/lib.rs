@@ -1,4 +1,5 @@
 pub mod distribution;
+pub mod error;
 pub mod filter;
 pub mod integration;
 pub mod parameter;
