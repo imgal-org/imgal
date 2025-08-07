@@ -171,15 +171,38 @@ fn time_domain_image() {
     let exp_s = 0.862788883482716;
 
     // assert G and S values, no mask
-    assert!(ensure_within_tolerance(g_no_mask_view.mean().unwrap(), exp_g, 1e-12));
-    assert!(ensure_within_tolerance(s_no_mask_view.mean().unwrap(), exp_s, 1e-12));
-
+    assert!(ensure_within_tolerance(
+        g_no_mask_view.mean().unwrap(),
+        exp_g,
+        1e-12
+    ));
+    assert!(ensure_within_tolerance(
+        s_no_mask_view.mean().unwrap(),
+        exp_s,
+        1e-12
+    ));
 
     // assert G, S and 0.0 values, with mask
-    assert!(ensure_within_tolerance(g_with_mask_view[[45, 52]], exp_g, 1e-12));
-    assert!(ensure_within_tolerance(s_with_mask_view[[45, 52]], exp_s, 1e-12));
-    assert!(ensure_within_tolerance(g_with_mask_view[[5, 8]], 0.0, 1e-12));
-    assert!(ensure_within_tolerance(s_with_mask_view[[5, 8]], 0.0, 1e-12));
+    assert!(ensure_within_tolerance(
+        g_with_mask_view[[45, 52]],
+        exp_g,
+        1e-12
+    ));
+    assert!(ensure_within_tolerance(
+        s_with_mask_view[[45, 52]],
+        exp_s,
+        1e-12
+    ));
+    assert!(ensure_within_tolerance(
+        g_with_mask_view[[5, 8]],
+        0.0,
+        1e-12
+    ));
+    assert!(ensure_within_tolerance(
+        s_with_mask_view[[5, 8]],
+        0.0,
+        1e-12
+    ));
 }
 
 #[test]
