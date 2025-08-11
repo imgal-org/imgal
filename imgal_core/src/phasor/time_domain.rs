@@ -4,7 +4,7 @@ use ndarray::{Array1, Array2, Array3, ArrayBase, ArrayView2, Axis, Data, Ix1, Ix
 
 use crate::error::DimensionError;
 use crate::integration::midpoint;
-use crate::parameter;
+use crate::parameter::omega;
 use crate::traits::numeric::ToFloat64;
 
 /// Compute the real and imaginary (G, S) coordinates of a 3-dimensional decay
@@ -57,7 +57,7 @@ where
     }
 
     // initialize phasor parameters
-    let w = parameter::omega(period);
+    let w = omega(period);
     let n: usize = data.len_of(Axis(a));
     let dt: f64 = period / n as f64;
     let h_w_dt: f64 = h * w * dt;
@@ -163,24 +163,18 @@ where
 /// * `data`: I(t), the 1-dimensonal decay curve.
 /// * `period`: The period.
 /// * `harmonic`: The harmonic value, default = 1.0.
-/// * `omega`: The angular frequency.
 ///
 /// # Returns
 ///
 /// * `f64`: The imaginary component, S.
-pub fn imaginary<T, S>(
-    data: &ArrayBase<S, Ix1>,
-    period: f64,
-    harmonic: Option<f64>,
-    omega: Option<f64>,
-) -> f64
+pub fn imaginary<T, S>(data: &ArrayBase<S, Ix1>, period: f64, harmonic: Option<f64>) -> f64
 where
     T: ToFloat64,
     S: Data<Elem = T>,
 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
-    let w: f64 = omega.unwrap_or_else(|| parameter::omega(period));
+    let w: f64 = omega(period);
 
     // integrate sine transform (imaginary)
     let n: usize = data.len();
@@ -213,24 +207,18 @@ where
 /// * `data`: I(t), the 1-dimensional decay curve.
 /// * `period`: The period.
 /// * `harmonic`: The harmonic value, default = 1.0.
-/// * `omega`: The angular frequency.
 ///
 /// # Returns
 ///
 /// * `f64`: The real component, G.
-pub fn real<T, S>(
-    data: &ArrayBase<S, Ix1>,
-    period: f64,
-    harmonic: Option<f64>,
-    omega: Option<f64>,
-) -> f64
+pub fn real<T, S>(data: &ArrayBase<S, Ix1>, period: f64, harmonic: Option<f64>) -> f64
 where
     T: ToFloat64,
     S: Data<Elem = T>,
 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
-    let w: f64 = omega.unwrap_or_else(|| parameter::omega(period));
+    let w: f64 = omega(period);
 
     // integrate cosine transform (real)
     let n: usize = data.len();

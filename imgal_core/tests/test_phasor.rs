@@ -208,7 +208,7 @@ fn time_domain_image() {
 #[test]
 fn time_domain_imaginary() {
     let data = decay::ideal_fluorescence_1d(256, 1.25e-8, 4.0e-9, 100.0);
-    let s = time_domain::imaginary(&data, 1.25e-8, None, None);
+    let s = time_domain::imaginary(&data, 1.25e-8, None);
 
     assert_eq!(s, 0.39720439791434226);
 }
@@ -216,7 +216,7 @@ fn time_domain_imaginary() {
 #[test]
 fn time_domain_real() {
     let data = decay::ideal_fluorescence_1d(256, 1.25e-8, 4.0e-9, 100.0);
-    let g = time_domain::real(&data, 1.25e-8, None, None);
+    let g = time_domain::real(&data, 1.25e-8, None);
 
     assert_eq!(g, 0.20444291541716833);
 }

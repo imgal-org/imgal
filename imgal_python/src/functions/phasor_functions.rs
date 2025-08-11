@@ -277,19 +277,13 @@ pub fn time_domain_image<'py>(
 /// :param data: I(t), the 1-dimensional decay curve.
 /// :param period: The period.
 /// :param harmonic: The harmonic value, default = 1.0.
-/// :param omega: The angular frequency.
 /// :return: The imaginary component, S.
 #[pyfunction]
 #[pyo3(name = "imaginary")]
-#[pyo3(signature = (data, period, harmonic=None, omega=None))]
-pub fn time_domain_imaginary(
-    data: Vec<f64>,
-    period: f64,
-    harmonic: Option<f64>,
-    omega: Option<f64>,
-) -> f64 {
+#[pyo3(signature = (data, period, harmonic=None))]
+pub fn time_domain_imaginary(data: Vec<f64>, period: f64, harmonic: Option<f64>) -> f64 {
     let arr = Array1::from_vec(data);
-    time_domain::imaginary(&arr, period, harmonic, omega)
+    time_domain::imaginary(&arr, period, harmonic)
 }
 
 /// Compute the real (G) component of a 1-dimensional decay curve.
@@ -304,17 +298,11 @@ pub fn time_domain_imaginary(
 /// :param data: I(t), the 1-dimensional decay curve.
 /// :param period: The period.
 /// :param harmonic: The harmonic value, default = 1.0.
-/// :param omega: The angular frequency.
 /// :return: The real component, G.
 #[pyfunction]
 #[pyo3(name = "real")]
-#[pyo3(signature = (data, period, harmonic=None, omega=None))]
-pub fn time_domain_real(
-    data: Vec<f64>,
-    period: f64,
-    harmonic: Option<f64>,
-    omega: Option<f64>,
-) -> f64 {
+#[pyo3(signature = (data, period, harmonic=None))]
+pub fn time_domain_real(data: Vec<f64>, period: f64, harmonic: Option<f64>) -> f64 {
     let arr = Array1::from_vec(data);
-    time_domain::real(&arr, period, harmonic, omega)
+    time_domain::real(&arr, period, harmonic)
 }
