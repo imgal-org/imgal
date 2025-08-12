@@ -51,7 +51,7 @@ where
     let sl = gs_shape.len();
     if a >= sl {
         return Err(DimensionError::InvalidAxis {
-            axis: a,
+            axis_idx: a,
             dim_len: sl,
         });
     }
