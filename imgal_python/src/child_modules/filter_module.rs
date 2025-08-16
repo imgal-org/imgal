@@ -12,7 +12,11 @@ pub fn register_filter_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
 
     // add filters submodule functions
     filter_module.add_function(wrap_pyfunction!(
-        filter_functions::filter_fft_convolve,
+        filter_functions::filter_fft_convolve_1d,
+        &filter_module
+    )?)?;
+    filter_module.add_function(wrap_pyfunction!(
+        filter_functions::filter_fft_deconvolve_1d,
         &filter_module
     )?)?;
 

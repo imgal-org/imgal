@@ -1,6 +1,6 @@
 use ndarray::{Array1, Array3};
 
-use crate::filter::fft_convolve;
+use crate::filter::fft_convolve_1d;
 use crate::simulation::instrument;
 
 /// Simulate a 1-dimensional gaussian IRF convolved decay curve.
@@ -39,7 +39,7 @@ pub fn gaussian_fluorescence_1d(
 ) -> Array1<f64> {
     let irf = instrument::gaussian_irf_1d(samples, period, irf_width, irf_center);
     let decay = ideal_fluorescence_1d(samples, period, tau, initial_value);
-    fft_convolve(decay.view(), irf.view())
+    fft_convolve_1d(decay.view(), irf.view())
 }
 
 /// Simulate a 3-dimensional Gaussian IRF convolved decay curve.
