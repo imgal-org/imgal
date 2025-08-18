@@ -1,4 +1,4 @@
-use ndarray::{Array1, Array3};
+use ndarray::{Array1, Array3, ArrayView1};
 
 use crate::filter::fft_convolve_1d;
 use crate::simulation::instrument;
@@ -158,6 +158,81 @@ pub fn ideal_fluorescence_3d(
 ) -> Array3<f64> {
     // create 1-dimensional decay curve and broadcast
     let d = ideal_fluorescence_1d(samples, period, tau, initial_value);
-    let new_shape = (shape.0, shape.1, samples);
-    d.broadcast(new_shape).unwrap().to_owned()
+    let dims = (shape.0, shape.1, samples);
+    d.broadcast(dims).unwrap().to_owned()
+}
+
+/// Simulate a 1-dimensional IRF convolved fluorescence decay curve.
+///
+/// # Description
+///
+/// Compute an instrument response function (IRF) convolved (1-dimensional)
+/// curve by FFT convolving the given IRF with an ideal decay cruve. The ideal
+/// decay cruve is computed as:
+///
+/// ```text
+/// I(t) = Io * e^(-t/τ)
+/// ```
+///
+/// # Arguments
+///
+/// * `irf`: The IRF as a 1-dimensonal array.
+/// * `samples`: The number of discrete points that make up the decay curve (_i.e._ time).
+/// * `period`: The period (_i.e._ time interval).
+/// * `tau`: The lifetime.
+/// * `initial_value`: The initial fluorescence value.
+///
+/// # Returns
+///
+/// * `Array1<f64>`: The 1-dimensional IRF convolved decay curve.
+pub fn irf_fluorescence_1d(
+    irf: ArrayView1<f64>,
+    samples: usize,
+    period: f64,
+    tau: f64,
+    initial_value: f64,
+) -> Array1<f64> {
+    // create ideal decay curve and convolve with input irf
+    let d = ideal_fluorescence_1d(samples, period, tau, initial_value);
+    fft_convolve_1d(d.view(), irf)
+}
+
+/// Simulate a 3-dimensional IRF convolved fluorescence decay curve.
+///
+/// # Description
+///
+/// Compute an instrument response function (IRF) convolved (3-dimensional)
+/// cruve by FFT convolving the given IRF with an ideal decay curve. The ideal
+/// decay curve is computed as:
+///
+/// ```text
+/// I(t) = Io * e^(-t/τ)
+/// ```
+///
+/// # Arguments
+///
+/// * `irf`: The IRF as a 1-dimensonal array.
+/// * `samples`: The number of discrete points that make up the decay curve (_i.e._ time).
+/// * `period`: The period (_i.e._ time interval).
+/// * `tau`: The lifetime.
+/// * `initial_value`: The initial fluorescence value.
+/// * `shape`: The row and col shape to broadcast the decay curve into.
+///
+/// # Returns
+///
+/// * `Array3<f64>`: The 3-dimensional IRF convolved decay curve.
+pub fn irf_fluorescence_3d(
+    irf: ArrayView1<f64>,
+    samples: usize,
+    period: f64,
+    tau: f64,
+    initial_value: f64,
+    shape: (usize, usize),
+) -> Array3<f64> {
+    // create 1-dimensional IRF convolved decay curve to broadcast
+    let d = irf_fluorescence_1d(irf, samples, period, tau, initial_value);
+
+    // broadcast IRF convolved decay curve
+    let dims = (shape.0, shape.1, samples);
+    d.broadcast(dims).unwrap().to_owned()
 }

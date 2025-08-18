@@ -150,6 +150,75 @@ pub fn decay_ideal_fluorescence_3d(
     Ok(output.into_pyarray(py))
 }
 
+/// Simulate a 1-dimensional IRF convolved fluorescence decay cruve.
+///
+/// Compute an instrument response function (IRF) convolved (1-dimensional)
+/// curve by FFT convolving the given IRF with an ideal decay curve. The ideal
+/// decay curve is computed as:
+///
+/// I(t) = Io * e^(-t/τ)
+///
+/// :param irf: The IRF as a 1-dimensonal array.
+/// :param samples: The number of discrete points that make up the decay curve
+///     (i.e. time).
+/// :param period: The period (i.e. the interval).
+/// :param tau: The lifetime.
+/// :param initial_value: The initial fluorescence value.
+/// :return: The 1-dimensional IRF convolved decay curve.
+#[pyfunction]
+#[pyo3(name = "irf_fluorescence_1d")]
+pub fn decay_irf_fluorescence_1d(
+    py: Python,
+    irf: Vec<f64>,
+    samples: usize,
+    period: f64,
+    tau: f64,
+    initial_value: f64,
+) -> PyResult<Bound<PyArray1<f64>>> {
+    let irf = Array1::from_vec(irf);
+    let output =
+        simulation::decay::irf_fluorescence_1d(irf.view(), samples, period, tau, initial_value);
+    Ok(output.into_pyarray(py))
+}
+
+/// Simulate a 3-dimensional IRF convolved fluorescence decay curve.
+///
+/// Compute an instrument response function (IRF) convolved (3-dimensional)
+/// curve by FFT convolving the given IRF with an ideal decay cruve. The ideal
+/// decay curve is a computed as:
+///
+/// I(t) = Io * e^(-t/τ)
+///
+/// :param irf: The IRF as a 1-dimensonal array.
+/// :param samples: The number of discrete points that make up the decay curve
+///     (i.e. time).
+/// :param period: The period (i.e. the interval).
+/// :param tau: The lifetime.
+/// :param initial_value: The initial fluorescence value.
+/// :return: The 1-dimensional IRF convolved decay curve.
+#[pyfunction]
+#[pyo3(name = "irf_fluorescence_3d")]
+pub fn decay_irf_fluorescence_3d(
+    py: Python,
+    irf: Vec<f64>,
+    samples: usize,
+    period: f64,
+    tau: f64,
+    initial_value: f64,
+    shape: (usize, usize),
+) -> PyResult<Bound<PyArray3<f64>>> {
+    let irf = Array1::from_vec(irf);
+    let output = simulation::decay::irf_fluorescence_3d(
+        irf.view(),
+        samples,
+        period,
+        tau,
+        initial_value,
+        shape,
+    );
+    Ok(output.into_pyarray(py))
+}
+
 /// Simulate a 1-dimensional Gaussian instruement response function (IRF).
 ///
 /// This function creates a Gaussian IRF by converting "full width at half maximum"
