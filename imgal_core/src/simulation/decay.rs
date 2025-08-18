@@ -3,25 +3,23 @@ use ndarray::{Array1, Array3, ArrayView1};
 use crate::filter::fft_convolve_1d;
 use crate::simulation::instrument;
 
-/// Simulate a 1-dimensional gaussian IRF convolved decay curve.
+/// Simulate a 1-dimensional Gaussian IRF convolved decay curve.
 ///
 /// # Description
 ///
 /// Compute a Gaussian instrument response function (IRF) convolved curve
-/// (1-dimensional) by FFT convolving the IRF with a decay cruve. The ideal
-/// decay curve is computed as:
+/// (1-dimensional) by FFT convolving the IRF with an ideal decay cruve. The
+/// ideal decay curve is computed as:
 ///
 /// ```text
 /// I(t) = Io * e^(-t/τ)
 /// ```
 ///
-/// The ideal decay curve is then convolved with a Guassian IRF.
-///
 /// # Arguments
 ///
-/// * `samples`: The number of descrete points that make up the decay curve (_i.e._ time).
-/// * `period`: The period, in the same unit as thee other parameters(_e.g._ seconds).
-/// * `tau`: The lifetime, in the same unit as the other parameters (_e.g._ seconds).
+/// * `samples`: The number of discrete points that make up the decay curve (_i.e._ time).
+/// * `period`: The period (_i.e._ time interval).
+/// * `tau`: The lifetime.
 /// * `initial_value`: The initial fluorescence value.
 /// * `irf_width`: The full width at half maximum (FWHM) of the IRF.
 /// * `irf_center`: The temporal position of the IRF peak within the time range.
@@ -38,8 +36,8 @@ pub fn gaussian_fluorescence_1d(
     irf_center: f64,
 ) -> Array1<f64> {
     let irf = instrument::gaussian_irf_1d(samples, period, irf_width, irf_center);
-    let decay = ideal_fluorescence_1d(samples, period, tau, initial_value);
-    fft_convolve_1d(decay.view(), irf.view())
+    let d = ideal_fluorescence_1d(samples, period, tau, initial_value);
+    fft_convolve_1d(d.view(), irf.view())
 }
 
 /// Simulate a 3-dimensional Gaussian IRF convolved decay curve.
@@ -47,20 +45,18 @@ pub fn gaussian_fluorescence_1d(
 /// # Description
 ///
 /// Compute a Gaussian instrument response function (IRF) convolved curve
-/// (3-dimensional) by FFT convolving the IRF with a decay cruve. The ideal
+/// (3-dimensional) by FFT convolving the IRF with an ideal decay cruve. The ideal
 /// decay curve is computed as:
 ///
 /// ```text
 /// I(t) = Io * e^(-t/τ)
 /// ```
 ///
-/// The ideal decay curve is then convolved with a Guassian IRF.
-///
 /// # Arguments
 ///
-/// * `samples`: The number of descrete points that make up the decay curve (_i.e._ time).
-/// * `period`: The period, in the same unit as thee other parameters(_e.g._ seconds).
-/// * `tau`: The lifetime, in the same unit as the other parameters (_e.g._ seconds).
+/// * `samples`: The number of discrete points that make up the decay curve (_i.e._ time).
+/// * `period`: The period (_i.e_ time interval).
+/// * `tau`: The lifetime.
 /// * `initial_value`: The initial fluorescence value.
 /// * `irf_width`: The full width at half maximum (FWHM) of the IRF.
 /// * `irf_center`: The temporal position of the IRF peak within the time range.
@@ -80,11 +76,11 @@ pub fn gaussian_fluorescence_3d(
 ) -> Array3<f64> {
     // create 1-dimensional gaussian IRF convolved curve and broadcast
     let d = gaussian_fluorescence_1d(samples, period, tau, initial_value, irf_width, irf_center);
-    let new_shape = (shape.0, shape.1, samples);
-    d.broadcast(new_shape).unwrap().to_owned()
+    let dims = (shape.0, shape.1, samples);
+    d.broadcast(dims).unwrap().to_owned()
 }
 
-/// Simulate an ideal 1-dimensional fluorescence decay curve.
+/// Simulate a 1-dimensional ideal fluorescence decay curve.
 ///
 /// # Description
 ///
@@ -99,9 +95,10 @@ pub fn gaussian_fluorescence_3d(
 ///
 /// # Arguments
 ///
-/// * `samples`: The number of descrete points that make up the decay curve (i.e. time).
-/// * `period`: The period in the same unit as tau (e.g. nanoseconds).
-/// * `tau`: The lifetime in the same unit as the period (e.g. nanoseconds).
+/// * `samples`: The number of discrete points that make up the decay curve
+///    (_i.e._ time).
+/// * `period`: The period (_i.e_ time interval).
+/// * `tau`: The lifetime.
 /// * `initial_value`: The initial fluorescence value.
 ///
 /// # Returns
@@ -122,7 +119,7 @@ pub fn ideal_fluorescence_1d(
     t.map(|ti| initial_value * (-ti / tau).exp())
 }
 
-/// Simulate an ideal 3-dimensional fluorescence decay curve.
+/// Simulate a 3-dimensional ideal fluorescence decay curve.
 ///
 /// A fluorescence decay curve is computed as:
 ///
@@ -136,9 +133,9 @@ pub fn ideal_fluorescence_1d(
 ///
 /// # Arguments
 ///
-/// * `samples`: The number of descrete points that make up the decay curve (i.e. time).
-/// * `period`: The period in the same unit as tau (e.g. nanoseconds).
-/// * `tau`: The lifetime in the same unit as the period (e.g. nanoseconds).
+/// * `samples`: The number of discrete points that make up the decay curve (i.e. time).
+/// * `period`: The period (_i.e._ time interval).
+/// * `tau`: The lifetime.
 /// * `initial_value`: The initial fluorescence value.
 /// * `shape`: The row and col shape to broadcast the decay curve into.
 ///

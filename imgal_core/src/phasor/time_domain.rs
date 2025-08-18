@@ -23,7 +23,7 @@ use crate::traits::numeric::ToFloat64;
 /// # Arguments
 ///
 /// * `data`: I(t), the decay data image.
-/// * `period`: The period.
+/// * `period`: The period (_i.e._ time interval).
 /// * `harmonic`: The harmonic value, default = 1.0.
 /// * `axis`: The decay or lifetime axis, default = 2.
 ///
@@ -161,7 +161,7 @@ where
 /// # Arguments
 ///
 /// * `data`: I(t), the 1-dimensonal decay curve.
-/// * `period`: The period.
+/// * `period`: The period (_i.e._ time interval).
 /// * `harmonic`: The harmonic value, default = 1.0.
 ///
 /// # Returns
@@ -205,7 +205,7 @@ where
 /// # Arguments
 ///
 /// * `data`: I(t), the 1-dimensional decay curve.
-/// * `period`: The period.
+/// * `period`: The period, (_i.e._ time interval).
 /// * `harmonic`: The harmonic value, default = 1.0.
 ///
 /// # Returns

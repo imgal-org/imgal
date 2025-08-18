@@ -1,24 +1,22 @@
 use numpy::{
     IntoPyArray, PyArray1, PyArray3, PyArrayMethods, PyReadonlyArray1, PyReadonlyArray3,
-    PyReadwriteArray1, PyReadwriteArray3,
+    PyReadwriteArray1, PyReadwriteArray3, ndarray::Array1,
 };
 use pyo3::prelude::*;
 
 use imgal_core::simulation;
 
-/// Simulate a 1-dimensional gaussian IRF convolved decay curve.
+/// Simulate a 1-dimensional Gaussian IRF convolved decay curve.
 ///
 /// Compute a Gaussian instrument response function (IRF) convolved curve
-/// (1-dimensional) by FFT convolving the IRF with a decay cruve. The ideal
-/// decay curve is computed as:
+/// (1-dimensional) by FFT convolving the IRF with an ideal decay cruve. The
+/// ideal decay curve is computed as:
 ///
 /// I(t) = Io * e^(-t/τ)
 ///
-/// The ideal decay curve is then convolved with a Guassian IRF.
-///
-/// :param samples: The number of descrete points that make up the decay curve (i.e. time).
-/// :param period: The period, in the same unit as thee other parameters(e.g. seconds).
-/// :param tau: The lifetime, in the same unit as the other parameters (e.g. seconds).
+/// :param samples: The number of discrete points that make up the decay curve (i.e. time).
+/// :param period: The period (i.e. time interval).
+/// :param tau: The lifetime.
 /// :param initial_value: The initial fluorescence value.
 /// :param irf_width: The full width at half maximum (FWHM) of the IRF.
 /// :param irf_center: The temporal position of the IRF peak within the time range.
@@ -48,16 +46,14 @@ pub fn decay_gaussian_fluorescence_1d(
 /// Simulate a 3-dimensional Gaussian IRF convolved decay curve.
 ///
 /// Compute a Gaussian instrument response function (IRF) convolved curve
-/// (3-dimensional) by FFT convolving the IRF with a decay cruve. The ideal
+/// (3-dimensional) by FFT convolving the IRF with an ideal decay cruve. The ideal
 /// decay curve is computed as:
 ///
 /// I(t) = Io * e^(-t/τ)
 ///
-/// The ideal decay curve is then convolved with a Guassian IRF.
-///
-/// :param samples: The number of descrete points that make up the decay curve (i.e. time).
-/// :param period: The period, in the same unit as thee other parameters(e.g. seconds).
-/// :param tau: The lifetime, in the same unit as the other parameters (e.g. seconds).
+/// :param samples: The number of discrete points that make up the decay curve (i.e. time).
+/// :param period: The period (i.e. time interval).
+/// :param tau: The lifetime.
 /// :param initial_value: The initial fluorescence value.
 /// :param irf_width: The full width at half maximum (FWHM) of the IRF.
 /// :param irf_center: The temporal position of the IRF peak within the time range.
@@ -99,10 +95,10 @@ pub fn decay_gaussian_fluorescence_3d(
 /// Where "Io" is the initial fluorescence value and "t" (i.e. the number of
 /// samples).
 ///
-/// :param samples: The number of descrete points that make up the decay curve
+/// :param samples: The number of discrete points that make up the decay curve
 ///     (i.e. time).
-/// :param period: The period in the same unit as tau (e.g. seconds).
-/// :param tau: The lifetime in the same unit as the period (e.g. seconds).
+/// :param period: The period (i.e. time interval).
+/// :param tau: The lifetime.
 /// :param initial_value: The initial fluorescence value.
 /// :return: The 1-dimensional decay curve.
 #[pyfunction]
@@ -128,10 +124,10 @@ pub fn decay_ideal_fluorescence_1d(
 /// number of samples). The decay curve is then broadcasted to the specified input
 /// shape with the number of samples along the last axis.
 ///
-/// :param samples: The number of descrete points that make up the decay curve
+/// :param samples: The number of discrete points that make up the decay curve
 ///     (i.e. time).
-/// :param period: The period in the same unit as tau (e.g. seconds).
-/// :param tau: The lifetime in the same unit as the period (e.g. seconds).
+/// :param period: The period (i.e. time interval).
+/// :param tau: The lifetime.
 /// :param initial_value: The initial fluorescence value.
 /// :param shape: The row and col shape to broadcast the decay curve into.
 /// :return: The 3-dimensional decay curve.

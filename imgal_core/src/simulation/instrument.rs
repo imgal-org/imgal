@@ -4,7 +4,7 @@ use ndarray::Array1;
 
 use crate::distribution::gaussian;
 
-/// Simulate a 1-dimensional Gaussian instruement response function (IRF).
+/// Simulate a 1-dimensional Gaussian instrument response function (IRF).
 ///
 /// # Description
 ///
