@@ -1,4 +1,4 @@
-use ndarray::{Array1, Array3, ArrayBase, ArrayViewMut1, ArrayViewMut3, Axis, Data, Ix1, Ix3, Zip};
+use ndarray::{Array1, Array3, ArrayView1, ArrayView3, ArrayViewMut1, ArrayViewMut3, Axis, Zip};
 use rand::SeedableRng;
 use rand::prelude::*;
 use rand::rngs::StdRng;
@@ -28,10 +28,9 @@ use crate::traits::numeric::ToFloat64;
 /// # Returns
 ///
 /// * `Array1<f64>`: A 1-dimensonal array of the input data with Poisson noise applied.
-pub fn poisson_1d<T, S>(data: &ArrayBase<S, Ix1>, scale: f64, seed: Option<u64>) -> Array1<f64>
+pub fn poisson_1d<T>(data: ArrayView1<T>, scale: f64, seed: Option<u64>) -> Array1<f64>
 where
     T: ToFloat64,
-    S: Data<Elem = T>,
 {
     // set optional parameters if needed
     let s = seed.unwrap_or(0);
@@ -108,15 +107,14 @@ pub fn poisson_1d_mut(mut data: ArrayViewMut1<f64>, scale: f64, seed: Option<u64
 ///
 /// * `Array3<f64>`: A 3-dimensional array of the input data with Poisson noise
 ///    applied.
-pub fn poisson_3d<T, S>(
-    data: &ArrayBase<S, Ix3>,
+pub fn poisson_3d<T>(
+    data: ArrayView3<T>,
     scale: f64,
     seed: Option<u64>,
     axis: Option<usize>,
 ) -> Array3<f64>
 where
     T: ToFloat64,
-    S: Data<Elem = T>,
 {
     // set optional parameters if needed
     let a = axis.unwrap_or(2);

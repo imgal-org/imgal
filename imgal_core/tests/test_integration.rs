@@ -22,7 +22,10 @@ fn integration_composite_simpson() {
 fn integration_midpoint() {
     let gauss_arr = get_gaussian_distribution(512);
 
-    assert_eq!(integration::midpoint(gauss_arr.view(), None), 1.0000000000000009);
+    assert_eq!(
+        integration::midpoint(gauss_arr.view(), None),
+        1.0000000000000009
+    );
 }
 
 #[test]

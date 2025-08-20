@@ -269,19 +269,19 @@ pub fn noise_poisson_1d<'py>(
     // pattern match and extract allowed array types
     if let Ok(array) = data.extract::<PyReadonlyArray1<f32>>() {
         let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_1d(&ro_arr.as_array(), scale, seed);
+        let output = simulation::noise::poisson_1d(ro_arr.as_array(), scale, seed);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray1<f64>>() {
         let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_1d(&ro_arr.as_array(), scale, seed);
+        let output = simulation::noise::poisson_1d(ro_arr.as_array(), scale, seed);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray1<u8>>() {
         let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_1d(&ro_arr.as_array(), scale, seed);
+        let output = simulation::noise::poisson_1d(ro_arr.as_array(), scale, seed);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray1<u16>>() {
         let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_1d(&ro_arr.as_array(), scale, seed);
+        let output = simulation::noise::poisson_1d(ro_arr.as_array(), scale, seed);
         return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
@@ -341,19 +341,19 @@ pub fn noise_poisson_3d<'py>(
     // pattern match and extract allowed array types
     if let Ok(array) = data.extract::<PyReadonlyArray3<f32>>() {
         let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_3d(&ro_arr.as_array(), scale, seed, axis);
+        let output = simulation::noise::poisson_3d(ro_arr.as_array(), scale, seed, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray3<f64>>() {
         let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_3d(&ro_arr.as_array(), scale, seed, axis);
+        let output = simulation::noise::poisson_3d(ro_arr.as_array(), scale, seed, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray3<u8>>() {
         let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_3d(&ro_arr.as_array(), scale, seed, axis);
+        let output = simulation::noise::poisson_3d(ro_arr.as_array(), scale, seed, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray3<u16>>() {
         let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_3d(&ro_arr.as_array(), scale, seed, axis);
+        let output = simulation::noise::poisson_3d(ro_arr.as_array(), scale, seed, axis);
         return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(

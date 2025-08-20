@@ -79,12 +79,12 @@ fn calibration_image() {
     let sim_data = get_decay_data((10, 10));
 
     // calculate the phasor image, (G, S)
-    let gs_arr = time_domain::image(&sim_data, 1.25e-8, None, None, None).unwrap();
+    let gs_arr = time_domain::image(sim_data.view(), 1.25e-8, None, None, None).unwrap();
 
     // calibrate the phasor image
     let modulation = 1.05;
     let phase = -0.981;
-    let cal_gs_arr = calibration::image(&gs_arr, modulation, phase, None);
+    let cal_gs_arr = calibration::image(gs_arr.view(), modulation, phase, None);
 
     // pick a point in the calibrated data
     let g_mean = cal_gs_arr.index_axis(Axis(2), 0).mean().unwrap();
@@ -100,7 +100,7 @@ fn calibration_image_mut() {
     let sim_data = get_decay_data((10, 10));
 
     // calculate the phasor image, (G, S)
-    let mut gs_arr = time_domain::image(&sim_data, 1.25e-8, None, None, None).unwrap();
+    let mut gs_arr = time_domain::image(sim_data.view(), 1.25e-8, None, None, None).unwrap();
 
     // calibrate the phasor image
     let modulation = 1.05;
@@ -156,9 +156,9 @@ fn time_domain_image() {
     let mask = get_circle_mask((100, 100), (50, 50), 8);
 
     // compute phasors with and without a mask
-    let gs_no_mask = time_domain::image(&sim_data, 1.25e-8, None, None, None).unwrap();
+    let gs_no_mask = time_domain::image(sim_data.view(), 1.25e-8, None, None, None).unwrap();
     let gs_with_mask =
-        time_domain::image(&sim_data, 1.25e-8, Some(mask.view()), None, None).unwrap();
+        time_domain::image(sim_data.view(), 1.25e-8, Some(mask.view()), None, None).unwrap();
 
     // get views of each channel
     let g_no_mask_view = gs_no_mask.index_axis(Axis(2), 0);
@@ -208,7 +208,7 @@ fn time_domain_image() {
 #[test]
 fn time_domain_imaginary() {
     let data = decay::ideal_fluorescence_1d(256, 1.25e-8, 4.0e-9, 100.0);
-    let s = time_domain::imaginary(&data, 1.25e-8, None);
+    let s = time_domain::imaginary(data.view(), 1.25e-8, None);
 
     assert_eq!(s, 0.39720439791434226);
 }
@@ -216,7 +216,7 @@ fn time_domain_imaginary() {
 #[test]
 fn time_domain_real() {
     let data = decay::ideal_fluorescence_1d(256, 1.25e-8, 4.0e-9, 100.0);
-    let g = time_domain::real(&data, 1.25e-8, None);
+    let g = time_domain::real(data.view(), 1.25e-8, None);
 
     assert_eq!(g, 0.20444291541716833);
 }

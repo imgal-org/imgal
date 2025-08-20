@@ -69,15 +69,15 @@ pub fn calibration_image<'py>(
     // pattern match and extract allowed array types
     if let Ok(array) = data.extract::<PyReadonlyArray3<f32>>() {
         let ro_arr = array.readonly();
-        let output = calibration::image(&ro_arr.as_array(), modulation, phase, axis);
+        let output = calibration::image(ro_arr.as_array(), modulation, phase, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray3<f64>>() {
         let ro_arr = array.readonly();
-        let output = calibration::image(&ro_arr.as_array(), modulation, phase, axis);
+        let output = calibration::image(ro_arr.as_array(), modulation, phase, axis);
         return Ok(output.into_pyarray(py));
     } else if let Ok(array) = data.extract::<PyReadonlyArray3<u16>>() {
         let ro_arr = array.readonly();
-        let output = calibration::image(&ro_arr.as_array(), modulation, phase, axis);
+        let output = calibration::image(ro_arr.as_array(), modulation, phase, axis);
         return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
@@ -219,31 +219,31 @@ pub fn time_domain_image<'py>(
     // pattern matc hand extract allowed array types
     if let Ok(arr) = data.extract::<PyReadonlyArray3<f32>>() {
         if let Some(m) = mask {
-            return time_domain::image(&arr.as_array(), period, Some(m.as_array()), harmonic, axis)
+            return time_domain::image(arr.as_array(), period, Some(m.as_array()), harmonic, axis)
                 .map(|output| output.into_pyarray(py))
                 .map_err(map_dimension_error);
         } else {
-            return time_domain::image(&arr.as_array(), period, None, harmonic, axis)
+            return time_domain::image(arr.as_array(), period, None, harmonic, axis)
                 .map(|output| output.into_pyarray(py))
                 .map_err(map_dimension_error);
         }
     } else if let Ok(arr) = data.extract::<PyReadonlyArray3<f64>>() {
         if let Some(m) = mask {
-            return time_domain::image(&arr.as_array(), period, Some(m.as_array()), harmonic, axis)
+            return time_domain::image(arr.as_array(), period, Some(m.as_array()), harmonic, axis)
                 .map(|output| output.into_pyarray(py))
                 .map_err(map_dimension_error);
         } else {
-            return time_domain::image(&arr.as_array(), period, None, harmonic, axis)
+            return time_domain::image(arr.as_array(), period, None, harmonic, axis)
                 .map(|output| output.into_pyarray(py))
                 .map_err(map_dimension_error);
         }
     } else if let Ok(arr) = data.extract::<PyReadonlyArray3<u16>>() {
         if let Some(m) = mask {
-            return time_domain::image(&arr.as_array(), period, Some(m.as_array()), harmonic, axis)
+            return time_domain::image(arr.as_array(), period, Some(m.as_array()), harmonic, axis)
                 .map(|output| output.into_pyarray(py))
                 .map_err(map_dimension_error);
         } else {
-            return time_domain::image(&arr.as_array(), period, None, harmonic, axis)
+            return time_domain::image(arr.as_array(), period, None, harmonic, axis)
                 .map(|output| output.into_pyarray(py))
                 .map_err(map_dimension_error);
         }
@@ -272,7 +272,7 @@ pub fn time_domain_image<'py>(
 #[pyo3(signature = (data, period, harmonic=None))]
 pub fn time_domain_imaginary(data: Vec<f64>, period: f64, harmonic: Option<f64>) -> f64 {
     let arr = Array1::from_vec(data);
-    time_domain::imaginary(&arr, period, harmonic)
+    time_domain::imaginary(arr.view(), period, harmonic)
 }
 
 /// Compute the real (G) component of a 1-dimensional decay curve.
@@ -293,5 +293,5 @@ pub fn time_domain_imaginary(data: Vec<f64>, period: f64, harmonic: Option<f64>)
 #[pyo3(signature = (data, period, harmonic=None))]
 pub fn time_domain_real(data: Vec<f64>, period: f64, harmonic: Option<f64>) -> f64 {
     let arr = Array1::from_vec(data);
-    time_domain::real(&arr, period, harmonic)
+    time_domain::real(arr.view(), period, harmonic)
 }

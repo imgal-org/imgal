@@ -1,4 +1,4 @@
-use ndarray::{Array3, ArrayBase, ArrayViewMut3, Axis, Data, Ix3, Zip};
+use ndarray::{Array3, ArrayView3, ArrayViewMut3, Axis, Zip};
 use rayon::prelude::*;
 
 use crate::phasor::plot;
@@ -71,15 +71,14 @@ pub fn coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64
 ///
 /// * `Array3<f64>`: A 3-dimensional array with the calibrated phasor values,
 ///    where calibrated G and S are channels 0 and 1 respectively.
-pub fn image<T, S>(
-    data: &ArrayBase<S, Ix3>,
+pub fn image<T>(
+    data: ArrayView3<T>,
     modulation: f64,
     phase: f64,
     axis: Option<usize>,
 ) -> Array3<f64>
 where
     T: ToFloat64,
-    S: Data<Elem = T>,
 {
     // set optional parameters if needed
     let a = axis.unwrap_or(2);

@@ -1,6 +1,6 @@
 use std::f64;
 
-use ndarray::{Array1, Array2, Array3, ArrayBase, ArrayView2, Axis, Data, Ix1, Ix3, Zip, stack};
+use ndarray::{Array1, Array2, Array3, ArrayView1, ArrayView2, ArrayView3, Axis, Zip, stack};
 
 use crate::error::DimensionError;
 use crate::integration::midpoint;
@@ -31,8 +31,8 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// * `Array3<f64>`: The real and imaginary coordinates as a 3D (ch, row, col) image,
 ///    where G and S are indexed at 0 and 1 respectively on the _channel_ axis.
-pub fn image<T, S>(
-    data: &ArrayBase<S, Ix3>,
+pub fn image<T>(
+    data: ArrayView3<T>,
     period: f64,
     mask: Option<ArrayView2<bool>>,
     harmonic: Option<f64>,
@@ -40,7 +40,6 @@ pub fn image<T, S>(
 ) -> Result<Array3<f64>, DimensionError>
 where
     T: ToFloat64,
-    S: Data<Elem = T>,
 {
     // set optional parameters if needed
     let h = harmonic.unwrap_or(1.0);
@@ -167,10 +166,9 @@ where
 /// # Returns
 ///
 /// * `f64`: The imaginary component, S.
-pub fn imaginary<T, S>(data: &ArrayBase<S, Ix1>, period: f64, harmonic: Option<f64>) -> f64
+pub fn imaginary<T>(data: ArrayView1<T>, period: f64, harmonic: Option<f64>) -> f64
 where
     T: ToFloat64,
-    S: Data<Elem = T>,
 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
@@ -211,10 +209,9 @@ where
 /// # Returns
 ///
 /// * `f64`: The real component, G.
-pub fn real<T, S>(data: &ArrayBase<S, Ix1>, period: f64, harmonic: Option<f64>) -> f64
+pub fn real<T>(data: ArrayView1<T>, period: f64, harmonic: Option<f64>) -> f64
 where
     T: ToFloat64,
-    S: Data<Elem = T>,
 {
     // set optional parameters if needed
     let h: f64 = harmonic.unwrap_or(1.0);
