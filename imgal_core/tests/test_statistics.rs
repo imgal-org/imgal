@@ -13,6 +13,6 @@ fn statistics_sum() {
     let float_arr = Array1::from_vec(float_data);
 
     // assert arrays
-    assert_eq!(statistics::sum(&int_arr), 40);
-    assert_eq!(statistics::sum(&float_arr), 51.86);
+    assert_eq!(statistics::sum(int_arr.view()), 40);
+    assert_eq!(statistics::sum(float_arr.view()), 51.86);
 }

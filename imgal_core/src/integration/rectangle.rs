@@ -1,4 +1,4 @@
-use ndarray::{ArrayBase, Data, Ix1};
+use ndarray::ArrayView1;
 
 use crate::statistics::sum;
 use crate::traits::numeric::ToFloat64;
@@ -16,16 +16,15 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Arguments
 ///
-/// * `x`: The 1-dimensional data to integrate.
+/// * `x`: The 1-dimensional array to integrate.
 /// * `delta_x`: The width between data points, default = 1.0.
 ///
 /// # Returns
 ///
 /// * `f64`: The computed integral.
-pub fn midpoint<T, S>(x: &ArrayBase<S, Ix1>, delta_x: Option<f64>) -> f64
+pub fn midpoint<T>(x: ArrayView1<T>, delta_x: Option<f64>) -> f64
 where
     T: ToFloat64,
-    S: Data<Elem = T>,
 {
-    delta_x.unwrap_or(1.0) * sum(&x).into()
+    delta_x.unwrap_or(1.0) * sum(x).into()
 }

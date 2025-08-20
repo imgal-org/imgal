@@ -1,4 +1,4 @@
-use ndarray::{ArrayBase, Data, Ix1};
+use ndarray::ArrayView1;
 
 use crate::traits::numeric::ToFloat64;
 
@@ -27,14 +27,13 @@ use crate::traits::numeric::ToFloat64;
 /// let arr = Array1::from_vec(vec![1.82, 3.35, 7.13, 9.25]);
 ///
 /// // compute the sum of the array
-/// let total = sum(&arr);
+/// let total = sum(arr.view());
 ///
 /// assert_eq!(total, 21.55);
 /// ```
-pub fn sum<T, S>(data: &ArrayBase<S, Ix1>) -> T
+pub fn sum<T>(data: ArrayView1<T>) -> T
 where
     T: ToFloat64,
-    S: Data<Elem = T>,
 {
     let d = data.as_slice().unwrap();
     d.iter().copied().sum()

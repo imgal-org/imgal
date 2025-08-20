@@ -184,8 +184,8 @@ where
     for i in 0..n {
         buf.push(data[i].into() * f64::sin(h_w_dt * (i as f64)));
     }
-    let i_sin_integral: f64 = midpoint(&Array1::from_vec(buf), Some(dt));
-    let i_integral: f64 = midpoint(&data, Some(dt));
+    let i_sin_integral: f64 = midpoint(Array1::from_vec(buf).view(), Some(dt));
+    let i_integral: f64 = midpoint(data.view(), Some(dt));
     i_sin_integral / i_integral
 }
 
@@ -228,7 +228,7 @@ where
     for i in 0..n {
         buf.push(data[i].into() * f64::cos(h_w_dt * (i as f64)));
     }
-    let i_cos_integral: f64 = midpoint(&Array1::from_vec(buf), Some(dt));
-    let i_integral: f64 = midpoint(&data, Some(dt));
+    let i_cos_integral: f64 = midpoint(Array1::from_vec(buf).view(), Some(dt));
+    let i_integral: f64 = midpoint(data.view(), Some(dt));
     i_cos_integral / i_integral
 }

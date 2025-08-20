@@ -8,5 +8,5 @@ fn distribution_gaussian() {
 
     // assert a value and integrate the curve
     assert_eq!(gauss_arr[100], 0.004465507286912305);
-    assert_eq!(midpoint(&gauss_arr, None), 1.0000000000000007);
+    assert_eq!(midpoint(gauss_arr.view(), None), 1.0000000000000007);
 }

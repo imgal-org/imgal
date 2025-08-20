@@ -14,5 +14,5 @@ pub extern "C" fn sum(ptr: *const f64, len: usize) -> f64 {
     // create a slice and compute sum
     let s = unsafe { slice::from_raw_parts(ptr, len) };
     let arr = ArrayView1::from(s);
-    statistics::sum(&arr)
+    statistics::sum(arr.view())
 }

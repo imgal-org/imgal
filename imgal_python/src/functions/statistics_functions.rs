@@ -11,5 +11,5 @@ use imgal_core::statistics;
 #[pyo3(name = "sum")]
 pub fn statistics_sum(data: Vec<f64>) -> f64 {
     let arr = Array1::from_vec(data);
-    statistics::sum(&arr)
+    statistics::sum(arr.view())
 }
