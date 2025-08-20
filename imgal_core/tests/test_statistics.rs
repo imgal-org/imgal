@@ -1,9 +1,9 @@
 use ndarray::Array1;
 
-use imgal_core::statistics::sum;
+use imgal_core::statistics;
 
 #[test]
-fn test_sum() {
+fn statistics_sum() {
     // create some test vecs
     let int_data = vec![2, 5, 10, 23];
     let float_data = vec![1.0, 10.5, 3.25, 37.11];
@@ -13,6 +13,6 @@ fn test_sum() {
     let float_arr = Array1::from_vec(float_data);
 
     // assert arrays
-    assert_eq!(sum(&int_arr), 40);
-    assert_eq!(sum(&float_arr), 51.86);
+    assert_eq!(statistics::sum(&int_arr), 40);
+    assert_eq!(statistics::sum(&float_arr), 51.86);
 }
