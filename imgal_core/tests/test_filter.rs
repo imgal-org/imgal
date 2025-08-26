@@ -9,7 +9,7 @@ fn ensure_within_tolerance(a: f64, b: f64, tolerance: f64) -> bool {
 
 #[test]
 fn filter_fft_convolve_1d() {
-    let a = decay::ideal_fluorescence_1d(256, 1.25e-8, 1.1e-9, 100.0);
+    let a = decay::ideal_monoexponential_1d(256, 1.25e-8, 1.1e-9, 100.0);
     let b = instrument::gaussian_irf_1d(256, 1.25e-8, 1.0e-9, 2.0e-9);
     let conv = filter::fft_convolve_1d(a.view(), b.view());
 
@@ -24,8 +24,8 @@ fn filter_fft_convolve_1d() {
 
 #[test]
 fn filter_fft_deconvolve_1d() {
-    let a = decay::gaussian_fluorescence_1d(256, 1.25e-8, 1.1e-9, 100.0, 1.0e-9, 2.0e-9);
-    let b = decay::ideal_fluorescence_1d(256, 1.25e-8, 1.1e-9, 100.0);
+    let a = decay::gaussian_monoexponential_1d(256, 1.25e-8, 1.1e-9, 100.0, 1.0e-9, 2.0e-9);
+    let b = decay::ideal_monoexponential_1d(256, 1.25e-8, 1.1e-9, 100.0);
     let dconv = filter::fft_deconvolve_1d(a.view(), b.view(), None);
 
     // check curve by integration and the peak of the curve

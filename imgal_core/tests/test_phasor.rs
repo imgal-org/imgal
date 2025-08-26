@@ -19,7 +19,7 @@ fn get_decay_data(shape: (usize, usize)) -> Array3<f64> {
     let irf_center = 2.0e-9;
 
     // create simulated ideal decay data
-    decay::gaussian_fluorescence_3d(
+    decay::gaussian_monoexponential_3d(
         samples,
         period,
         tau,
@@ -58,15 +58,15 @@ fn get_circle_mask(shape: (usize, usize), center: (isize, isize), radius: isize)
 
 // test the phasor::calibration
 #[test]
-fn calibration_coordinate_pair() {
+fn calibration_coordinates() {
     // use 1.1 ns tau and 12.5 ns period
     let w = omega(1.25e-8);
-    let (g, s) = plot::single_component_coordinate_pair(1.1e-9, w);
+    let (g, s) = plot::monoexponential_coordinates(1.1e-9, w);
 
     // set a modulation and phase value to calibrate with
     let modulation = 1.05;
     let phase = 0.42;
-    let coords_cal = calibration::coordinate_pair(g, s, modulation, phase);
+    let coords_cal = calibration::coordinates(g, s, modulation, phase);
 
     assert_eq!(coords_cal, (0.5529599928454205, 0.7338912847329425));
 }
@@ -138,10 +138,10 @@ fn plot_phase() {
 }
 
 #[test]
-fn plot_single_component_coordinate_pair() {
+fn plot_monoexponential_coordinates() {
     // use 1.1 ns tau and 12.5 ns period
     let w = omega(1.25e-8);
-    let coords = plot::single_component_coordinate_pair(1.1e-9, w);
+    let coords = plot::monoexponential_coordinates(1.1e-9, w);
 
     assert_eq!(coords, (0.7658604730109535, 0.4234598078807387));
 }
@@ -205,7 +205,7 @@ fn time_domain_image() {
 
 #[test]
 fn time_domain_imaginary() {
-    let data = decay::ideal_fluorescence_1d(256, 1.25e-8, 4.0e-9, 100.0);
+    let data = decay::ideal_monoexponential_1d(256, 1.25e-8, 4.0e-9, 100.0);
     let s = time_domain::imaginary(data.view(), 1.25e-8, None);
 
     assert_eq!(s, 0.39720439791434226);
@@ -213,7 +213,7 @@ fn time_domain_imaginary() {
 
 #[test]
 fn time_domain_real() {
-    let data = decay::ideal_fluorescence_1d(256, 1.25e-8, 4.0e-9, 100.0);
+    let data = decay::ideal_monoexponential_1d(256, 1.25e-8, 4.0e-9, 100.0);
     let g = time_domain::real(data.view(), 1.25e-8, None);
 
     assert_eq!(g, 0.20444291541716833);

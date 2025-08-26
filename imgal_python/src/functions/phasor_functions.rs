@@ -7,9 +7,9 @@ use pyo3::prelude::*;
 use crate::error::map_dimension_error;
 use imgal_core::phasor::{calibration, plot, time_domain};
 
-/// Calibrate a real and imaginary (G, S) coordinate pair.
+/// Calibrate a real and imaginary (G, S) coordinates.
 ///
-/// Calibrate the real and imaginary (e.g. G and S) coordinate pair by rotating
+/// Calibrate the real and imaginary (e.g. G and S) coordinates by rotating
 /// and scaling by phase (φ) and modulation (M) respectively using:
 ///
 /// g = M * cos(φ)
@@ -24,11 +24,11 @@ use imgal_core::phasor::{calibration, plot, time_domain};
 /// :param s: The imaginary component (S) to calibrate.
 /// :param modulation: The modulation to scale the input (G, S) coordinates.
 /// :param phase: The phase, φ angle, to rotate the input (G, S) coordinates.
-/// :return: The calibrated coordinate pair, (G, S).
+/// :return: The calibrated coordinates, (G, S).
 #[pyfunction]
-#[pyo3(name = "coordinate_pair")]
-pub fn calibration_coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64) {
-    calibration::coordinate_pair(g, s, modulation, phase)
+#[pyo3(name = "coordinates")]
+pub fn calibration_coordinates(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64) {
+    calibration::coordinates(g, s, modulation, phase)
 }
 
 /// Calibrate the real and imaginary (G, S) coordinates of a 3-dimensional phasor
@@ -122,8 +122,8 @@ pub fn calibration_image_mut(
 /// Find the modulation and phase calibration values.
 ///
 /// This function calculates the modulation and phase calibration values from
-/// a pair of theoretical single component coordinates (computed from "tau" and
-/// "omega") and a pair of measured coordinates. The output, (M, φ), are the
+/// theoretical monoexponential coordinates (computed from "tau" and
+/// "omega") and measured coordinates. The output, (M, φ), are the
 /// modulation and phase values to calibrate with.
 ///
 /// :param g: The measured real (G) value.
@@ -138,56 +138,56 @@ pub fn calibration_modulation_and_phase(g: f64, s: f64, tau: f64, omega: f64) ->
     calibration::modulation_and_phase(g, s, tau, omega)
 }
 
-/// Compute the modulation of a phasor coordinate pair.
+/// Compute the modulation of phasor G and S coordinates.
 ///
-/// This function calculates the modulation (M) of a phasor coordinate pair
+/// This function calculates the modulation (M) of phasor G and S coordinates
 /// using the pythagorean theorem to find the hypotenuse (i.e. the modulation):
 ///
 /// M = √(G² + S²)
 ///
 /// :param g: The real component, G.
 /// :param s: The imaginary component, S.
-/// :return: The modulation (M) of the (G, S) phasor coordinate pair.
+/// :return: The modulation (M) of the (G, S) phasor coordinates.
 #[pyfunction]
 #[pyo3(name = "modulation")]
 pub fn plot_modulation(g: f64, s: f64) -> f64 {
     plot::modulation(g, s)
 }
 
-/// Compute the phase of a phasor coordinate pair.
+/// Compute the phase of phasor G and S coordinates.
 ///
-/// This function calculates the phase or phi (φ) of a phasor coordinate pair
+/// This function calculates the phase or phi (φ) of phasor G and S coordinates
 /// using:
 ///
 /// φ = tan⁻¹(S / G)
 ///
 /// This implementation uses atan2 and computes the four quadrant arctanget of
-/// the phasor coordinate pair.
+/// the phasor coordinates.
 ///
 /// :param g: The real component, G.
 /// :param s: The imaginary component, S.
-/// :return: The phase (phi, φ) angle of the (G, S) phasor coordinate pair.
+/// :return: The phase (phi, φ) angle of the (G, S) phasor coordinates.
 #[pyfunction]
 #[pyo3(name = "phase")]
 pub fn plot_phase(g: f64, s: f64) -> f64 {
     plot::phase(g, s)
 }
 
-/// Compute a coordinate pair for a single component decay.
+/// Compute the G and S coordinates for a monoexponential decay.
 ///
-/// This function computes a coordinate pair for a single component decay given
-/// as:
+/// This function computes the G and S coordinates for a monoexponential decay
+/// given as:
 ///
 /// G = 1 / 1 + (ωτ)²
 /// S = ωτ / 1 + (ωτ)²
 ///
-/// :param tau: The lifetime of a single component decay.
+/// :param tau: The lifetime of a monoexponential.
 /// :param omega: The angular frequency.
-/// :return: The single component decay coordinate pair, (G, S).
+/// :return: The single component decay coordinates, (G, S).
 #[pyfunction]
-#[pyo3(name = "single_component_coordinate_pair")]
-pub fn plot_single_component_coordinate_pair(tau: f64, omega: f64) -> (f64, f64) {
-    plot::single_component_coordinate_pair(tau, omega)
+#[pyo3(name = "monoexponential_coordinates")]
+pub fn plot_monoexponential_coordinates(tau: f64, omega: f64) -> (f64, f64) {
+    plot::monoexponential_coordinates(tau, omega)
 }
 
 /// Compute the real and imaginary (G, S) coordinates of a 3-dimensional decay

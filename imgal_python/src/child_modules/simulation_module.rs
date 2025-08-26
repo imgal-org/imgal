@@ -18,27 +18,27 @@ pub fn register_simulation_module(parent_module: &Bound<'_, PyModule>) -> PyResu
 
     // add simulation::decay submodule functions
     decay_module.add_function(wrap_pyfunction!(
-        simulation_functions::decay_gaussian_fluorescence_1d,
+        simulation_functions::decay_gaussian_monoexponential_1d,
         &decay_module
     )?)?;
     decay_module.add_function(wrap_pyfunction!(
-        simulation_functions::decay_gaussian_fluorescence_3d,
+        simulation_functions::decay_gaussian_monoexponential_3d,
         &decay_module
     )?)?;
     decay_module.add_function(wrap_pyfunction!(
-        simulation_functions::decay_ideal_fluorescence_1d,
+        simulation_functions::decay_ideal_monoexponential_1d,
         &decay_module
     )?)?;
     decay_module.add_function(wrap_pyfunction!(
-        simulation_functions::decay_ideal_fluorescence_3d,
+        simulation_functions::decay_ideal_monoexponential_3d,
         &decay_module
     )?)?;
     decay_module.add_function(wrap_pyfunction!(
-        simulation_functions::decay_irf_fluorescence_1d,
+        simulation_functions::decay_irf_monoexponential_1d,
         &decay_module
     )?)?;
     decay_module.add_function(wrap_pyfunction!(
-        simulation_functions::decay_irf_fluorescence_3d,
+        simulation_functions::decay_irf_monoexponential_3d,
         &decay_module
     )?)?;
 

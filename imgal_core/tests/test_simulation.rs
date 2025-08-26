@@ -9,8 +9,8 @@ fn ensure_within_tolerance(a: f64, b: f64, tolerance: f64) -> bool {
 }
 
 #[test]
-fn decay_gaussian_fluorescence_1d() {
-    let d = decay::gaussian_fluorescence_1d(256, 1.25e-8, 1.0e-9, 100.0, 0.5e-9, 3.0e-9);
+fn decay_gaussian_monoexponential_1d() {
+    let d = decay::gaussian_monoexponential_1d(256, 1.25e-8, 1.0e-9, 100.0, 0.5e-9, 3.0e-9);
 
     // check curve by integration and the peak of the curve
     assert!(ensure_within_tolerance(
@@ -22,8 +22,9 @@ fn decay_gaussian_fluorescence_1d() {
 }
 
 #[test]
-fn decay_gaussian_fluorescence_3d() {
-    let d = decay::gaussian_fluorescence_3d(256, 1.25e-8, 1.0e-9, 100.0, 0.5e-9, 3.0e-9, (10, 10));
+fn decay_gaussian_monoexponential_3d() {
+    let d =
+        decay::gaussian_monoexponential_3d(256, 1.25e-8, 1.0e-9, 100.0, 0.5e-9, 3.0e-9, (10, 10));
 
     // check shape, curve by integration and a point
     assert_eq!(d.shape(), [10, 10, 256]);
@@ -40,8 +41,8 @@ fn decay_gaussian_fluorescence_3d() {
 }
 
 #[test]
-fn decay_ideal_fluorescence_1d() {
-    let d = decay::ideal_fluorescence_1d(256, 1.25e-8, 1.0e-9, 100.0);
+fn decay_ideal_monoexponential_1d() {
+    let d = decay::ideal_monoexponential_1d(256, 1.25e-8, 1.0e-9, 100.0);
 
     // check the curve by integration and a point
     assert!(ensure_within_tolerance(
@@ -53,8 +54,8 @@ fn decay_ideal_fluorescence_1d() {
 }
 
 #[test]
-fn decay_ideal_fluorescence_3d() {
-    let d = decay::ideal_fluorescence_3d(256, 1.25e-8, 1.0e-9, 100.0, (10, 10));
+fn decay_ideal_monoexponential_3d() {
+    let d = decay::ideal_monoexponential_3d(256, 1.25e-8, 1.0e-9, 100.0, (10, 10));
 
     // check shape, curve by integration and a point
     assert_eq!(d.shape(), [10, 10, 256]);
@@ -71,9 +72,9 @@ fn decay_ideal_fluorescence_3d() {
 }
 
 #[test]
-fn decay_irf_fluorescence_1d() {
+fn decay_irf_monoexponential_1d() {
     let irf = instrument::gaussian_irf_1d(256, 1.25e-8, 0.5e-9, 3.0e-9);
-    let d = decay::irf_fluorescence_1d(irf.view(), 256, 1.25e-8, 1.0e-9, 100.0);
+    let d = decay::irf_monoexponential_1d(irf.view(), 256, 1.25e-8, 1.0e-9, 100.0);
 
     // check the curve by integration and a point
     assert!(ensure_within_tolerance(
@@ -85,9 +86,9 @@ fn decay_irf_fluorescence_1d() {
 }
 
 #[test]
-fn decay_irf_fluorescence_3d() {
+fn decay_irf_monoexponential_3d() {
     let irf = instrument::gaussian_irf_1d(256, 1.25e-8, 0.5e-9, 3.0e-9);
-    let d = decay::irf_fluorescence_3d(irf.view(), 256, 1.25e-8, 1.0e-9, 100.0, (10, 10));
+    let d = decay::irf_monoexponential_3d(irf.view(), 256, 1.25e-8, 1.0e-9, 100.0, (10, 10));
 
     // check shape, cruve by integration and a point
     assert_eq!(d.shape(), [10, 10, 256]);

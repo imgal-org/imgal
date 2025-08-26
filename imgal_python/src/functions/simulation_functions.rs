@@ -6,24 +6,25 @@ use pyo3::prelude::*;
 
 use imgal_core::simulation;
 
-/// Simulate a 1-dimensional Gaussian IRF convolved decay curve.
+/// Simulate a 1-dimensional Gaussian IRF convolved monoexponential decay curve.
 ///
 /// Compute a Gaussian instrument response function (IRF) convolved curve
-/// (1-dimensional) by FFT convolving the IRF with an ideal decay cruve. The
-/// ideal decay curve is computed as:
+/// (1-dimensional) by FFT convolving the IRF with an ideal monoexponential
+/// decay cruve defined as:
 ///
 /// I(t) = Io * e^(-t/τ)
 ///
-/// :param samples: The number of discrete points that make up the decay curve (i.e. time).
+/// :param samples: The number of discrete points that make up the decay curve
+///     (i.e. time).
 /// :param period: The period (i.e. time interval).
 /// :param tau: The lifetime.
-/// :param initial_value: The initial fluorescence value.
+/// :param initial_value: The initial decay value.
 /// :param irf_width: The full width at half maximum (FWHM) of the IRF.
 /// :param irf_center: The temporal position of the IRF peak within the time range.
-/// :return: The 1-dimensional Gaussian IRF convolved decay curve.
+/// :return: The 1-dimensional Gaussian IRF convolved monoexponential decay curve.
 #[pyfunction]
-#[pyo3(name = "gaussian_fluorescence_1d")]
-pub fn decay_gaussian_fluorescence_1d(
+#[pyo3(name = "gaussian_monoexponential_1d")]
+pub fn decay_gaussian_monoexponential_1d(
     py: Python,
     samples: usize,
     period: f64,
@@ -32,7 +33,7 @@ pub fn decay_gaussian_fluorescence_1d(
     irf_width: f64,
     irf_center: f64,
 ) -> PyResult<Bound<PyArray1<f64>>> {
-    let output = simulation::decay::gaussian_fluorescence_1d(
+    let output = simulation::decay::gaussian_monoexponential_1d(
         samples,
         period,
         tau,
@@ -43,28 +44,27 @@ pub fn decay_gaussian_fluorescence_1d(
     Ok(output.into_pyarray(py))
 }
 
-/// Simulate a 3-dimensional Gaussian IRF convolved decay curve.
+/// Simulate a 3-dimensional Gaussian IRF convolved monoexponential decay curve.
 ///
 /// Compute a Gaussian instrument response function (IRF) convolved curve
-/// (3-dimensional) by FFT convolving the IRF with an ideal decay cruve. The ideal
-/// decay curve is computed as:
+/// (3-dimensional) by FFT convolving the IRF with an ideal monoexponential
+/// decay cruve defined as:
 ///
 /// I(t) = Io * e^(-t/τ)
 ///
-/// :param samples: The number of discrete points that make up the decay curve (i.e. time).
+/// :param samples: The number of discrete points that make up the decay curve
+///     (i.e. time).
 /// :param period: The period (i.e. time interval).
 /// :param tau: The lifetime.
-/// :param initial_value: The initial fluorescence value.
+/// :param initial_value: The initial decay value.
 /// :param irf_width: The full width at half maximum (FWHM) of the IRF.
 /// :param irf_center: The temporal position of the IRF peak within the time range.
 /// :param shape: The row and col shape to broadcast the decay curve into.
-///
-/// # Returns
-///
-/// * `Array3<f64>`: The 3-dimensional Gaussian IRF convolved decay curve.
+/// :return: The 3-dimensional Gaussian IRF convolved monoexponential
+///     decay curve.
 #[pyfunction]
-#[pyo3(name = "gaussian_fluorescence_3d")]
-pub fn decay_gaussian_fluorescence_3d(
+#[pyo3(name = "gaussian_monoexponential_3d")]
+pub fn decay_gaussian_monoexponential_3d(
     py: Python,
     samples: usize,
     period: f64,
@@ -74,7 +74,7 @@ pub fn decay_gaussian_fluorescence_3d(
     irf_center: f64,
     shape: (usize, usize),
 ) -> PyResult<Bound<PyArray3<f64>>> {
-    let output = simulation::decay::gaussian_fluorescence_3d(
+    let output = simulation::decay::gaussian_monoexponential_3d(
         samples,
         period,
         tau,
@@ -86,41 +86,41 @@ pub fn decay_gaussian_fluorescence_3d(
     Ok(output.into_pyarray(py))
 }
 
-/// Simulate a 1-dimensional fluorescence decay curve.
+/// Simulate a 1-dimensional ideal monoexponential decay curve.
 ///
-/// A fluorescence decay curve is computed as:
+/// A monoexponential decay curve is defined as:
 ///
 /// I(t) = Io * e^(-t/τ)
 ///
-/// Where "Io" is the initial fluorescence value and "t" (i.e. the number of
+/// Where "Io" is the initial decay value and "t" (i.e. the number of
 /// samples).
 ///
 /// :param samples: The number of discrete points that make up the decay curve
 ///     (i.e. time).
 /// :param period: The period (i.e. time interval).
 /// :param tau: The lifetime.
-/// :param initial_value: The initial fluorescence value.
-/// :return: The 1-dimensional decay curve.
+/// :param initial_value: The initial decay value.
+/// :return: The 1-dimensional monoexponential decay curve.
 #[pyfunction]
-#[pyo3(name = "ideal_fluorescence_1d")]
-pub fn decay_ideal_fluorescence_1d(
+#[pyo3(name = "ideal_monoexponential_1d")]
+pub fn decay_ideal_monoexponential_1d(
     py: Python,
     samples: usize,
     period: f64,
     tau: f64,
     initial_value: f64,
 ) -> PyResult<Bound<PyArray1<f64>>> {
-    let output = simulation::decay::ideal_fluorescence_1d(samples, period, tau, initial_value);
+    let output = simulation::decay::ideal_monoexponential_1d(samples, period, tau, initial_value);
     Ok(output.into_pyarray(py))
 }
 
-/// Simulate a 3-dimensional fluorescence decay curve.
+/// Simulate a 3-dimensional ideal monoexponential decay curve.
 ///
-/// A fluorescence decay curve is computed as:
+/// A monoexponential decay curve is defined as:
 ///
 /// I(t) = Io * e^(-t/τ)
 ///
-/// Where "Io" is the initial fluorescence value and "t" is the time (i.e. the
+/// Where "Io" is the initial decay value and "t" is the time (i.e. the
 /// number of samples). The decay curve is then broadcasted to the specified input
 /// shape with the number of samples along the last axis.
 ///
@@ -128,12 +128,12 @@ pub fn decay_ideal_fluorescence_1d(
 ///     (i.e. time).
 /// :param period: The period (i.e. time interval).
 /// :param tau: The lifetime.
-/// :param initial_value: The initial fluorescence value.
+/// :param initial_value: The initial decay value.
 /// :param shape: The row and col shape to broadcast the decay curve into.
-/// :return: The 3-dimensional decay curve.
+/// :return: The 3-dimensional monoexponential decay curve.
 #[pyfunction]
-#[pyo3(name = "ideal_fluorescence_3d")]
-pub fn decay_ideal_fluorescence_3d(
+#[pyo3(name = "ideal_monoexponential_3d")]
+pub fn decay_ideal_monoexponential_3d(
     py: Python,
     samples: usize,
     period: f64,
@@ -142,15 +142,15 @@ pub fn decay_ideal_fluorescence_3d(
     shape: (usize, usize),
 ) -> PyResult<Bound<PyArray3<f64>>> {
     let output =
-        simulation::decay::ideal_fluorescence_3d(samples, period, tau, initial_value, shape);
+        simulation::decay::ideal_monoexponential_3d(samples, period, tau, initial_value, shape);
     Ok(output.into_pyarray(py))
 }
 
-/// Simulate a 1-dimensional IRF convolved fluorescence decay cruve.
+/// Simulate a 1-dimensional IRF convolved monoexponential decay cruve.
 ///
 /// Compute an instrument response function (IRF) convolved (1-dimensional)
-/// curve by FFT convolving the given IRF with an ideal decay curve. The ideal
-/// decay curve is computed as:
+/// curve by FFT convolving the given IRF with an ideal monoexponential decay
+/// curve. The monoexponential decay curve is defined as:
 ///
 /// I(t) = Io * e^(-t/τ)
 ///
@@ -159,11 +159,11 @@ pub fn decay_ideal_fluorescence_3d(
 ///     (i.e. time).
 /// :param period: The period (i.e. the interval).
 /// :param tau: The lifetime.
-/// :param initial_value: The initial fluorescence value.
-/// :return: The 1-dimensional IRF convolved decay curve.
+/// :param initial_value: The initial decay value.
+/// :return: The 1-dimensional IRF convolved monoexponential decay curve.
 #[pyfunction]
-#[pyo3(name = "irf_fluorescence_1d")]
-pub fn decay_irf_fluorescence_1d(
+#[pyo3(name = "irf_monoexponential_1d")]
+pub fn decay_irf_monoexponential_1d(
     py: Python,
     irf: Vec<f64>,
     samples: usize,
@@ -173,15 +173,15 @@ pub fn decay_irf_fluorescence_1d(
 ) -> PyResult<Bound<PyArray1<f64>>> {
     let irf = Array1::from_vec(irf);
     let output =
-        simulation::decay::irf_fluorescence_1d(irf.view(), samples, period, tau, initial_value);
+        simulation::decay::irf_monoexponential_1d(irf.view(), samples, period, tau, initial_value);
     Ok(output.into_pyarray(py))
 }
 
-/// Simulate a 3-dimensional IRF convolved fluorescence decay curve.
+/// Simulate a 3-dimensional IRF convolved monoexponential decay curve.
 ///
 /// Compute an instrument response function (IRF) convolved (3-dimensional)
-/// curve by FFT convolving the given IRF with an ideal decay cruve. The ideal
-/// decay curve is a computed as:
+/// curve by FFT convolving the given IRF with an ideal monoexponential decay
+/// cruve. The monoexponential decay curve is defined as:
 ///
 /// I(t) = Io * e^(-t/τ)
 ///
@@ -190,11 +190,11 @@ pub fn decay_irf_fluorescence_1d(
 ///     (i.e. time).
 /// :param period: The period (i.e. the interval).
 /// :param tau: The lifetime.
-/// :param initial_value: The initial fluorescence value.
-/// :return: The 1-dimensional IRF convolved decay curve.
+/// :param initial_value: The initial decay value.
+/// :return: The 1-dimensional IRF convolved monoexponential decay curve.
 #[pyfunction]
-#[pyo3(name = "irf_fluorescence_3d")]
-pub fn decay_irf_fluorescence_3d(
+#[pyo3(name = "irf_monoexponential_3d")]
+pub fn decay_irf_monoexponential_3d(
     py: Python,
     irf: Vec<f64>,
     samples: usize,
@@ -204,7 +204,7 @@ pub fn decay_irf_fluorescence_3d(
     shape: (usize, usize),
 ) -> PyResult<Bound<PyArray3<f64>>> {
     let irf = Array1::from_vec(irf);
-    let output = simulation::decay::irf_fluorescence_3d(
+    let output = simulation::decay::irf_monoexponential_3d(
         irf.view(),
         samples,
         period,

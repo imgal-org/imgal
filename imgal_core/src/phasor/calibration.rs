@@ -4,11 +4,11 @@ use rayon::prelude::*;
 use crate::phasor::plot;
 use crate::traits::numeric::ToFloat64;
 
-/// Calibrate a real and imaginary (G, S) coordinate pair.
+/// Calibrate a real and imaginary (G, S) coordinates.
 ///
 /// # Description
 ///
-/// Calibrate the real and imaginary (_e.g._ G and S) coordinate pair by rotating
+/// Calibrate the real and imaginary (_e.g._ G and S) coordinates by rotating
 /// and scaling by phase (φ) and modulation (M) respectively using:
 ///
 /// ```text
@@ -30,8 +30,8 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Returns
 ///
-/// * `(f64, f64)`: The calibrated coordinate pair, (G, S).
-pub fn coordinate_pair(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64) {
+/// * `(f64, f64)`: The calibrated coordinates, (G, S).
+pub fn coordinates(g: f64, s: f64, modulation: f64, phase: f64) -> (f64, f64) {
     let g_trans = modulation * phase.cos();
     let s_trans = modulation * phase.sin();
     let g_cal = g * g_trans - s * s_trans;
@@ -151,8 +151,8 @@ pub fn image_mut(mut data: ArrayViewMut3<f64>, modulation: f64, phase: f64, axis
 /// # Description
 ///
 /// This function calculates the modulation and phase calibration values from
-/// a pair of theoretical single component coordinates (computed from `tau` and
-/// `omega`) and a pair of measured coordinates. The output, (M, φ), are the
+/// theoretical monoexponential coordinates (computed from `tau` and
+/// `omega`) and measured coordinates. The output, (M, φ), are the
 /// modulation and phase values to calibrate with.
 ///
 /// # Arguments
@@ -167,7 +167,7 @@ pub fn image_mut(mut data: ArrayViewMut3<f64>, modulation: f64, phase: f64, axis
 /// * `(f64, f64)`: The modulation and phase calibration values, (M, φ).
 pub fn modulation_and_phase(g: f64, s: f64, tau: f64, omega: f64) -> (f64, f64) {
     // get calibration modulation and phase
-    let cal_point = plot::single_component_coordinate_pair(tau, omega);
+    let cal_point = plot::monoexponential_coordinates(tau, omega);
     let cal_mod = plot::modulation(cal_point.0, cal_point.1);
     let cal_phs = plot::phase(cal_point.0, cal_point.1);
 
