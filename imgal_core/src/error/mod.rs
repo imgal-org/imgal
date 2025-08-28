@@ -1,2 +1,2 @@
-pub mod dimension;
-pub use dimension::ArrayError;
+pub mod array;
+pub use array::ArrayError;
