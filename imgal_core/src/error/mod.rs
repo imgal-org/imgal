@@ -1,2 +1,2 @@
 pub mod dimension;
-pub use dimension::DimensionError;
+pub use dimension::ArrayError;

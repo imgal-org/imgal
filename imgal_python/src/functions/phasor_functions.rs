@@ -4,7 +4,7 @@ use numpy::{
 };
 use pyo3::prelude::*;
 
-use crate::error::map_dimension_error;
+use crate::error::map_array_error;
 use imgal_core::phasor::{calibration, plot, time_domain};
 
 /// Calibrate a real and imaginary (G, S) coordinates.
@@ -221,31 +221,31 @@ pub fn time_domain_image<'py>(
         if let Some(m) = mask {
             return time_domain::image(arr.as_array(), period, Some(m.as_array()), harmonic, axis)
                 .map(|output| output.into_pyarray(py))
-                .map_err(map_dimension_error);
+                .map_err(map_array_error);
         } else {
             return time_domain::image(arr.as_array(), period, None, harmonic, axis)
                 .map(|output| output.into_pyarray(py))
-                .map_err(map_dimension_error);
+                .map_err(map_array_error);
         }
     } else if let Ok(arr) = data.extract::<PyReadonlyArray3<f64>>() {
         if let Some(m) = mask {
             return time_domain::image(arr.as_array(), period, Some(m.as_array()), harmonic, axis)
                 .map(|output| output.into_pyarray(py))
-                .map_err(map_dimension_error);
+                .map_err(map_array_error);
         } else {
             return time_domain::image(arr.as_array(), period, None, harmonic, axis)
                 .map(|output| output.into_pyarray(py))
-                .map_err(map_dimension_error);
+                .map_err(map_array_error);
         }
     } else if let Ok(arr) = data.extract::<PyReadonlyArray3<u16>>() {
         if let Some(m) = mask {
             return time_domain::image(arr.as_array(), period, Some(m.as_array()), harmonic, axis)
                 .map(|output| output.into_pyarray(py))
-                .map_err(map_dimension_error);
+                .map_err(map_array_error);
         } else {
             return time_domain::image(arr.as_array(), period, None, harmonic, axis)
                 .map(|output| output.into_pyarray(py))
-                .map_err(map_dimension_error);
+                .map_err(map_array_error);
         }
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(

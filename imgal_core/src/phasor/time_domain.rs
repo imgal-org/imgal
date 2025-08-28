@@ -2,7 +2,7 @@ use std::f64;
 
 use ndarray::{Array1, Array2, Array3, ArrayView1, ArrayView2, ArrayView3, Axis, Zip, stack};
 
-use crate::error::DimensionError;
+use crate::error::ArrayError;
 use crate::integration::midpoint;
 use crate::parameter::omega;
 use crate::traits::numeric::ToFloat64;
@@ -37,7 +37,7 @@ pub fn image<T>(
     mask: Option<ArrayView2<bool>>,
     harmonic: Option<f64>,
     axis: Option<usize>,
-) -> Result<Array3<f64>, DimensionError>
+) -> Result<Array3<f64>, ArrayError>
 where
     T: ToFloat64,
 {
@@ -49,7 +49,7 @@ where
     let mut gs_shape = data.shape().to_vec();
     let sl = gs_shape.len();
     if a >= sl {
-        return Err(DimensionError::InvalidAxis {
+        return Err(ArrayError::InvalidAxis {
             axis_idx: a,
             dim_len: sl,
         });
