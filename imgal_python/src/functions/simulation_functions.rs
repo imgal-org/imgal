@@ -4,215 +4,299 @@ use numpy::{
 };
 use pyo3::prelude::*;
 
+use crate::error::map_array_error;
 use imgal_core::simulation;
 
-/// Simulate a 1-dimensional Gaussian IRF convolved monoexponential decay curve.
+/// Simulate a 1-dimensional Gaussian IRF convolved monoexponential or
+/// multiexponential decay curve.
 ///
-/// Compute a Gaussian instrument response function (IRF) convolved curve
-/// (1-dimensional) by FFT convolving the IRF with an ideal monoexponential
-/// decay cruve defined as:
+/// This function generates a 1-dimensonal Gaussian instrument response function
+/// (IRF) convolved monoexponential or multiexponential decay curve. The ideal
+/// decay curve is defined as the sum of one or more exponential components,
+/// each characterized by a lifetime (tau) and fractional intensity:
 ///
-/// I(t) = Io * e^(-t/τ)
+/// I(t) = Σᵢ αᵢ × exp(-t/τᵢ)
 ///
-/// :param samples: The number of discrete points that make up the decay curve
-///     (i.e. time).
-/// :param period: The period (i.e. time interval).
-/// :param tau: The lifetime.
-/// :param initial_value: The initial decay value.
-/// :param irf_width: The full width at half maximum (FWHM) of the IRF.
+/// :param samples: The number of discrete points that make up the decay curve.
+/// :param period: The period (_i.e._ time interval).
+/// :param taus: An array of lifetimes. For a monoexponential decay curve use a
+///     single tau value and a fractional intensity of 1.0. For a
+///     multiexponential decay curve use two or more tau values, matched with
+///     their respective fractional intensity. The "taus" and "fractions" arrays
+///     must have the same length. Tau values set to 0.0 will be skipped.
+/// :param fractions: An array of fractional intensities for each tau in the "taus"
+///     array. The "fractions" array must be the same length as the "taus" array
+///     and sum to 1.0. Fraction values set to 0.0 will be skipped.
+/// :param total_counts: The total intensity count (_e.g._ photon count) of the
+///     decay curve.
 /// :param irf_center: The temporal position of the IRF peak within the time range.
-/// :return: The 1-dimensional Gaussian IRF convolved monoexponential decay curve.
+/// :param irf_width: The full width at half maximum (FWHM) of the IRF.
+/// :return: The 1-dimensonal Gaussian IRF convolved monoexponential
+///     or multiexponential decay curve.
 #[pyfunction]
-#[pyo3(name = "gaussian_monoexponential_1d")]
-pub fn decay_gaussian_monoexponential_1d(
+#[pyo3(name = "gaussian_exponential_1d")]
+pub fn decay_gaussian_exponential_1d(
     py: Python,
     samples: usize,
     period: f64,
-    tau: f64,
-    initial_value: f64,
-    irf_width: f64,
+    taus: Vec<f64>,
+    fractions: Vec<f64>,
+    total_counts: f64,
     irf_center: f64,
+    irf_width: f64,
 ) -> PyResult<Bound<PyArray1<f64>>> {
-    let output = simulation::decay::gaussian_monoexponential_1d(
+    simulation::decay::gaussian_exponential_1d(
         samples,
         period,
-        tau,
-        initial_value,
-        irf_width,
+        &taus,
+        &fractions,
+        total_counts,
         irf_center,
-    );
-    Ok(output.into_pyarray(py))
+        irf_width,
+    )
+    .map(|output| output.into_pyarray(py))
+    .map_err(map_array_error)
 }
 
-/// Simulate a 3-dimensional Gaussian IRF convolved monoexponential decay curve.
+/// Simulate a 3-dimensional Gaussian IRF convolved monoexponential or
+/// multiexponential decay curve.
 ///
-/// Compute a Gaussian instrument response function (IRF) convolved curve
-/// (3-dimensional) by FFT convolving the IRF with an ideal monoexponential
-/// decay cruve defined as:
+/// This function generates a 3-dimensonal Gaussian instrument response function
+/// (IRF) convolved monoexponential or multiexponential decay curve. The ideal
+/// decay curve is defined as the sum of one or more exponential components,
+/// each characterized by a lifetime (tau) and fractional intensity:
 ///
-/// I(t) = Io * e^(-t/τ)
+/// I(t) = Σᵢ αᵢ × exp(-t/τᵢ)
 ///
-/// :param samples: The number of discrete points that make up the decay curve
-///     (i.e. time).
-/// :param period: The period (i.e. time interval).
-/// :param tau: The lifetime.
-/// :param initial_value: The initial decay value.
-/// :param irf_width: The full width at half maximum (FWHM) of the IRF.
+/// :param samples: The number of discrete points that make up the decay curve.
+/// :param period: The period (_i.e._ time interval).
+/// :param taus: An array of lifetimes. For a monoexponential decay curve use a
+///     single tau value and a fractional intensity of 1.0. For a
+///     multiexponential decay curve use two or more tau values, matched with
+///     their respective fractional intensity. The "taus" and "fractions" arrays
+///     must have the same length. Tau values set to 0.0 will be skipped.
+/// :param fractions: An array of fractional intensities for each tau in the "taus"
+///     array. The "fractions" array must be the same length as the "taus" array
+///     and sum to 1.0. Fraction values set to 0.0 will be skipped.
+/// :param total_counts: The total intensity count (_e.g._ photon count) of the
+///     decay curve.
 /// :param irf_center: The temporal position of the IRF peak within the time range.
+/// :param irf_width: The full width at half maximum (FWHM) of the IRF.
 /// :param shape: The row and col shape to broadcast the decay curve into.
 /// :return: The 3-dimensional Gaussian IRF convolved monoexponential
-///     decay curve.
+///     or multiexponential decay curve.
 #[pyfunction]
-#[pyo3(name = "gaussian_monoexponential_3d")]
-pub fn decay_gaussian_monoexponential_3d(
+#[pyo3(name = "gaussian_exponential_3d")]
+pub fn decay_gaussian_exponential_3d(
     py: Python,
     samples: usize,
     period: f64,
-    tau: f64,
-    initial_value: f64,
-    irf_width: f64,
+    taus: Vec<f64>,
+    fractions: Vec<f64>,
+    total_counts: f64,
     irf_center: f64,
+    irf_width: f64,
     shape: (usize, usize),
 ) -> PyResult<Bound<PyArray3<f64>>> {
-    let output = simulation::decay::gaussian_monoexponential_3d(
+    simulation::decay::gaussian_exponential_3d(
         samples,
         period,
-        tau,
-        initial_value,
-        irf_width,
+        &taus,
+        &fractions,
+        total_counts,
         irf_center,
+        irf_width,
         shape,
-    );
-    Ok(output.into_pyarray(py))
+    )
+    .map(|output| output.into_pyarray(py))
+    .map_err(map_array_error)
 }
 
-/// Simulate a 1-dimensional ideal monoexponential decay curve.
+/// Simulate an ideal 1-dimensional monoexponential or multiexponential decay
+/// curve.
 ///
-/// A monoexponential decay curve is defined as:
+/// This function generates a 1-dimensonal ideal exponential decay curve by
+/// computing the sum of one or more exponential components, each characterized
+/// by a lifetime (tau) and fractional intensity as defined by:
 ///
-/// I(t) = Io * e^(-t/τ)
+/// I(t) = Σᵢ αᵢ × exp(-t/τᵢ)
 ///
-/// Where "Io" is the initial decay value and "t" (i.e. the number of
-/// samples).
+/// where αᵢ are the pre-exponential factors derived from the fractional
+/// intensities and lifetimes.
 ///
-/// :param samples: The number of discrete points that make up the decay curve
-///     (i.e. time).
-/// :param period: The period (i.e. time interval).
-/// :param tau: The lifetime.
-/// :param initial_value: The initial decay value.
-/// :return: The 1-dimensional monoexponential decay curve.
+/// :param samples: The number of discrete points that make up the decay curve.
+/// :param period: The period (_i.e._ time interval).
+/// :param taus: An array of lifetimes. For a monoexponential decay curve use a
+///     single tau value and a fractional intensity of 1.0. For a
+///     multiexponential decay curve use two or more tau values, matched with
+///     their respective fractional intensity. The "taus" and "fractions" arrays
+///     must have the same length. Tau values set to 0.0 will be skipped.
+/// :param fractions: An array of fractional intensities for each tau in the "taus"
+///     array. The "fractions" array must be the same length as the "taus" array
+///     and sum to 1.0. Fraction values set to 0.0 will be skipped.
+/// :param total_counts: The total intensity count (_e.g._ photon count) of the
+///     decay curve.
+/// :return: The 1-dimensonal monoexponential or multiexponential
+///     decay curve.
 #[pyfunction]
-#[pyo3(name = "ideal_monoexponential_1d")]
-pub fn decay_ideal_monoexponential_1d(
+#[pyo3(name = "ideal_exponential_1d")]
+pub fn decay_ideal_exponential_1d(
     py: Python,
     samples: usize,
     period: f64,
-    tau: f64,
-    initial_value: f64,
+    taus: Vec<f64>,
+    fractions: Vec<f64>,
+    total_counts: f64,
 ) -> PyResult<Bound<PyArray1<f64>>> {
-    let output = simulation::decay::ideal_monoexponential_1d(samples, period, tau, initial_value);
-    Ok(output.into_pyarray(py))
+    simulation::decay::ideal_exponential_1d(samples, period, &taus, &fractions, total_counts)
+        .map(|output| output.into_pyarray(py))
+        .map_err(map_array_error)
 }
 
-/// Simulate a 3-dimensional ideal monoexponential decay curve.
+/// Simulate an ideal 3-dimensional monoexponential or multiexponential decay
+/// curve.
 ///
-/// A monoexponential decay curve is defined as:
+/// This function generates a 3-dimensonal ideal exponential decay curve by
+/// computing the sum of one or more exponential components, each characterized
+/// by a lifetime (tau) and fractional intensity as defined by:
 ///
-/// I(t) = Io * e^(-t/τ)
+/// I(t) = Σᵢ αᵢ × exp(-t/τᵢ)
 ///
-/// Where "Io" is the initial decay value and "t" is the time (i.e. the
-/// number of samples). The decay curve is then broadcasted to the specified input
-/// shape with the number of samples along the last axis.
+/// where αᵢ are the pre-exponential factors derived from the fractional
+/// intensities and lifetimes.
 ///
-/// :param samples: The number of discrete points that make up the decay curve
-///     (i.e. time).
-/// :param period: The period (i.e. time interval).
-/// :param tau: The lifetime.
-/// :param initial_value: The initial decay value.
+/// <https://doi.org/10.1111/j.1749-6632.1969.tb56231.x>
+///
+/// :param samples: The number of discrete points that make up the decay curve.
+/// :param period: The period (_i.e._ time interval).
+/// :param taus: An array of lifetimes. For a monoexponential decay curve use a
+///     single tau value and a fractional intensity of 1.0. For a
+///     multiexponential decay curve use two or more tau values, matched with
+///     their respective fractional intensity. The "taus" and "fractions" arrays
+///     must have the same length. Tau values set to 0.0 will be skipped.
+/// :param fractions: An array of fractional intensities for each tau in the "taus"
+///     array. The "fractions" array must be the same length as the "taus" array
+///     and sum to 1.0. Fraction values set to 0.0 will be skipped.
+/// :param total_counts: The total intensity count (_e.g._ photon count) of the
+///     decay curve.
 /// :param shape: The row and col shape to broadcast the decay curve into.
-/// :return: The 3-dimensional monoexponential decay curve.
+/// :return: The 3-dimensonal monoexponential or multiexponential
+///     decay curve.
 #[pyfunction]
-#[pyo3(name = "ideal_monoexponential_3d")]
-pub fn decay_ideal_monoexponential_3d(
+#[pyo3(name = "ideal_exponential_3d")]
+pub fn decay_ideal_exponential_3d(
     py: Python,
     samples: usize,
     period: f64,
-    tau: f64,
-    initial_value: f64,
+    taus: Vec<f64>,
+    fractions: Vec<f64>,
+    total_counts: f64,
     shape: (usize, usize),
 ) -> PyResult<Bound<PyArray3<f64>>> {
-    let output =
-        simulation::decay::ideal_monoexponential_3d(samples, period, tau, initial_value, shape);
-    Ok(output.into_pyarray(py))
+    simulation::decay::ideal_exponential_3d(samples, period, &taus, &fractions, total_counts, shape)
+        .map(|output| output.into_pyarray(py))
+        .map_err(map_array_error)
 }
 
-/// Simulate a 1-dimensional IRF convolved monoexponential decay cruve.
+/// Simulate a 1-dimensional IRF convolved monoexponential or multiexponential
+/// decay curve.
 ///
-/// Compute an instrument response function (IRF) convolved (1-dimensional)
-/// curve by FFT convolving the given IRF with an ideal monoexponential decay
-/// curve. The monoexponential decay curve is defined as:
+/// This function generates a 1-dimensonal instrument response function (IRF)
+/// convolved monoexponential or multiexponential decay curve. The ideal
+/// decay curve is defined as the sum of one or more exponential components,
+/// each characterized by a lifetime (tau) and fractional intensity:
 ///
-/// I(t) = Io * e^(-t/τ)
+/// I(t) = Σᵢ αᵢ × exp(-t/τᵢ)
 ///
 /// :param irf: The IRF as a 1-dimensonal array.
-/// :param samples: The number of discrete points that make up the decay curve
-///     (i.e. time).
-/// :param period: The period (i.e. the interval).
-/// :param tau: The lifetime.
-/// :param initial_value: The initial decay value.
-/// :return: The 1-dimensional IRF convolved monoexponential decay curve.
+/// :param samples: The number of discrete points that make up the decay curve.
+/// :param period: The period (_i.e._ time interval).
+/// :param taus: An array of lifetimes. For a monoexponential decay curve use a
+///     single tau value and a fractional intensity of 1.0. For a
+///     multiexponential decay curve use two or more tau values, matched with
+///     their respective fractional intensity. The "taus" and "fractions" arrays
+///     must have the same length. Tau values set to 0.0 will be skipped.
+/// :param fractions: An array of fractional intensities for each tau in the "taus"
+///     array. The "fractions" array must be the same length as the "taus" array
+///     and sum to 1.0. Fraction values set to 0.0 will be skipped.
+/// :param total_counts: The total intensity count (_e.g._ photon count) of the
+///     decay curve.
+/// :return: The 1-dimensional IRF convolved monoexponential or
+///     multiexponential decay curve.
 #[pyfunction]
-#[pyo3(name = "irf_monoexponential_1d")]
-pub fn decay_irf_monoexponential_1d(
+#[pyo3(name = "irf_exponential_1d")]
+pub fn decay_irf_exponential_1d(
     py: Python,
     irf: Vec<f64>,
     samples: usize,
     period: f64,
-    tau: f64,
-    initial_value: f64,
+    taus: Vec<f64>,
+    fractions: Vec<f64>,
+    total_counts: f64,
 ) -> PyResult<Bound<PyArray1<f64>>> {
     let irf = Array1::from_vec(irf);
-    let output =
-        simulation::decay::irf_monoexponential_1d(irf.view(), samples, period, tau, initial_value);
-    Ok(output.into_pyarray(py))
-}
-
-/// Simulate a 3-dimensional IRF convolved monoexponential decay curve.
-///
-/// Compute an instrument response function (IRF) convolved (3-dimensional)
-/// curve by FFT convolving the given IRF with an ideal monoexponential decay
-/// cruve. The monoexponential decay curve is defined as:
-///
-/// I(t) = Io * e^(-t/τ)
-///
-/// :param irf: The IRF as a 1-dimensonal array.
-/// :param samples: The number of discrete points that make up the decay curve
-///     (i.e. time).
-/// :param period: The period (i.e. the interval).
-/// :param tau: The lifetime.
-/// :param initial_value: The initial decay value.
-/// :return: The 1-dimensional IRF convolved monoexponential decay curve.
-#[pyfunction]
-#[pyo3(name = "irf_monoexponential_3d")]
-pub fn decay_irf_monoexponential_3d(
-    py: Python,
-    irf: Vec<f64>,
-    samples: usize,
-    period: f64,
-    tau: f64,
-    initial_value: f64,
-    shape: (usize, usize),
-) -> PyResult<Bound<PyArray3<f64>>> {
-    let irf = Array1::from_vec(irf);
-    let output = simulation::decay::irf_monoexponential_3d(
+    simulation::decay::irf_exponential_1d(
         irf.view(),
         samples,
         period,
-        tau,
-        initial_value,
+        &taus,
+        &fractions,
+        total_counts,
+    )
+    .map(|output| output.into_pyarray(py))
+    .map_err(map_array_error)
+}
+
+/// Simulate a 3-dimensional IRF convolved monoexponential or multiexponential
+/// decay curve.
+///
+/// This function generates a 3-dimensonal instrument response function (IRF)
+/// convolved monoexponential or multiexponential decay curve. The ideal
+/// decay curve is defined as the sum of one or more exponential components,
+/// each characterized by a lifetime (tau) and fractional intensity:
+///
+/// I(t) = Σᵢ αᵢ × exp(-t/τᵢ)
+///
+/// :param irf: The IRF as a 1-dimensonal array.
+/// :param samples: The number of discrete points that make up the decay curve.
+/// :param period: The period (_i.e._ time interval).
+/// :param taus: An array of lifetimes. For a monoexponential decay curve use a
+///     single tau value and a fractional intensity of 1.0. For a
+///     multiexponential decay curve use two or more tau values, matched with
+///     their respective fractional intensity. The "taus" and "fractions" arrays
+///     must have the same length. Tau values set to 0.0 will be skipped.
+/// :param fractions: An array of fractional intensities for each tau in the "taus"
+///     array. The "fractions" array must be the same length as the "taus" array
+///     and sum to 1.0. Fraction values set to 0.0 will be skipped.
+/// :param total_counts: The total intensity count (_e.g._ photon count) of the
+///     decay curve.
+/// :param shape: The row and col shape to broadcast the decay curve into.
+/// :return: The 3-dimensional IRF convolved monoexponential or
+///     multiexponential decay curve.
+#[pyfunction]
+#[pyo3(name = "irf_exponential_3d")]
+pub fn decay_irf_exponential_3d(
+    py: Python,
+    irf: Vec<f64>,
+    samples: usize,
+    period: f64,
+    taus: Vec<f64>,
+    fractions: Vec<f64>,
+    total_counts: f64,
+    shape: (usize, usize),
+) -> PyResult<Bound<PyArray3<f64>>> {
+    let irf = Array1::from_vec(irf);
+    simulation::decay::irf_exponential_3d(
+        irf.view(),
+        samples,
+        period,
+        &taus,
+        &fractions,
+        total_counts,
         shape,
-    );
-    Ok(output.into_pyarray(py))
+    )
+    .map(|output| output.into_pyarray(py))
+    .map_err(map_array_error)
 }
 
 /// Simulate a 1-dimensional Gaussian instruement response function (IRF).
@@ -227,8 +311,8 @@ pub fn decay_irf_monoexponential_3d(
 ///
 /// :param bins: The number of discrete points to sample the Gaussian distribution.
 /// :param time_range: The total time range over which to simulate the IRF.
-/// :param irf_width: The full width at half maximum (FWHM) of the IRF.
 /// :param irf_center: The temporal position of the IRF peak within the time range.
+/// :param irf_width: The full width at half maximum (FWHM) of the IRF.
 /// :return : The simulated 1-dimensional IRF curve.
 #[pyfunction]
 #[pyo3(name = "gaussian_irf_1d")]
@@ -236,10 +320,10 @@ pub fn instrument_gaussian_irf_1d(
     py: Python,
     bins: usize,
     time_range: f64,
-    irf_width: f64,
     irf_center: f64,
+    irf_width: f64,
 ) -> PyResult<Bound<PyArray1<f64>>> {
-    let output = simulation::instrument::gaussian_irf_1d(bins, time_range, irf_width, irf_center);
+    let output = simulation::instrument::gaussian_irf_1d(bins, time_range, irf_center, irf_width);
     Ok(output.into_pyarray(py))
 }
 

@@ -10,6 +10,10 @@ pub fn map_array_error(err: ArrayError) -> PyErr {
             "Axis {} is out of bounds for dimension length {}.",
             axis_idx, dim_len
         )),
+        ArrayError::InvalidSum { expected, got } => PyValueError::new_err(format!(
+            "Invalid sum, expected {} but got {}.",
+            expected, got
+        )),
         ArrayError::MismatchedArrayLengths {
             a_arr_len,
             b_arr_len,

@@ -1,33 +1,24 @@
-use ndarray::{Array2, Array3, Axis};
+use ndarray::{Array2, Axis};
 
 use imgal_core::parameter::omega;
 use imgal_core::phasor::{calibration, plot, time_domain};
 use imgal_core::simulation::decay;
 
+// simulated bioexponential decay parameters
+const SAMPLES: usize = 256;
+const PERIOD: f64 = 12.5;
+const TAUS: [f64; 2] = [1.0, 3.0];
+const FRACTIONS: [f64; 2] = [0.7, 0.3];
+const TOTAL_COUNTS: f64 = 5000.0;
+const IRF_CENTER: f64 = 3.0;
+const IRF_WIDTH: f64 = 0.5;
+const SHAPE: (usize, usize) = (10, 10);
+const MODULATION: f64 = 0.7;
+const PHASE: f64 = -0.981;
+
 // helper functions
 fn ensure_within_tolerance(a: f64, b: f64, tolerance: f64) -> bool {
     (a - b).abs() < tolerance
-}
-
-fn get_decay_data(shape: (usize, usize)) -> Array3<f64> {
-    // set decay simulation parameters
-    let samples = 256;
-    let period = 1.25e-8;
-    let tau = 1.1e-9;
-    let initial_value = 120.0;
-    let irf_width = 7.324e-10;
-    let irf_center = 2.0e-9;
-
-    // create simulated ideal decay data
-    decay::gaussian_monoexponential_3d(
-        samples,
-        period,
-        tau,
-        initial_value,
-        irf_width,
-        irf_center,
-        shape,
-    )
 }
 
 fn get_circle_mask(shape: (usize, usize), center: (isize, isize), radius: isize) -> Array2<bool> {
@@ -59,65 +50,79 @@ fn get_circle_mask(shape: (usize, usize), center: (isize, isize), radius: isize)
 // test the phasor::calibration
 #[test]
 fn calibration_coordinates() {
-    // use 1.1 ns tau and 12.5 ns period
-    let w = omega(1.25e-8);
-    let (g, s) = plot::monoexponential_coordinates(1.1e-9, w);
+    // phasor coordinates to calibrate
+    let g = -0.37067312732350316;
+    let s = 0.6841432489903166;
 
     // set a modulation and phase value to calibrate with
-    let modulation = 1.05;
-    let phase = 0.42;
-    let coords_cal = calibration::coordinates(g, s, modulation, phase);
+    let coords_cal = calibration::coordinates(g, s, MODULATION, PHASE);
 
-    assert_eq!(coords_cal, (0.5529599928454205, 0.7338912847329425));
+    assert_eq!(coords_cal, (0.2536762376620283, 0.48199495552386873));
 }
 
 #[test]
 fn calibration_image() {
     // get simulated data
-    let sim_data = get_decay_data((10, 10));
+    let i = decay::gaussian_exponential_3d(
+        SAMPLES,
+        PERIOD,
+        &TAUS,
+        &FRACTIONS,
+        TOTAL_COUNTS,
+        IRF_CENTER,
+        IRF_WIDTH,
+        SHAPE,
+    )
+    .unwrap();
 
     // calculate the phasor image, (G, S)
-    let gs_arr = time_domain::image(sim_data.view(), 1.25e-8, None, None, None).unwrap();
+    let gs_arr = time_domain::image(i.view(), PERIOD, None, None, None).unwrap();
 
     // calibrate the phasor image
-    let modulation = 1.05;
-    let phase = -0.981;
-    let cal_gs_arr = calibration::image(gs_arr.view(), modulation, phase, None);
+    let cal_gs_arr = calibration::image(gs_arr.view(), MODULATION, PHASE, None);
 
     // pick a point in the calibrated data
     let g_mean = cal_gs_arr.index_axis(Axis(2), 0).mean().unwrap();
     let s_mean = cal_gs_arr.index_axis(Axis(2), 1).mean().unwrap();
 
-    assert!(ensure_within_tolerance(g_mean, 0.79231123283627, 1e-12));
-    assert!(ensure_within_tolerance(s_mean, 0.44494532088982, 1e-12));
+    assert!(ensure_within_tolerance(g_mean, 0.2536762376620283, 1e-12));
+    assert!(ensure_within_tolerance(s_mean, 0.48199495552386873, 1e-12));
 }
 
 #[test]
 fn calibration_image_mut() {
     // get simulated data
-    let sim_data = get_decay_data((10, 10));
+    let sim_data = decay::gaussian_exponential_3d(
+        SAMPLES,
+        PERIOD,
+        &TAUS,
+        &FRACTIONS,
+        TOTAL_COUNTS,
+        IRF_CENTER,
+        IRF_WIDTH,
+        SHAPE,
+    )
+    .unwrap();
 
     // calculate the phasor image, (G, S)
-    let mut gs_arr = time_domain::image(sim_data.view(), 1.25e-8, None, None, None).unwrap();
+    let mut gs_arr = time_domain::image(sim_data.view(), PERIOD, None, None, None).unwrap();
 
     // calibrate the phasor image
-    let modulation = 1.05;
-    let phase = -0.981;
-    calibration::image_mut(gs_arr.view_mut(), modulation, phase, None);
+    calibration::image_mut(gs_arr.view_mut(), MODULATION, PHASE, None);
 
     // pick a point in the calibrated data
     let g_mean = gs_arr.index_axis(Axis(2), 0).mean().unwrap();
     let s_mean = gs_arr.index_axis(Axis(2), 1).mean().unwrap();
 
-    assert!(ensure_within_tolerance(g_mean, 0.79231123283627, 1e-12));
-    assert!(ensure_within_tolerance(s_mean, 0.44494532088982, 1e-12));
+    assert!(ensure_within_tolerance(g_mean, 0.2536762376620283, 1e-12));
+    assert!(ensure_within_tolerance(s_mean, 0.48199495552386873, 1e-12));
 }
 
 #[test]
 fn calibration_modulation_and_phase() {
     // use 1.1 ns tau and 12.5 ns period
-    let w = omega(1.25e-8);
-    let mod_phs = calibration::modulation_and_phase(-0.055, 0.59, 1.1e-9, w);
+    let w = omega(PERIOD);
+    let mod_phs = calibration::modulation_and_phase(-0.055, 0.59, 1.1, w);
 
     assert_eq!(mod_phs, (1.4768757234403935, -1.1586655116823268));
 }
@@ -140,23 +145,35 @@ fn plot_phase() {
 #[test]
 fn plot_monoexponential_coordinates() {
     // use 1.1 ns tau and 12.5 ns period
-    let w = omega(1.25e-8);
-    let coords = plot::monoexponential_coordinates(1.1e-9, w);
+    let w = omega(PERIOD);
+    let coords = plot::monoexponential_coordinates(1.1, w);
 
-    assert_eq!(coords, (0.7658604730109535, 0.4234598078807387));
+    assert_eq!(coords, (0.7658604730109534, 0.4234598078807387));
 }
 
 // test the phasor::time_domain module
 #[test]
 fn time_domain_image() {
+    // get simulated data
+    let i = decay::gaussian_exponential_3d(
+        SAMPLES,
+        PERIOD,
+        &TAUS,
+        &FRACTIONS,
+        TOTAL_COUNTS,
+        IRF_CENTER,
+        IRF_WIDTH,
+        (100, 100),
+    )
+    .unwrap();
+
     // get simulated data and circle mask
-    let sim_data = get_decay_data((100, 100));
     let mask = get_circle_mask((100, 100), (50, 50), 8);
 
     // compute phasors with and without a mask
-    let gs_no_mask = time_domain::image(sim_data.view(), 1.25e-8, None, None, None).unwrap();
+    let gs_no_mask = time_domain::image(i.view(), PERIOD, None, None, None).unwrap();
     let gs_with_mask =
-        time_domain::image(sim_data.view(), 1.25e-8, Some(mask.view()), None, None).unwrap();
+        time_domain::image(i.view(), PERIOD, Some(mask.view()), None, None).unwrap();
 
     // get views of each channel
     let g_no_mask_view = gs_no_mask.index_axis(Axis(2), 0);
@@ -164,9 +181,9 @@ fn time_domain_image() {
     let g_with_mask_view = gs_with_mask.index_axis(Axis(2), 0);
     let s_with_mask_view = gs_with_mask.index_axis(Axis(2), 1);
 
-    // expected values
-    let exp_g = 0.067527056199306;
-    let exp_s = 0.862788883482716;
+    // expected uncalibrated values
+    let exp_g = -0.37067312732350316;
+    let exp_s = 0.6841432489903166;
 
     // assert G and S values, no mask
     assert!(ensure_within_tolerance(
@@ -205,16 +222,16 @@ fn time_domain_image() {
 
 #[test]
 fn time_domain_imaginary() {
-    let data = decay::ideal_monoexponential_1d(256, 1.25e-8, 4.0e-9, 100.0);
-    let s = time_domain::imaginary(data.view(), 1.25e-8, None);
+    let i = decay::ideal_exponential_1d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS).unwrap();
+    let s = time_domain::imaginary(i.view(), PERIOD, None);
 
-    assert_eq!(s, 0.39720439791434226);
+    assert_eq!(s, 0.4102178630685902);
 }
 
 #[test]
 fn time_domain_real() {
-    let data = decay::ideal_monoexponential_1d(256, 1.25e-8, 4.0e-9, 100.0);
-    let g = time_domain::real(data.view(), 1.25e-8, None);
+    let i = decay::ideal_exponential_1d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS).unwrap();
+    let g = time_domain::real(i.view(), PERIOD, None);
 
-    assert_eq!(g, 0.20444291541716833);
+    assert_eq!(g, 0.6601376050345189);
 }

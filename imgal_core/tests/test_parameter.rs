@@ -9,6 +9,6 @@ fn parameter_abbe_diffraction_limit() {
 #[test]
 fn parameter_omega() {
     // test with 12.5 nanoseconds
-    let w = parameter::omega(1.25e-8);
-    assert_eq!(w, 502654824.5743669)
+    let w = parameter::omega(12.5);
+    assert_eq!(w, 0.5026548245743669)
 }

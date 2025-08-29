@@ -21,8 +21,8 @@ use crate::distribution::gaussian;
 ///
 /// * `bins`: The number of discrete points to sample the Gaussian distribution.
 /// * `time_range`: The total time range over which to simulate the IRF.
-/// * `irf_width`: The full width at half maximum (FWHM) of the IRF.
 /// * `irf_center`: The temporal position of the IRF peak within the time range.
+/// * `irf_width`: The full width at half maximum (FWHM) of the IRF.
 ///
 /// # Returns
 ///
@@ -30,8 +30,8 @@ use crate::distribution::gaussian;
 pub fn gaussian_irf_1d(
     bins: usize,
     time_range: f64,
-    irf_width: f64,
     irf_center: f64,
+    irf_width: f64,
 ) -> Array1<f64> {
     let sigma = irf_width / (2.0 * (2.0 * LN_2).sqrt());
     gaussian(sigma, bins, time_range, irf_center)

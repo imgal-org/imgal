@@ -4,6 +4,7 @@ use std::fmt;
 #[derive(Debug, Clone, PartialEq)]
 pub enum ArrayError {
     InvalidAxis { axis_idx: usize, dim_len: usize },
+    InvalidSum { expected: f64, got: f64 },
     MismatchedArrayLengths { a_arr_len: usize, b_arr_len: usize },
 }
 
@@ -14,9 +15,12 @@ impl fmt::Display for ArrayError {
             ArrayError::InvalidAxis { axis_idx, dim_len } => {
                 write!(
                     f,
-                    "Axis {} is out of bounds for dimension length {}.",
+                    "Invalid axis, axis {} is out of bounds for dimension length {}.",
                     axis_idx, dim_len
                 )
+            }
+            ArrayError::InvalidSum { expected, got } => {
+                write!(f, "Invalid sum, expected {} but got {}.", expected, got)
             }
             ArrayError::MismatchedArrayLengths {
                 a_arr_len,
@@ -24,7 +28,7 @@ impl fmt::Display for ArrayError {
             } => {
                 write!(
                     f,
-                    "Input array lengths, {} and {}, do not match.",
+                    "Mismatched array lengths, {} and {}, do not match.",
                     a_arr_len, b_arr_len
                 )
             }
