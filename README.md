@@ -6,7 +6,9 @@ Imgal (**Im**a**g**e **A**lgorithm **L**ibrary), is fast and mostly* safe image 
 [SciJava Ops](https://github.com/scijava/scijava), [ImgLib2](https://github.com/imglib/imglib2), the ImageJ2 ecosystem. `imgal` is organized as a monorepo with `imgal_core` as the core library that contains the algorithm logic while `imgal_java` and `imgal_python` serve `imgal`'s
 Java and Python language bindings.
 
-# Building `imgal` from source
+## Installation
+
+### Building `imgal_core` from source
 
 You can build the entire project from the root with:
 
@@ -34,7 +36,7 @@ Additionally, shared libraries will be prefixed with `lib`, making the compiled 
 | libimgal_python | Python bindings (using PyO3). |
 
 
-# Building `imgal_python` from source
+### Building `imgal_python` from source
 
 To build the `imgal` Python bindings, use the `maturin` build tool. If you're using `uv` you can do the following in the `imgal_python`:
 
@@ -55,20 +57,28 @@ $ mamba activate myenv
 (myenv) $ maturin develop --release
 ```
 
-# Using `imgal` from Python
+
+## Usage
+
+### Using `imgal` in Python
 
 ```python
-import imgal_python.phasor.time_domain as td
-import numpy as np
-from tifffile import imread
+import imgal_python.simulation.decay as dsim
+import imgal_python.simulation.noise as nsim
 
-# read some FLIM data
-data = imread("/path/to/flim_data.tif")
+# biexponential decay parameters
+samples = 256
+period = 12.5
+taus = [1.0, 3.0]
+fractions = [0.7, 0.3]
+photons = 5000.0
+irf_center = 3.0
+irf_width = 0.5
+shape = (75, 50)
 
-# transpose lifetime axis to last position for fastest
-# compute time (contigous memory with C-order)
-data = data.transpose(1, 2, 0).copy()
+# simulate 3D biexponential decay data, (74, 50, 256)
+sim = dsim.gaussian_exponential_3d(samples, period, taus, fractions, photons, irf_center, irf_width, shape)
 
-# compute phasor
-result = td.image(data, 0.0012)
+# simulate poisson noise in place
+nsim.poisson_3d_mut(sim, 0.8)
 ```
