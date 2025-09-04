@@ -58,6 +58,10 @@ pub fn register_phasor_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
         &plot_module
     )?)?;
     plot_module.add_function(wrap_pyfunction!(
+        phasor_functions::plot_map_image,
+        &plot_module
+    )?)?;
+    plot_module.add_function(wrap_pyfunction!(
         phasor_functions::plot_monoexponential_coordinates,
         &plot_module
     )?)?;

@@ -1,6 +1,6 @@
 use numpy::{
-    IntoPyArray, PyArray3, PyArrayMethods, PyReadonlyArray2, PyReadonlyArray3, PyReadwriteArray3,
-    ndarray::Array1,
+    IntoPyArray, PyArray2, PyArray3, PyArrayMethods, PyReadonlyArray2, PyReadonlyArray3,
+    PyReadwriteArray3, ndarray::Array1,
 };
 use pyo3::prelude::*;
 
@@ -188,6 +188,35 @@ pub fn plot_phase(g: f64, s: f64) -> f64 {
 #[pyo3(name = "monoexponential_coordinates")]
 pub fn plot_monoexponential_coordinates(tau: f64, omega: f64) -> (f64, f64) {
     plot::monoexponential_coordinates(tau, omega)
+}
+
+/// Map G and S coordinates back to the input phasor array as a boolean mask.
+///
+/// This function maps the G and S coordinates back to the input G/S phasor
+/// array and returns a 2-dimensional boolean mask where "true" indicates
+/// G and S coordiantes presentin the "g_coords" and "s_coords" arrays.
+///
+/// :param data: The G/S 3-dimensional array.
+/// :param g_coords: A 1-dimensional array of "g" coordinates in the "data" array.
+///     The "g_coords" and "s_coords" array lengths must match.
+/// :param s_coords: A 1-dimensional array of "s" coordiantes in the "data" array.
+/// *   The "s_coords" and "g_coords" array lengths must match.
+/// :param axis: The channel axis, default = 2.
+/// :return: A 2-dimensional boolean mask where "true" pixels
+///     represent values found in the "g_coords" and "s_coords" arrays.
+#[pyfunction]
+#[pyo3(name = "map_image")]
+#[pyo3(signature = (data, g_coords, s_coords, axis=None))]
+pub fn plot_map_image<'py>(
+    py: Python<'py>,
+    data: PyReadonlyArray3<f64>,
+    g_coords: Vec<f64>,
+    s_coords: Vec<f64>,
+    axis: Option<usize>,
+) -> PyResult<Bound<'py, PyArray2<bool>>> {
+    plot::map_image(data.as_array(), &g_coords, &s_coords, axis)
+        .map(|output| output.into_pyarray(py))
+        .map_err(map_array_error)
 }
 
 /// Compute the real and imaginary (G, S) coordinates of a 3-dimensional decay
