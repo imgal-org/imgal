@@ -46,12 +46,10 @@ where
     let a = axis.unwrap_or(2);
 
     // check if axis parameter is valid
-    let mut gs_shape = data.shape().to_vec();
-    let sl = gs_shape.len();
-    if a >= sl {
+    if a >= 3 {
         return Err(ArrayError::InvalidAxis {
             axis_idx: a,
-            dim_len: sl,
+            dim_len: 3,
         });
     }
 
@@ -66,9 +64,10 @@ where
     let mut w_sin_buf: Vec<f64> = Vec::with_capacity(n);
 
     // drop specified axis and create new G and S output arrays with new shape
-    gs_shape.remove(a);
-    let mut g_arr = Array2::<f64>::zeros((gs_shape[0], gs_shape[1]));
-    let mut s_arr = Array2::<f64>::zeros((gs_shape[0], gs_shape[1]));
+    let mut shape = data.shape().to_vec();
+    shape.remove(a);
+    let mut g_arr = Array2::<f64>::zeros((shape[0], shape[1]));
+    let mut s_arr = Array2::<f64>::zeros((shape[0], shape[1]));
 
     // load the waveform buffers
     for i in 0..n {

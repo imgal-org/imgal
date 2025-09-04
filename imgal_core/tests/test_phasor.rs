@@ -172,8 +172,7 @@ fn time_domain_image() {
 
     // compute phasors with and without a mask
     let gs_no_mask = time_domain::image(i.view(), PERIOD, None, None, None).unwrap();
-    let gs_with_mask =
-        time_domain::image(i.view(), PERIOD, Some(mask.view()), None, None).unwrap();
+    let gs_with_mask = time_domain::image(i.view(), PERIOD, Some(mask.view()), None, None).unwrap();
 
     // get views of each channel
     let g_no_mask_view = gs_no_mask.index_axis(Axis(2), 0);
