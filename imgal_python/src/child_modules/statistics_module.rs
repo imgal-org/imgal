@@ -15,6 +15,10 @@ pub fn register_statistics_module(parent_module: &Bound<'_, PyModule>) -> PyResu
         statistics_functions::statistics_sum,
         &statistics_module
     )?)?;
+    statistics_module.add_function(wrap_pyfunction!(
+        statistics_functions::statistics_weighted_merge_sort_mut,
+        &statistics_module
+    )?)?;
 
     // attach to parent module
     parent_module.add_submodule(&statistics_module)

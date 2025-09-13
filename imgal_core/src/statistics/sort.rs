@@ -1,0 +1,145 @@
+use std::cmp::Ordering;
+
+use crate::error::ArrayError;
+use crate::traits::numeric::ToFloat64;
+
+/// Sort 1-dimensional arrays of values and their associated weights.
+///
+/// # Description
+///
+/// This function performs a bottom up merge sort on the input 1-dimensional
+/// data array along with it's associated weights. Both the `data` and `weights`
+/// arrays are _mutated_ during the sorting. The output of this function is a
+/// weighted inversion count.
+///
+/// # Arguments
+///
+/// * `data`: A 1-dimensional array/slice of numbers of the same length as
+///    `weights`.
+/// * `weights`: A 1-dimensional array/slice of weights of the same length as
+///    `data`.
+///
+/// # Returns
+///
+/// *`OK(f64)`: The number of swaps needed to sort the input array.
+/// *`Err(ArrayError)`: An ArrayError.
+///
+/// # Reference
+///
+/// <https://doi.org/10.1109/TIP.2019.2909194>
+pub fn weighted_merge_sort_mut<T>(data: &mut [T], weights: &mut [f64]) -> Result<f64, ArrayError>
+where
+    T: ToFloat64,
+{
+    // ensure input arrays are same length
+    let dl = data.len();
+    let wl = weights.len();
+    if dl != wl {
+        return Err(ArrayError::MismatchedArrayLengths {
+            a_arr_len: dl,
+            b_arr_len: wl,
+        });
+    };
+
+    // counters for weighted inversions (i.e. swaps)
+    let mut swap = 0.0;
+    let mut swap_temp: f64;
+
+    // define step and cursors
+    let mut step: usize = 1;
+    let mut left: usize;
+    let mut right: usize;
+    let mut end: usize;
+    let mut k: usize;
+
+    // create working buffers
+    let mut data_buf = data.to_owned();
+    let mut weights_buf = weights.to_owned();
+    let mut cum_weights_buf: Vec<f64> = vec![0.0; dl];
+
+    // weighted bottom-up merge sort
+    while step < dl {
+        left = 0;
+        k = 0;
+        let mut cw_acc = weights[0];
+        cum_weights_buf[0] = weights[0];
+        cum_weights_buf
+            .iter_mut()
+            .zip(weights_buf.iter())
+            .skip(1)
+            .for_each(|(cw, w)| {
+                *cw = cw_acc + w;
+                cw_acc = *cw;
+            });
+
+        loop {
+            right = left + step;
+            end = right + step;
+            if end > dl {
+                if right > dl {
+                    break;
+                }
+                end = dl;
+            }
+            let mut l = left;
+            let mut r = right;
+            while l < right && r < end {
+                match data[l].partial_cmp(&data[r]) {
+                    Some(Ordering::Greater) => {
+                        if l == 0 {
+                            swap_temp = weights[r] * cum_weights_buf[right - 1];
+                        } else {
+                            swap_temp =
+                                weights[r] * (cum_weights_buf[right - 1] - cum_weights_buf[l - 1]);
+                        }
+                        swap = swap + swap_temp;
+                        data_buf[k] = data[r];
+                        weights_buf[k] = weights[r];
+                        k += 1;
+                        r += 1;
+                    }
+                    _ => {
+                        data_buf[k] = data[l];
+                        weights_buf[k] = weights[l];
+                        k += 1;
+                        l += 1;
+                    }
+                }
+            }
+            if l < right {
+                while l < right {
+                    data_buf[k] = data[l];
+                    weights_buf[k] = weights[l];
+                    k += 1;
+                    l += 1;
+                }
+            } else {
+                while r < end {
+                    data_buf[k] = data[r];
+                    weights_buf[k] = weights[r];
+                    k += 1;
+                    r += 1;
+                }
+            }
+            left = end;
+        }
+
+        // copy any unmerged tail, if array size is not a power of 2
+        if k < dl {
+            while k < dl {
+                data_buf[k] = data[k];
+                weights_buf[k] = weights[k];
+                k += 1;
+            }
+        }
+
+        // prepare for the next step, copy merged results back source
+        data.clone_from_slice(&data_buf);
+        weights.clone_from_slice(&weights_buf);
+
+        // double the run size, continue
+        step *= 2;
+    }
+
+    Ok(swap)
+}

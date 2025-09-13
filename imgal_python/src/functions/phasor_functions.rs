@@ -245,7 +245,7 @@ pub fn time_domain_image<'py>(
     harmonic: Option<f64>,
     axis: Option<usize>,
 ) -> PyResult<Bound<'py, PyArray3<f64>>> {
-    // pattern matc hand extract allowed array types
+    // pattern match and extract allowed array types
     if let Ok(arr) = data.extract::<PyReadonlyArray3<f32>>() {
         if let Some(m) = mask {
             return time_domain::image(arr.as_array(), period, Some(m.as_array()), harmonic, axis)
