@@ -3,15 +3,57 @@ use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ArrayError {
-    InvalidAxis { axis_idx: usize, dim_len: usize },
-    InvalidSum { expected: f64, got: f64 },
-    MismatchedArrayLengths { a_arr_len: usize, b_arr_len: usize },
+    InvalidArrayParameterValueEqual {
+        param_name: &'static str,
+        value: usize,
+    },
+    InvalidArrayParameterValueGreater {
+        param_name: &'static str,
+        value: usize,
+    },
+    InvalidArrayParameterValueLess {
+        param_name: &'static str,
+        value: usize,
+    },
+    InvalidAxis {
+        axis_idx: usize,
+        dim_len: usize,
+    },
+    InvalidSum {
+        expected: f64,
+        got: f64,
+    },
+    MismatchedArrayLengths {
+        a_arr_len: usize,
+        b_arr_len: usize,
+    },
 }
 
 // "Dimension size {} of axis {} is out of bounds for dimension size {}."
 impl fmt::Display for ArrayError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            ArrayError::InvalidArrayParameterValueEqual { param_name, value } => {
+                write!(
+                    f,
+                    "Invalid array parameter value, the parameter {} can not equal {}.",
+                    param_name, value
+                )
+            }
+            ArrayError::InvalidArrayParameterValueGreater { param_name, value } => {
+                write!(
+                    f,
+                    "Invalid array parameter value, the parameter {} can not be greater than {}.",
+                    param_name, value
+                )
+            }
+            ArrayError::InvalidArrayParameterValueLess { param_name, value } => {
+                write!(
+                    f,
+                    "Invalid array parameter value, the parameter {} can not be less than {}.",
+                    param_name, value
+                )
+            }
             ArrayError::InvalidAxis { axis_idx, dim_len } => {
                 write!(
                     f,

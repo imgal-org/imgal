@@ -2,6 +2,7 @@ pub mod distribution;
 pub mod error;
 pub mod filter;
 pub mod integration;
+pub mod kernel;
 pub mod parameter;
 pub mod phasor;
 pub mod simulation;

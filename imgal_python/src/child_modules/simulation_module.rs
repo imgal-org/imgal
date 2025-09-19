@@ -70,7 +70,7 @@ pub fn register_simulation_module(parent_module: &Bound<'_, PyModule>) -> PyResu
         &noise_module
     )?)?;
 
-    // attach simulation submodule before attaching to the parent module
+    // attach simulation submodules before attaching to the parent module
     simulation_module.add_submodule(&decay_module)?;
     simulation_module.add_submodule(&instrument_module)?;
     simulation_module.add_submodule(&noise_module)?;
