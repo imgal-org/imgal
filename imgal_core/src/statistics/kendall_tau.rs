@@ -1,0 +1,113 @@
+use std::cmp::Ordering;
+
+use crate::error::ArrayError;
+use crate::statistics::weighted_merge_sort_mut;
+use crate::traits::numeric::ToFloat64;
+
+pub fn weighted_kendall_tau_b<T>(
+    data_a: &[T],
+    data_b: &[T],
+    weights: &[f64],
+) -> Result<f64, ArrayError>
+where
+    T: ToFloat64,
+{
+    // check array lengths match
+    let dl = data_a.len();
+    if dl != data_b.len() || dl != weights.len() {
+        return Err(ArrayError::MismatchedArrayLengths {
+            a_arr_len: dl,
+            b_arr_len: data_b.len().min(weights.len()),
+        });
+    }
+
+    // can not compute a tau for less than 2 elements
+    if dl < 2 {
+        return Ok(0.0);
+    }
+
+    // rank the data and create paired data
+    let (a_ranks, a_tie_corr) = rank_with_weights(data_a, weights);
+    let (b_ranks, b_tie_corr) = rank_with_weights(data_b, weights);
+    let mut rank_pairs: Vec<(i32, i32, usize)> = a_ranks
+        .iter()
+        .zip(b_ranks.iter())
+        .enumerate()
+        .map(|(i, (&a, &b))| (a, b, i))
+        .collect();
+    rank_pairs.sort_by_key(|&(a, _, _)| a);
+
+    // extract b ranks in "a" sorted order and associated weights
+    let mut b_sorted: Vec<i32> = Vec::with_capacity(dl);
+    let mut w_sorted: Vec<f64> = Vec::with_capacity(dl);
+    rank_pairs.iter().for_each(|&(_, b, i)| {
+        b_sorted.push(b);
+        w_sorted.push(weights[i]);
+    });
+
+    // count weighted inversions (i.e. swaps)
+    let swaps = weighted_merge_sort_mut(&mut b_sorted, &mut w_sorted).unwrap();
+
+    // calculate total possible weighted pairs
+    let total_w: f64 = weights.iter().sum();
+    let sum_w_sqr: f64 = weights.iter().map(|w| w.powi(2)).sum();
+    let total_w_pairs = total_w.powi(2) - sum_w_sqr;
+
+    // calculate tau-b with tie corrections, discordant pairs and swaps are the same
+    let c_pairs = (total_w_pairs / 2.0) - swaps;
+    let numer = c_pairs - swaps;
+    let denom = ((total_w_pairs - a_tie_corr) * (total_w_pairs - b_tie_corr)).sqrt();
+    if denom == 0.0 {
+        Ok(0.0)
+    } else {
+        Ok(numer / denom)
+    }
+}
+
+fn rank_with_weights<T>(data: &[T], weights: &[f64]) -> (Vec<i32>, f64)
+where
+    T: ToFloat64,
+{
+    // create indicies sorted by values
+    let dl = data.len();
+    let mut indices: Vec<usize> = (0..dl).collect();
+    indices.sort_by(|&a, &b| data[a].partial_cmp(&data[b]).unwrap_or(Ordering::Equal));
+
+    // set up rank parameters
+    let mut ranks: Vec<i32> = vec![0; dl];
+    let mut tie_corr = 0.0;
+    let mut cur_rank = 1;
+    let mut i = 0;
+
+    while i < dl {
+        let cur_val = data[indices[i]];
+        let mut j = i;
+        let mut tied_indices: Vec<usize> = Vec::new();
+        // find all values tied with current value
+        while j < dl && data[indices[j]].partial_cmp(&cur_val) == Some(Ordering::Equal) {
+            tied_indices.push(indices[j]);
+            j += 1;
+        }
+        // assign average rank to all tied values
+        let group_size = (j - i) as i32;
+        let avg_rank = cur_rank + (group_size - 1) / 2;
+        tied_indices.iter().for_each(|&ti| {
+            ranks[ti] = avg_rank;
+        });
+        // add tie corrections
+        if group_size > 1 {
+            let mut tie_group_corr = 0.0;
+            for k in 0..tied_indices.len() {
+                for l in (k + 1)..tied_indices.len() {
+                    tie_group_corr += weights[tied_indices[k]] * weights[tied_indices[l]];
+                }
+            }
+            // factor of 2 for symmetric pairs
+            tie_corr += 2.0 * tie_group_corr
+        }
+        cur_rank += group_size;
+        i = j;
+    }
+
+    (ranks, tie_corr)
+}

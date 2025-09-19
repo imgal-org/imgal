@@ -1,14 +1,15 @@
 use pyo3::prelude::*;
 
 use super::child_modules::{
-    distribution_module, filter_module, integration_module, kernel_module, parameter_module,
-    phasor_module, simulation_module, statistics_module,
+    colocalization_module, distribution_module, filter_module, integration_module, kernel_module,
+    parameter_module, phasor_module, simulation_module, statistics_module,
 };
 
 /// Python binding for the imgal parent module.
 #[pymodule(name = "imgal_python")]
 fn imgal_parent_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // register child modules
+    colocalization_module::register_colocalization_module(m)?;
     distribution_module::register_distribution_module(m)?;
     filter_module::register_filter_module(m)?;
     integration_module::register_integration_module(m)?;
