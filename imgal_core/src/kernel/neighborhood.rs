@@ -90,3 +90,72 @@ pub fn sphere(radius: usize) -> Result<Array3<bool>, ArrayError> {
 
     Ok(kernel)
 }
+
+/// Create a 2-dimensonal square kernel with a weighted circle neighborhood.
+///
+/// # Description
+///
+/// This function creates a square boolean kernel representing a weighted value
+/// circle of the specified radius (_i.e._ the neighborhood). The circle is
+/// defined using the Euclidean distance from the center point. Points within
+/// the radius are valid weighted positions (_i.e._ a weight can be assigned but
+/// is not guaranteed to be present), while points outside are not valid and
+/// set to 0.0. The maximum weight value is located at the center of the circle,
+/// defined by `initial_value`, and decaying values towards the edge at the
+/// `falloff_radius` rate.
+///
+/// # Arguments
+///
+/// * `circle_radius`: The radius of the circle in pixels. Must be greater than
+///    0.
+/// * `falloff_radius`: A scaling factor that determines how quickly weights
+///    decay with distance. Larger values result in a slower falloff with a
+///    broader circle. Small values result in a faster falloff with a tighter
+///    circle.
+/// * `initial_value`: The maximum weight value at the center of the kernel,
+///    default = 1.0.
+///
+/// # Returns
+///
+/// * `Ok(Array2<f64>)`: A 2-dimensonal square boolean array with side lengths
+///    of `radius * 2 + 1` with a weighted circular neighborhood.
+/// * `Err(ArrayError)`: If `circle_radius == 0`.
+pub fn weighted_circle(
+    circle_radius: usize,
+    falloff_radius: f64,
+    initial_value: Option<f64>,
+) -> Result<Array2<f64>, ArrayError> {
+    // check if circle_radius parameter is valid
+    if circle_radius == 0 {
+        return Err(ArrayError::InvalidArrayParameterValueLess {
+            param_name: "circle_radius",
+            value: 0,
+        });
+    }
+
+    // set circle parameters and create weighted kernel
+    let dim = circle_radius * 2 + 1;
+    let center = circle_radius as f64;
+    let norm_center = center / falloff_radius;
+    let iv = initial_value.unwrap_or(1.0);
+    let mut kernel = Array2::<f64>::zeros((dim, dim));
+
+    // iterate through each position and calculate euclidean distance and weights
+    kernel.indexed_iter_mut().for_each(|((row, col), v)| {
+        let x = col as f64;
+        let y = row as f64;
+        let mut norm_dist = ((x - center).powi(2) + (y - center).powi(2)).sqrt() / falloff_radius;
+        if norm_dist <= norm_center {
+            if norm_dist >= iv {
+                norm_dist = 0.0;
+            } else {
+                norm_dist = iv - norm_dist;
+            }
+            *v = norm_dist
+        } else {
+            *v = 0.0
+        }
+    });
+
+    Ok(kernel)
+}

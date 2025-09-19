@@ -21,6 +21,10 @@ pub fn register_kernel_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
         kernel_functions::neighborhood_sphere,
         &neighborhood_module
     )?)?;
+    neighborhood_module.add_function(wrap_pyfunction!(
+        kernel_functions::neighborhood_weighted_circle,
+        &neighborhood_module
+    )?)?;
 
     // attach kernel submodules before attaching to the parent module
     kernel_module.add_submodule(&neighborhood_module)?;
