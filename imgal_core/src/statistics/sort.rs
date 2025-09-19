@@ -21,8 +21,8 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Returns
 ///
-/// *`OK(f64)`: The number of swaps needed to sort the input array.
-/// *`Err(ArrayError)`: An ArrayError.
+/// * `OK(f64)`: The number of swaps needed to sort the input array.
+/// * `Err(ArrayError)`: An ArrayError.
 ///
 /// # Reference
 ///
