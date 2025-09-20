@@ -76,3 +76,38 @@ pub fn neighborhood_weighted_circle(
         .map(|output| output.into_pyarray(py))
         .map_err(map_array_error)
 }
+
+/// Create a 3-dimensional cube kernel with a weighted sphere neighborhood.
+///
+/// This function creates a cube kernel representing a weighted value sphere of
+/// the specified radius (i.e. the neighborhood). The sphere is defined using
+/// the Euclidean distance from the center point. Points within the radius are
+/// valid weighted positions (i.e. a weight can be assigned but is not
+/// guaranteed to be present), while points outside are not valid and set to 0.0.
+/// The maximum weight value is located at the center of the sphere, defined by
+/// "initial_value", and decaying values towards the edge at the "falloff_radius"
+/// rate.
+///
+/// :param sphere_radius: The radius of the sphere in voxels. Must be greater than
+///     0.
+/// :param falloff_radius: A scaling factor that determines how quickly weights
+///     decay with distance. Larger values result in a slower falloff with a
+///     broader sphere. Small values result in a faster falloff with a tighter
+///     sphere.
+/// :param initial_value: The maximum weight value at the center of the kernel,
+///     default = 1.0.
+/// :return: A 3-dimensional cube array with side lengths of
+///     "radius * 2 + 1" with a weighted spherical neighborhood.
+#[pyfunction]
+#[pyo3(name = "weighted_sphere")]
+#[pyo3(signature = (sphere_radius, falloff_radius, initial_value=None))]
+pub fn neighborhood_weighted_sphere(
+    py: Python,
+    sphere_radius: usize,
+    falloff_radius: f64,
+    initial_value: Option<f64>,
+) -> PyResult<Bound<PyArray3<f64>>> {
+    kernel::neighborhood::weighted_sphere(sphere_radius, falloff_radius, initial_value)
+        .map(|output| output.into_pyarray(py))
+        .map_err(map_array_error)
+}
