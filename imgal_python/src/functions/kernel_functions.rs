@@ -42,10 +42,9 @@ pub fn neighborhood_sphere(py: Python, radius: usize) -> PyResult<Bound<PyArray3
         .map_err(map_array_error)
 }
 
-
-/// Create a 2-dimensonal square kernel with a weighted circle neighborhood.
+/// Create a 2-dimensional square kernel with a weighted circle neighborhood.
 ///
-/// This function creates a square boolean kernel representing a weighted value
+/// This function creates a square kernel representing a weighted value
 /// circle of the specified radius (i.e. the neighborhood). The circle is
 /// defined using the Euclidean distance from the center point. Points within
 /// the radius are valid weighted positions (i.e. a weight can be assigned but
@@ -62,7 +61,7 @@ pub fn neighborhood_sphere(py: Python, radius: usize) -> PyResult<Bound<PyArray3
 ///    circle.
 /// :param initial_value: The maximum weight value at the center of the kernel,
 ///    default = 1.0.
-/// :return: A 2-dimensonal square boolean array with side lengths
+/// :return: A 2-dimensional square array with side lengths
 ///    of "radius * 2 + 1" with a weighted circular neighborhood.
 #[pyfunction]
 #[pyo3(name = "weighted_circle")]

@@ -91,11 +91,11 @@ pub fn sphere(radius: usize) -> Result<Array3<bool>, ArrayError> {
     Ok(kernel)
 }
 
-/// Create a 2-dimensonal square kernel with a weighted circle neighborhood.
+/// Create a 2-dimensional square kernel with a weighted circle neighborhood.
 ///
 /// # Description
 ///
-/// This function creates a square boolean kernel representing a weighted value
+/// This function creates a square kernel representing a weighted value
 /// circle of the specified radius (_i.e._ the neighborhood). The circle is
 /// defined using the Euclidean distance from the center point. Points within
 /// the radius are valid weighted positions (_i.e._ a weight can be assigned but
@@ -117,7 +117,7 @@ pub fn sphere(radius: usize) -> Result<Array3<bool>, ArrayError> {
 ///
 /// # Returns
 ///
-/// * `Ok(Array2<f64>)`: A 2-dimensonal square boolean array with side lengths
+/// * `Ok(Array2<f64>)`: A 2-dimensional square array with side lengths
 ///    of `radius * 2 + 1` with a weighted circular neighborhood.
 /// * `Err(ArrayError)`: If `circle_radius == 0`.
 pub fn weighted_circle(
