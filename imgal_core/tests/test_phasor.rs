@@ -1,8 +1,8 @@
-use ndarray::{Array2, Axis};
+use ndarray::{Array2, Axis, s};
 
 use imgal_core::parameter::omega;
 use imgal_core::phasor::{calibration, plot, time_domain};
-use imgal_core::simulation::decay;
+use imgal_core::simulation::{decay, noise};
 
 // simulated bioexponential decay parameters
 const SAMPLES: usize = 256;
@@ -151,6 +151,34 @@ fn plot_monoexponential_coordinates() {
     assert_eq!(coords, (0.7658604730109534, 0.4234598078807387));
 }
 
+#[test]
+fn plot_map_image() {
+    // get simulated data
+    let mut i = decay::gaussian_exponential_3d(
+        SAMPLES,
+        PERIOD,
+        &TAUS,
+        &FRACTIONS,
+        TOTAL_COUNTS,
+        IRF_CENTER,
+        IRF_WIDTH,
+        (50, 50),
+    )
+    .unwrap();
+    noise::poisson_3d_mut(i.view_mut(), 0.3, None, None);
+
+    // compute phasor array and select coordinates to map back
+    let gs_arr = time_domain::image(i.view(), PERIOD, None, None, None).unwrap();
+    let g_coords = gs_arr.slice(s![25..30, 25..30, 0]).flatten().to_vec();
+    let s_coords = gs_arr.slice(s![25..30, 25..30, 1]).flatten().to_vec();
+
+    // map the coords back to the image
+    let mask = plot::map_image(gs_arr.view(), &g_coords, &s_coords, None).unwrap();
+
+    // check a spot in mask and outside of it
+    assert_eq!(mask[[28, 28]], true);
+    assert_eq!(mask[[5, 5]], false);
+}
 // test the phasor::time_domain module
 #[test]
 fn time_domain_image() {
