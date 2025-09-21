@@ -1,5 +1,6 @@
 use ndarray::{ArrayView1, s};
 
+use crate::error::ArrayError;
 use crate::traits::numeric::ToFloat64;
 
 /// Integrate a curve with Simpson's 1/3 rule and the trapezoid rule.
@@ -71,8 +72,8 @@ where
 /// # Returns
 ///
 /// * `Ok(f64)`: The computed integral.
-/// * `Err(&str)`: Error message if the number of subintervals is odd.
-pub fn simpson<T>(x: ArrayView1<T>, delta_x: Option<f64>) -> Result<f64, &'static str>
+/// * `Err(ArrayError)`: If the number of subintervals is odd.
+pub fn simpson<T>(x: ArrayView1<T>, delta_x: Option<f64>) -> Result<f64, ArrayError>
 where
     T: ToFloat64,
 {
@@ -91,6 +92,8 @@ where
         }
         Ok((d_x / 3.0) * integral)
     } else {
-        Err("Odd number of subintervals is not supported for Simpson's 1/3 rule.")
+        return Err(ArrayError::InvalidArrayGeneric {
+            msg: "An odd number of subintervals is not allowed in Simpson's 1/3 rule integration.",
+        });
     }
 }

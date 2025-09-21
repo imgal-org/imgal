@@ -3,6 +3,9 @@ use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ArrayError {
+    InvalidArrayGeneric {
+        msg: &'static str,
+    },
     InvalidArrayParameterValueEqual {
         param_name: &'static str,
         value: usize,
@@ -33,6 +36,9 @@ pub enum ArrayError {
 impl fmt::Display for ArrayError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            ArrayError::InvalidArrayGeneric { msg } => {
+                write!(f, "{}", msg)
+            }
             ArrayError::InvalidArrayParameterValueEqual { param_name, value } => {
                 write!(
                     f,

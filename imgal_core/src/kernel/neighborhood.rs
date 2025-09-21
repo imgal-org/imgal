@@ -18,9 +18,9 @@ use crate::error::ArrayError;
 /// # Returns
 ///
 /// * `Ok(Array2<bool>)`: A 2-dimensional square boolean array with side lengths
-///    of `radius * 2 + 1` where `true` values represent points inside or on the
+///    of "radius * 2 + 1" where `true` values represent points inside or on the
 ///    circle boundary of the specified radius.
-/// * `Err(ArrayError)`: An ArrayError.
+/// * `Err(ArrayError)`: If radius is <= 0.
 pub fn circle(radius: usize) -> Result<Array2<bool>, ArrayError> {
     // check if radius parameter is valid
     if radius == 0 {
@@ -62,9 +62,9 @@ pub fn circle(radius: usize) -> Result<Array2<bool>, ArrayError> {
 /// # Returns
 ///
 /// * `Ok(Array3<bool>)`: A 3-dimensional cube boolean array with side lengths
-///   of `radius * 2 + 1` where `true` values represent points inside or on the
+///   of "radius * 2 + 1" where `true` values represent points inside or on the
 ///   sphere boundary of the specified radius.
-/// * `Err(ArrayError)`: An ArrayError.
+/// * `Err(ArrayError)`: If radius is <= 0.
 pub fn sphere(radius: usize) -> Result<Array3<bool>, ArrayError> {
     // check if radius parameter is valid
     if radius == 0 {
@@ -118,8 +118,8 @@ pub fn sphere(radius: usize) -> Result<Array3<bool>, ArrayError> {
 /// # Returns
 ///
 /// * `Ok(Array2<f64>)`: A 2-dimensional square array with side lengths
-///    of `radius * 2 + 1` with a weighted circular neighborhood.
-/// * `Err(ArrayError)`: If `circle_radius == 0`.
+///    of "radius * 2 + 1" with a weighted circular neighborhood.
+/// * `Err(ArrayError)`: If circle radius is <= 0.
 pub fn weighted_circle(
     circle_radius: usize,
     falloff_radius: f64,
@@ -187,8 +187,8 @@ pub fn weighted_circle(
 /// # Returns
 ///
 /// * `OK(Array3<f64>)`: A 3-dimensional cube array with side lengths of
-///    `radius * 2 + 1` with a weighted spherical neighborhood.
-/// * `Err(ArrayError)`: If `sphere_radius == 0`.
+///    "radius * 2 + 1" with a weighted spherical neighborhood.
+/// * `Err(ArrayError)`: If the sphere radius is <= 0.
 pub fn weighted_sphere(
     sphere_radius: usize,
     falloff_radius: f64,

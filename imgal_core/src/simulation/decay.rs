@@ -40,7 +40,8 @@ use crate::statistics::sum;
 ///
 /// * `Ok(Array1<f64>)`: The 1-dimensonal Gaussian IRF convolved monoexponential
 ///    or multiexponential decay curve.
-/// * `Err(ArrayError)`: An ArrayError.
+/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+///    fractions array does not sum to 1.0.
 pub fn gaussian_exponential_1d(
     samples: usize,
     period: f64,
@@ -92,7 +93,8 @@ pub fn gaussian_exponential_1d(
 ///
 /// * `Ok(Array3<f64>)`: The 3-dimensional Gaussian IRF convolved monoexponential
 ///    or multiexponential decay curve.
-/// * `Err(ArrayError)`: An ArrayError.
+/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+///    fractions array does not sum to 1.0.
 pub fn gaussian_exponential_3d(
     samples: usize,
     period: f64,
@@ -153,7 +155,8 @@ pub fn gaussian_exponential_3d(
 ///
 /// * `Ok(Array1<f64>)`: The 1-dimensonal monoexponential or multiexponential
 ///    decay curve.
-/// * `Err(ArrayError)`: An ArrayError.
+/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+///    fractions array does not sum to 1.0.
 ///
 /// # Reference
 ///
@@ -246,7 +249,8 @@ pub fn ideal_exponential_1d(
 ///
 /// * `Ok(Array3<f64>)`: The 3-dimensonal monoexponential or multiexponential
 ///    decay curve.
-/// * `Err(ArrayError)`: An ArrayError.
+/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+///    fractions array does not sum to 1.0.
 ///
 /// # Reference
 ///
@@ -300,7 +304,8 @@ pub fn ideal_exponential_3d(
 ///
 /// * `Ok(Array1<f64>)`: The 1-dimensional IRF convolved monoexponential or
 ///    multiexponential decay curve.
-/// * `Err(ArrayError)`: An ArrayError.
+/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+///    fractions array does not sum to 1.0.
 pub fn irf_exponential_1d(
     irf: ArrayView1<f64>,
     samples: usize,
@@ -350,7 +355,8 @@ pub fn irf_exponential_1d(
 ///
 /// * `Ok(Array3<f64>)`: The 3-dimensional IRF convolved monoexponential or
 ///    multiexponential decay curve.
-/// * `Err(ArrayError)`: An ArrayError.
+/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+///    fractions array does not sum to 1.0.
 pub fn irf_exponential_3d(
     irf: ArrayView1<f64>,
     samples: usize,

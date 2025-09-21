@@ -31,7 +31,7 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// * `Ok(Array3<f64>)`: The real and imaginary coordinates as a 3D (ch, row, col) image,
 ///    where G and S are indexed at 0 and 1 respectively on the _channel_ axis.
-/// * `Err(ArrayError)`: An ArrayError.
+/// * `Err(ArrayError)`: If axis is >= 3.
 pub fn image<T>(
     data: ArrayView3<T>,
     period: f64,

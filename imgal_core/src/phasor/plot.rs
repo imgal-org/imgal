@@ -109,7 +109,7 @@ pub fn monoexponential_coordinates(tau: f64, omega: f64) -> (f64, f64) {
 ///
 /// * `Ok(Array2<bool>)`: A 2-dimensional boolean mask where `true` pixels
 ///    represent values found in the `g_coords` and `s_coords` arrays.
-/// * `Err(ArrayError)`: An ArrayError.
+/// * `Err(ArrayError)`: If "g" and "s" coordinate array lengths do not match.
 pub fn map_image(
     data: ArrayView3<f64>,
     g_coords: &[f64],
