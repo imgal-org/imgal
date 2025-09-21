@@ -6,12 +6,7 @@ use imgal_core::error::ArrayError;
 /// Map ArrayError types to Python exceptions.
 pub fn map_array_error(err: ArrayError) -> PyErr {
     match err {
-        ArrayError::InvalidArrayGeneric { msg } => {
-            PyException::new_err(format!(
-                "{}",
-                msg
-            ))
-        }
+        ArrayError::InvalidArrayGeneric { msg } => PyException::new_err(format!("{}", msg)),
         ArrayError::InvalidArrayParameterValueEqual { param_name, value } => {
             PyValueError::new_err(format!(
                 "Invalid array parameter value, the parameter {} can not equal {}.",
