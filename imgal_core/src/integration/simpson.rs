@@ -1,5 +1,3 @@
-use ndarray::{ArrayView1, s};
-
 use crate::error::ArrayError;
 use crate::traits::numeric::ToFloat64;
 
@@ -31,7 +29,7 @@ use crate::traits::numeric::ToFloat64;
 /// # Returns
 ///
 /// * `f64`: The computed integral.
-pub fn composite_simpson<T>(x: ArrayView1<T>, delta_x: Option<f64>) -> f64
+pub fn composite_simpson<T>(x: &[T], delta_x: Option<f64>) -> f64
 where
     T: ToFloat64,
 {
@@ -44,7 +42,7 @@ where
         simpson(x, delta_x).unwrap()
     } else {
         // compute the even subintervals with Simpson's rule
-        let integral: f64 = simpson(x.slice(s![..n]), delta_x).unwrap();
+        let integral: f64 = simpson(&x[..n], delta_x).unwrap();
         // compute the last subinterval with a trapizoid
         let trap: f64 = (d_x / 2.0) * (x[n - 1] + x[n]).into();
         integral + trap
@@ -73,7 +71,7 @@ where
 ///
 /// * `Ok(f64)`: The computed integral.
 /// * `Err(ArrayError)`: If the number of subintervals is odd.
-pub fn simpson<T>(x: ArrayView1<T>, delta_x: Option<f64>) -> Result<f64, ArrayError>
+pub fn simpson<T>(x: &[T], delta_x: Option<f64>) -> Result<f64, ArrayError>
 where
     T: ToFloat64,
 {

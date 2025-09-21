@@ -1,4 +1,3 @@
-use ndarray::{Array1, ArrayView1};
 use rustfft::{FftPlanner, num_complex::Complex, num_traits::Zero};
 
 /// Convolve two 1-dimensional signals using the Fast Fourier Transform (FFT).
@@ -21,7 +20,7 @@ use rustfft::{FftPlanner, num_complex::Complex, num_traits::Zero};
 ///
 /// * `Array1<f64>`: The FFT convolved result of the same length as input signal
 ///   `a`.
-pub fn fft_convolve_1d(a: ArrayView1<f64>, b: ArrayView1<f64>) -> Array1<f64> {
+pub fn fft_convolve_1d(a: &[f64], b: &[f64]) -> Vec<f64> {
     // compute FFT size
     let n_a = a.len();
     let n_b = b.len();
@@ -64,7 +63,7 @@ pub fn fft_convolve_1d(a: ArrayView1<f64>, b: ArrayView1<f64>) -> Array1<f64> {
         *v = a_fft_buf[i].re * scale;
     });
 
-    Array1::from_vec(result)
+    result
 }
 
 /// Deconvolve two 1-dimensional signals using the Fast Fourier Transform (FFT).
@@ -89,11 +88,7 @@ pub fn fft_convolve_1d(a: ArrayView1<f64>, b: ArrayView1<f64>) -> Array1<f64> {
 ///
 /// * `ArrayView1<f64>`: The FFT deconvolved result of the same length as input
 ///    signal `a`.
-pub fn fft_deconvolve_1d(
-    a: ArrayView1<f64>,
-    b: ArrayView1<f64>,
-    epsilon: Option<f64>,
-) -> Array1<f64> {
+pub fn fft_deconvolve_1d(a: &[f64], b: &[f64], epsilon: Option<f64>) -> Vec<f64> {
     // set optional parameters if needed
     let epsilon = epsilon.unwrap_or(1e-8);
 
@@ -143,5 +138,5 @@ pub fn fft_deconvolve_1d(
         *v = a_fft_buf[i].re * scale;
     });
 
-    Array1::from_vec(result)
+    result
 }

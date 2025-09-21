@@ -1,6 +1,6 @@
 use numpy::{
     IntoPyArray, PyArray2, PyArray3, PyArrayMethods, PyReadonlyArray2, PyReadonlyArray3,
-    PyReadwriteArray3, ndarray::Array1,
+    PyReadwriteArray3,
 };
 use pyo3::prelude::*;
 
@@ -300,8 +300,7 @@ pub fn time_domain_image<'py>(
 #[pyo3(name = "imaginary")]
 #[pyo3(signature = (data, period, harmonic=None))]
 pub fn time_domain_imaginary(data: Vec<f64>, period: f64, harmonic: Option<f64>) -> f64 {
-    let arr = Array1::from_vec(data);
-    time_domain::imaginary(arr.view(), period, harmonic)
+    time_domain::imaginary(&data, period, harmonic)
 }
 
 /// Compute the real (G) component of a 1-dimensional decay curve.
@@ -321,6 +320,5 @@ pub fn time_domain_imaginary(data: Vec<f64>, period: f64, harmonic: Option<f64>)
 #[pyo3(name = "real")]
 #[pyo3(signature = (data, period, harmonic=None))]
 pub fn time_domain_real(data: Vec<f64>, period: f64, harmonic: Option<f64>) -> f64 {
-    let arr = Array1::from_vec(data);
-    time_domain::real(arr.view(), period, harmonic)
+    time_domain::real(&data, period, harmonic)
 }

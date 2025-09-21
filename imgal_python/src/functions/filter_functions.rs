@@ -1,4 +1,4 @@
-use numpy::{IntoPyArray, PyArray1, ndarray::Array1};
+use numpy::{IntoPyArray, PyArray1};
 use pyo3::prelude::*;
 
 use imgal_core::filter;
@@ -22,9 +22,7 @@ pub fn filter_fft_convolve_1d(
     a: Vec<f64>,
     b: Vec<f64>,
 ) -> PyResult<Bound<PyArray1<f64>>> {
-    let a_arr = Array1::from_vec(a);
-    let b_arr = Array1::from_vec(b);
-    let output = filter::fft_convolve_1d(a_arr.view(), b_arr.view());
+    let output = filter::fft_convolve_1d(&a, &b);
     Ok(output.into_pyarray(py))
 }
 
@@ -51,8 +49,6 @@ pub fn filter_fft_deconvolve_1d(
     b: Vec<f64>,
     epsilon: Option<f64>,
 ) -> PyResult<Bound<PyArray1<f64>>> {
-    let a_arr = Array1::from_vec(a);
-    let b_arr = Array1::from_vec(b);
-    let output = filter::fft_deconvolve_1d(a_arr.view(), b_arr.view(), epsilon);
+    let output = filter::fft_deconvolve_1d(&a, &b, epsilon);
     Ok(output.into_pyarray(py))
 }

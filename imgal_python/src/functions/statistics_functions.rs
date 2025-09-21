@@ -1,4 +1,4 @@
-use numpy::{PyReadwriteArray1, ndarray::Array1};
+use numpy::PyReadwriteArray1;
 use pyo3::prelude::*;
 
 use crate::error::map_array_error;
@@ -11,8 +11,7 @@ use imgal_core::statistics;
 #[pyfunction]
 #[pyo3(name = "sum")]
 pub fn statistics_sum(data: Vec<f64>) -> f64 {
-    let arr = Array1::from_vec(data);
-    statistics::sum(arr.view())
+    statistics::sum(&data)
 }
 
 /// Sort 1-dimensional arrays of values and their associated weights.

@@ -1,5 +1,3 @@
-use ndarray::Array1;
-
 use crate::statistics::sum;
 
 /// Generate a normalized Gaussian distribution over a specified range.
@@ -28,11 +26,13 @@ use crate::statistics::sum;
 ///
 /// # Returns
 ///
-/// * `Array1<f64>`: The normalized Gaussian distribution.
-pub fn gaussian(sigma: f64, bins: usize, range: f64, center: f64) -> Array1<f64> {
+/// * `Vec<f64>`: The normalized Gaussian distribution.
+pub fn gaussian(sigma: f64, bins: usize, range: f64, center: f64) -> Vec<f64> {
     // create data range (i.e. time) and gaussian arrays
-    let mut r = Array1::<f64>::zeros(bins);
-    let mut g = Array1::<f64>::zeros(bins);
+    // let mut r = Array1::<f64>::zeros(bins);
+    // let mut g = Array1::<f64>::zeros(bins);
+    let mut r = vec![0.0; bins];
+    let mut g = vec![0.0; bins];
 
     // calculate range data
     let width = range / (bins as f64 - 1.0);
@@ -47,7 +47,7 @@ pub fn gaussian(sigma: f64, bins: usize, range: f64, center: f64) -> Array1<f64>
     });
 
     // normalize the gaussian distribution
-    let g_sum = sum(g.view());
+    let g_sum = sum(&g);
     g.iter_mut().for_each(|v| {
         *v /= g_sum;
     });

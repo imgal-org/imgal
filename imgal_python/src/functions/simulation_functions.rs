@@ -1,6 +1,6 @@
 use numpy::{
     IntoPyArray, PyArray1, PyArray3, PyArrayMethods, PyReadonlyArray1, PyReadonlyArray3,
-    PyReadwriteArray1, PyReadwriteArray3, ndarray::Array1,
+    PyReadwriteArray1, PyReadwriteArray3,
 };
 use pyo3::prelude::*;
 
@@ -234,17 +234,9 @@ pub fn decay_irf_exponential_1d(
     fractions: Vec<f64>,
     total_counts: f64,
 ) -> PyResult<Bound<PyArray1<f64>>> {
-    let irf = Array1::from_vec(irf);
-    simulation::decay::irf_exponential_1d(
-        irf.view(),
-        samples,
-        period,
-        &taus,
-        &fractions,
-        total_counts,
-    )
-    .map(|output| output.into_pyarray(py))
-    .map_err(map_array_error)
+    simulation::decay::irf_exponential_1d(&irf, samples, period, &taus, &fractions, total_counts)
+        .map(|output| output.into_pyarray(py))
+        .map_err(map_array_error)
 }
 
 /// Simulate a 3-dimensional IRF convolved monoexponential or multiexponential
@@ -285,9 +277,8 @@ pub fn decay_irf_exponential_3d(
     total_counts: f64,
     shape: (usize, usize),
 ) -> PyResult<Bound<PyArray3<f64>>> {
-    let irf = Array1::from_vec(irf);
     simulation::decay::irf_exponential_3d(
-        irf.view(),
+        &irf,
         samples,
         period,
         &taus,
@@ -351,21 +342,17 @@ pub fn noise_poisson_1d<'py>(
     seed: Option<u64>,
 ) -> PyResult<Bound<'py, PyArray1<f64>>> {
     // pattern match and extract allowed array types
-    if let Ok(array) = data.extract::<PyReadonlyArray1<f32>>() {
-        let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_1d(ro_arr.as_array(), scale, seed);
+    if let Ok(arr) = data.extract::<PyReadonlyArray1<f32>>() {
+        let output = simulation::noise::poisson_1d(arr.as_slice().unwrap(), scale, seed);
         return Ok(output.into_pyarray(py));
-    } else if let Ok(array) = data.extract::<PyReadonlyArray1<f64>>() {
-        let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_1d(ro_arr.as_array(), scale, seed);
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray1<f64>>() {
+        let output = simulation::noise::poisson_1d(arr.as_slice().unwrap(), scale, seed);
         return Ok(output.into_pyarray(py));
-    } else if let Ok(array) = data.extract::<PyReadonlyArray1<u8>>() {
-        let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_1d(ro_arr.as_array(), scale, seed);
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray1<u8>>() {
+        let output = simulation::noise::poisson_1d(arr.as_slice().unwrap(), scale, seed);
         return Ok(output.into_pyarray(py));
-    } else if let Ok(array) = data.extract::<PyReadonlyArray1<u16>>() {
-        let ro_arr = array.readonly();
-        let output = simulation::noise::poisson_1d(ro_arr.as_array(), scale, seed);
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray1<u16>>() {
+        let output = simulation::noise::poisson_1d(arr.as_slice().unwrap(), scale, seed);
         return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
@@ -391,8 +378,9 @@ pub fn noise_poisson_1d<'py>(
 #[pyo3(name = "poisson_1d_mut")]
 #[pyo3(signature= (data, scale, seed=None))]
 pub fn noise_poisson_1d_mut(mut data: PyReadwriteArray1<f64>, scale: f64, seed: Option<u64>) {
-    let arr = data.as_array_mut();
-    simulation::noise::poisson_1d_mut(arr, scale, seed);
+    // get mutable slice, all 1D arrays are contiguous
+    let d = data.as_slice_mut().unwrap();
+    simulation::noise::poisson_1d_mut(d, scale, seed);
 }
 
 /// Simulate Poisson noise on a 3-dimensional array.

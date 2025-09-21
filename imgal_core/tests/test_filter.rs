@@ -21,14 +21,14 @@ fn filter_fft_convolve_1d() {
     // simulate two signals to convolve
     let a = decay::ideal_exponential_1d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS).unwrap();
     let b = instrument::gaussian_irf_1d(SAMPLES, PERIOD, IRF_CENTER, IRF_WIDTH);
-    let conv = filter::fft_convolve_1d(a.view(), b.view());
+    let conv = filter::fft_convolve_1d(&a, &b);
 
     // bin width for integration check
     let dt = PERIOD / SAMPLES as f64;
 
     // check curve by integration and the peak of the curve
     assert!(ensure_within_tolerance(
-        midpoint(conv.view(), Some(dt)),
+        midpoint(&conv, Some(dt)),
         5015.983504781878,
         1e-12
     ));
@@ -49,14 +49,14 @@ fn filter_fft_deconvolve_1d() {
     )
     .unwrap();
     let b = decay::ideal_exponential_1d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS).unwrap();
-    let dconv = filter::fft_deconvolve_1d(a.view(), b.view(), None);
+    let dconv = filter::fft_deconvolve_1d(&a, &b, None);
 
     // bin width for integration check
     let dt = PERIOD / SAMPLES as f64;
 
     // check curve by integration and the peak of the curve
     assert!(ensure_within_tolerance(
-        midpoint(dconv.view(), Some(dt)),
+        midpoint(&dconv, Some(dt)),
         0.04882693030413842,
         1e-12
     ));

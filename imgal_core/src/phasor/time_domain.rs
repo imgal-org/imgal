@@ -1,6 +1,6 @@
 use std::f64;
 
-use ndarray::{Array1, Array2, Array3, ArrayView1, ArrayView2, ArrayView3, Axis, Zip, stack};
+use ndarray::{Array2, Array3, ArrayView2, ArrayView3, Axis, Zip, stack};
 
 use crate::error::ArrayError;
 use crate::integration::midpoint;
@@ -166,7 +166,7 @@ where
 /// # Returns
 ///
 /// * `f64`: The imaginary component, S.
-pub fn imaginary<T>(data: ArrayView1<T>, period: f64, harmonic: Option<f64>) -> f64
+pub fn imaginary<T>(data: &[T], period: f64, harmonic: Option<f64>) -> f64
 where
     T: ToFloat64,
 {
@@ -182,8 +182,8 @@ where
     for i in 0..n {
         buf.push(data[i].into() * f64::sin(h_w_dt * (i as f64)));
     }
-    let i_sin_integral: f64 = midpoint(Array1::from_vec(buf).view(), Some(dt));
-    let i_integral: f64 = midpoint(data.view(), Some(dt));
+    let i_sin_integral: f64 = midpoint(&buf, Some(dt));
+    let i_integral: f64 = midpoint(data, Some(dt));
     i_sin_integral / i_integral
 }
 
@@ -209,7 +209,7 @@ where
 /// # Returns
 ///
 /// * `f64`: The real component, G.
-pub fn real<T>(data: ArrayView1<T>, period: f64, harmonic: Option<f64>) -> f64
+pub fn real<T>(data: &[T], period: f64, harmonic: Option<f64>) -> f64
 where
     T: ToFloat64,
 {
@@ -225,7 +225,7 @@ where
     for i in 0..n {
         buf.push(data[i].into() * f64::cos(h_w_dt * (i as f64)));
     }
-    let i_cos_integral: f64 = midpoint(Array1::from_vec(buf).view(), Some(dt));
-    let i_integral: f64 = midpoint(data.view(), Some(dt));
+    let i_cos_integral: f64 = midpoint(&buf, Some(dt));
+    let i_integral: f64 = midpoint(data, Some(dt));
     i_cos_integral / i_integral
 }

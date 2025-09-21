@@ -1,5 +1,3 @@
-use ndarray::ArrayView1;
-
 use crate::traits::numeric::ToFloat64;
 
 /// Compute the sum of the slice of numbers.
@@ -24,17 +22,16 @@ use crate::traits::numeric::ToFloat64;
 /// use imgal_core::statistics::sum;
 ///
 /// // create a 1-dimensional array
-/// let arr = Array1::from_vec(vec![1.82, 3.35, 7.13, 9.25]);
+/// let arr = [1.82, 3.35, 7.13, 9.25];
 ///
 /// // compute the sum of the array
-/// let total = sum(arr.view());
+/// let total = sum(&arr);
 ///
 /// assert_eq!(total, 21.55);
 /// ```
-pub fn sum<T>(data: ArrayView1<T>) -> T
+pub fn sum<T>(data: &[T]) -> T
 where
     T: ToFloat64,
 {
-    let d = data.as_slice().unwrap();
-    d.iter().copied().sum()
+    data.iter().copied().sum()
 }

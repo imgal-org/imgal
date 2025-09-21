@@ -1,4 +1,4 @@
-use ndarray::{Array1, Array3, ArrayView1, ArrayView3, ArrayViewMut1, ArrayViewMut3, Axis, Zip};
+use ndarray::{Array3, ArrayView1, ArrayView3, ArrayViewMut3, Axis, Zip};
 use rand::SeedableRng;
 use rand::prelude::*;
 use rand::rngs::StdRng;
@@ -28,8 +28,8 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Returns
 ///
-/// * `Array1<f64>`: A 1-dimensonal array of the input data with Poisson noise applied.
-pub fn poisson_1d<T>(data: ArrayView1<T>, scale: f64, seed: Option<u64>) -> Array1<f64>
+/// * `Vec<f64>`: A 1-dimensonal array of the input data with Poisson noise applied.
+pub fn poisson_1d<T>(data: &[T], scale: f64, seed: Option<u64>) -> Vec<f64>
 where
     T: ToFloat64,
 {
@@ -37,14 +37,14 @@ where
     let s = seed.unwrap_or(0);
     let mut rng = StdRng::seed_from_u64(s);
 
-    // create new array and apply noise
-    let n_data: Array1<f64> = data.map(|x| {
-        if (*x).into() > 0.0 {
-            let l: f64 = (*x).into() * scale;
+    let mut n_data = vec![0.0; data.len()];
+    n_data.iter_mut().zip(data.iter()).for_each(|(n, &d)| {
+        if d.into() > 0.0 {
+            let l: f64 = d.into() * scale;
             let p = Poisson::new(l).unwrap();
-            p.sample(&mut rng)
+            *n = p.sample(&mut rng);
         } else {
-            0.0
+            *n = 0.0;
         }
     });
 
@@ -63,18 +63,18 @@ where
 ///
 /// # Arguments
 ///
-/// * `data`: The input 1-dimensional array to mutate.
+/// * `data`: The input 1-dimensional array view to mutate.
 /// * `scale`: The scale factor.
 /// * `seed`: Pseudorandom number generator seed. Set the `seed` value to apply
 ///    homogenous noise to the input array. If `None`, then heterogenous noise
 ///    is applied to the input array.
-pub fn poisson_1d_mut(mut data: ArrayViewMut1<f64>, scale: f64, seed: Option<u64>) {
+pub fn poisson_1d_mut(data: &mut [f64], scale: f64, seed: Option<u64>) {
     // set optional parameters if needed
     let s = seed.unwrap_or(0);
     let mut rng = StdRng::seed_from_u64(s);
 
     // mutate the 1d data array
-    data.map_inplace(|x| {
+    data.iter_mut().for_each(|x| {
         if *x > 0.0 {
             let l = *x * scale;
             let p = Poisson::new(l).unwrap();
@@ -204,15 +204,29 @@ pub fn poisson_3d_mut(
     let lanes = data.lanes_mut(Axis(a));
     if let Some(s) = seed {
         // apply noise with one seed, homogeneous noise
-        lanes.into_iter().par_bridge().for_each(|ln| {
-            poisson_1d_mut(ln, scale, Some(s));
+        lanes.into_iter().par_bridge().for_each(|mut ln| {
+            if let Some(l) = ln.as_slice_mut() {
+                poisson_1d_mut(l, scale, Some(s));
+            } else {
+                let mut l = ln.to_vec();
+                poisson_1d_mut(&mut l, scale, Some(s));
+                let l = ArrayView1::from(&l);
+                ln.assign(&l);
+            }
         });
     } else {
         // apply noise with variable seeds, hetergeneous noise
-        lanes.into_iter().par_bridge().for_each(|ln| {
+        lanes.into_iter().par_bridge().for_each(|mut ln| {
             let mut rng = rand::rng();
             let s = rng.next_u64();
-            poisson_1d_mut(ln, scale, Some(s));
+            if let Some(l) = ln.as_slice_mut() {
+                poisson_1d_mut(l, scale, Some(s));
+            } else {
+                let mut l = ln.to_vec();
+                poisson_1d_mut(&mut l, scale, Some(s));
+                let l = ArrayView1::from(&l);
+                ln.assign(&l);
+            }
         });
     }
 }

@@ -1,5 +1,3 @@
-use ndarray::ArrayView1;
-
 use crate::statistics::sum;
 use crate::traits::numeric::ToFloat64;
 
@@ -22,7 +20,7 @@ use crate::traits::numeric::ToFloat64;
 /// # Returns
 ///
 /// * `f64`: The computed integral.
-pub fn midpoint<T>(x: ArrayView1<T>, delta_x: Option<f64>) -> f64
+pub fn midpoint<T>(x: &[T], delta_x: Option<f64>) -> f64
 where
     T: ToFloat64,
 {

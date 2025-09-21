@@ -1,4 +1,3 @@
-use numpy::ndarray::Array1;
 use pyo3::prelude::*;
 
 use imgal_core::integration;
@@ -24,8 +23,7 @@ use imgal_core::integration;
 #[pyo3(name = "composite_simpson")]
 #[pyo3(signature = (x, delta_x=None))]
 pub fn integration_composite_simpson(x: Vec<f64>, delta_x: Option<f64>) -> f64 {
-    let x_arr = Array1::from_vec(x);
-    integration::composite_simpson(x_arr.view(), delta_x)
+    integration::composite_simpson(&x, delta_x)
 }
 
 /// Integrate a curve with the midpoint rule.
@@ -42,8 +40,7 @@ pub fn integration_composite_simpson(x: Vec<f64>, delta_x: Option<f64>) -> f64 {
 #[pyo3(name = "midpoint")]
 #[pyo3(signature = (x, delta_x=None))]
 pub fn integration_midpoint(x: Vec<f64>, delta_x: Option<f64>) -> f64 {
-    let x_arr = Array1::from_vec(x);
-    integration::midpoint(x_arr.view(), delta_x)
+    integration::midpoint(&x, delta_x)
 }
 
 /// Integrate a curve with Simpson's 1/3 rule.
@@ -63,6 +60,5 @@ pub fn integration_midpoint(x: Vec<f64>, delta_x: Option<f64>) -> f64 {
 #[pyo3(name = "simpson")]
 #[pyo3(signature = (x, delta_x=None))]
 pub fn integration_simpson(x: Vec<f64>, delta_x: Option<f64>) -> f64 {
-    let x_arr = Array1::from_vec(x);
-    integration::simpson(x_arr.view(), delta_x).unwrap()
+    integration::simpson(&x, delta_x).unwrap()
 }
