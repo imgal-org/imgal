@@ -1,7 +1,7 @@
 use ndarray::s;
 
 use imgal_core::integration::midpoint;
-use imgal_core::simulation::{decay, instrument};
+use imgal_core::simulation::{decay, instrument, noise};
 
 // simulated bioexponential decay parameters
 const SAMPLES: usize = 256;
@@ -44,6 +44,7 @@ fn decay_gaussian_exponential_1d() {
     assert!(ensure_within_tolerance(i[68], 2810.4960313074985, 1e-12));
 }
 
+// test the simulation::decay module
 #[test]
 fn decay_gaussian_exponential_3d() {
     // simulate decay data
@@ -167,6 +168,7 @@ fn decay_irf_exponential_3d() {
     ));
 }
 
+// test the simulation::instrument module
 #[test]
 fn instrument_gaussian_irf_1d() {
     // simulate IRF data
@@ -182,4 +184,78 @@ fn instrument_gaussian_irf_1d() {
         1e-12
     ));
     assert!(ensure_within_tolerance(irf[62], 0.09054417121965984, 1e-12));
+}
+
+// test the simulation::noise module
+#[test]
+fn noise_poisson_1d() {
+    // create test data
+    let data = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
+    let scale = 0.5;
+    let seed = Some(42);
+
+    // apply noise and test if deterministic with seed
+    let result_a = noise::poisson_1d(&data, scale, seed);
+    let result_b = noise::poisson_1d(&data, scale, seed);
+
+    // apply noise and test if not equal with different seed
+    let result_c = noise::poisson_1d(&data, scale, Some(30));
+
+    assert_eq!(result_a, result_b);
+    assert_ne!(data, result_a);
+    assert_ne!(result_a, result_c);
+    assert!(result_a.iter().all(|&x| x >= 0.0));
+}
+
+#[test]
+fn noise_poisson_1d_mut() {
+    // create test data
+    let mut data_a = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
+    let data_b = data_a.clone();
+    let scale = 0.5;
+    let seed = Some(42);
+
+    // mutate decay data with noise
+    noise::poisson_1d_mut(&mut data_a, scale, seed);
+
+    assert_ne!(data_a, data_b);
+    assert!(data_a.iter().all(|&x| x >= 0.0));
+}
+
+#[test]
+fn noise_poisson_3d() {
+    // simulate decay data
+    let i = decay::ideal_exponential_3d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS, SHAPE)
+        .unwrap();
+    let scale = 0.5;
+    let seed = Some(42);
+
+    // apply noise and test if deterministic with seed
+    let result_a = noise::poisson_3d(i.view(), scale, seed, None).unwrap();
+    let result_b = noise::poisson_3d(i.view(), scale, seed, None).unwrap();
+
+    // apply noise and test if not equal with different seed
+    let result_c = noise::poisson_3d(i.view(), scale, Some(30), None).unwrap();
+
+    assert_eq!(result_a.shape(), [10, 10, 256]);
+    assert_eq!(result_a, result_b);
+    assert_ne!(result_a, result_c);
+    assert!(result_a.iter().all(|&x| x >= 0.0));
+}
+
+#[test]
+fn noise_poisson_3d_mut() {
+    // simulate decay data
+    let mut i_a =
+        decay::ideal_exponential_3d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS, SHAPE)
+            .unwrap();
+    let i_b = i_a.clone();
+    let scale = 0.5;
+    let seed = Some(42);
+
+    // mutate decay data with noise
+    noise::poisson_3d_mut(i_a.view_mut(), scale, seed, None);
+
+    assert_ne!(i_a, i_b);
+    assert!(i_a.iter().all(|&x| x >= 0.0));
 }

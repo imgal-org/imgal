@@ -47,7 +47,7 @@ fn get_circle_mask(shape: (usize, usize), center: (isize, isize), radius: isize)
     mask
 }
 
-// test the phasor::calibration
+// test the phasor::calibration module
 #[test]
 fn calibration_coordinates() {
     // phasor coordinates to calibrate
