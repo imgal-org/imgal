@@ -57,7 +57,10 @@ where
     let c_pairs = (total_w_pairs / 2.0) - swaps;
     let numer = c_pairs - swaps;
     let denom = ((total_w_pairs - a_tie_corr) * (total_w_pairs - b_tie_corr)).sqrt();
-    if denom == 0.0 {
+    // return a Tau of 0.0 if the total weighted pairs and tie correction are close
+    // this happens when one of the inputs has the same value in the entire array
+    // in this case there is no correlation so a Tau of 0.0 is appropriate
+    if denom < 1e-7 {
         Ok(0.0)
     } else {
         Ok(numer / denom)
