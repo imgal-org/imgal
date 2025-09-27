@@ -56,17 +56,26 @@ where
     // calculate tau-b with tie corrections, discordant pairs and swaps are the same
     let c_pairs = (total_w_pairs / 2.0) - swaps;
     let numer = c_pairs - swaps;
+    // denom will become 0 or NaN if the total weighted pairs and tie correction
+    // are close, this happens when one of the inputs has the same value in the
+    // all or most of the array
     let denom = ((total_w_pairs - a_tie_corr) * (total_w_pairs - b_tie_corr)).sqrt();
-    // return a Tau of 0.0 if the total weighted pairs and tie correction are close
-    // this happens when one of the inputs has the same value in the entire array
-    // in this case there is no correlation so a Tau of 0.0 is appropriate
-    if denom < 1e-7 {
-        Ok(0.0)
+    if denom != 0.0 && !denom.is_nan() {
+        let tau = numer / denom;
+        // clamp tau to meaningful range of -1.0 and 1.0
+        if tau >= 1.0 {
+            Ok(1.0)
+        } else if tau <= -1.0 {
+            Ok(-1.0)
+        } else {
+            Ok(tau)
+        }
     } else {
-        Ok(numer / denom)
+        Ok(0.0)
     }
 }
 
+/// Rank data and associated weights with a Kendall Tau-b tie correction
 fn rank_with_weights<T>(data: &[T], weights: &[f64]) -> (Vec<i32>, f64)
 where
     T: ToFloat64,
