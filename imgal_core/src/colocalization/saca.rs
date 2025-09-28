@@ -6,6 +6,40 @@ use crate::kernel::neighborhood::weighted_circle;
 use crate::statistics::{effective_sample_size, weighted_kendall_tau_b};
 use crate::traits::numeric::ToFloat64;
 
+/// Compute colocalization strength using 2-dimensional Spatially Adaptive
+/// Colocalization Analysis (SACA)
+///
+/// # Description
+///
+/// This function computes a pixel-wise _z-score_ indicating colocalization and
+/// anti-colocalization strength on 2-dimensional input images using the
+/// Spatially Adaptive Colocalization Analysis (SACA) framework. Per pixel SACA
+/// utilizes a propagation and separation strategy to adaptively expand a
+/// weighted circular kernel that defines the pixel of consideration's
+/// neighborhood. The pixels within the neighborhood are assigned weights based
+/// on their distance from the center pixel (decreasing with distance), ranked
+/// and their colocalization coefficient computed using Kendall's Tau-b rank
+/// correlation.
+///
+/// # Arguments
+///
+/// * `data_a`: The 2-dimensional input image, `A`. Image `A` must have the same
+///    shape as image `B`.
+/// * `data_b`: Ihe 2-dimensional input image, `B`. Image `B` must have the same
+///    shape as image `A`.
+/// * `threshold_a`: Pixel intensity threshold value for image `A`. Pixels below
+///    this value are given a weight of 0.0 if the pixel is in the circular
+///    neighborhood.
+/// * `threshold_b`: Pixel intensity threshold value for image `B`. Pixels below
+///    this value are given a weight of 0.0 if the pixel is in the circular
+///    neighborhood.
+///
+/// # Returns
+///
+/// * `OK(Array2<f64>)`: The pixel-wise _z-score_ indicating colocalization or
+///    anti-colocalization by its sign and the degree or strength of the
+///    relationship through its absolute values.
+/// * `Err(ArrayError)`: If the dimensions of image `A` and `B` do not match.
 pub fn saca_2d<T>(
     data_a: ArrayView2<T>,
     data_b: ArrayView2<T>,
@@ -15,18 +49,27 @@ pub fn saca_2d<T>(
 where
     T: ToFloat64,
 {
-    // create image buffers
     // TODO make 2D output for now, final output should be 3D (heatmap + p-values)
-    let shape = data_a.dim();
-    let mut result = Array2::<f64>::zeros(shape);
-    let mut new_tau = Array2::<f64>::zeros(shape);
-    let mut new_sqrt_n = Array2::<f64>::zeros(shape);
-    let mut old_tau = Array2::<f64>::zeros(shape);
-    let mut old_sqrt_n = Array2::<f64>::ones(shape);
-    let mut stop = Array3::<f64>::zeros((shape.0, shape.1, 3));
+    // ensure input images have the same shape
+    let dims_a = data_a.dim();
+    let dims_b = data_b.dim();
+    if dims_a != dims_b {
+        return Err(ArrayError::MismatchedArrayShapes {
+            shape_a: vec![dims_a.0, dims_a.1],
+            shape_b: vec![dims_b.0, dims_b.1],
+        });
+    }
+
+    // create image buffers
+    let mut result = Array2::<f64>::zeros(dims_a);
+    let mut new_tau = Array2::<f64>::zeros(dims_a);
+    let mut new_sqrt_n = Array2::<f64>::zeros(dims_a);
+    let mut old_tau = Array2::<f64>::zeros(dims_a);
+    let mut old_sqrt_n = Array2::<f64>::ones(dims_a);
+    let mut stop = Array3::<f64>::zeros((dims_a.0, dims_a.1, 3));
 
     // set up saca parameters, see reference on "n" value selection for lambda
-    let dn = ((shape.0 * shape.1) as f64).ln().sqrt() * 2.0;
+    let dn = ((dims_a.0 * dims_a.1) as f64).ln().sqrt() * 2.0;
     let lambda = dn * 1.0;
     let tu: usize = 15;
     let tl: usize = 8;
@@ -35,7 +78,7 @@ where
     let step_size: f64 = 1.15;
     let mut lower_bound_check = false;
 
-    // try doing this rust style!
+    // run the multiscale adaptive analysis
     (0..tu).for_each(|s| {
         radius = size_f.floor() as usize;
         single_iteration_2d(
@@ -71,6 +114,7 @@ where
     Ok(result)
 }
 
+/// Single 2-dimensional SACA iteration.
 fn single_iteration_2d<T>(
     data_a: ArrayView2<T>,
     data_b: ArrayView2<T>,
@@ -96,8 +140,8 @@ fn single_iteration_2d<T>(
     // set up buffers and parameters
     let buf_size = (2 * radius + 1) * (2 * radius + 1);
 
-    // do the kendall's tau on the data here
-    let shape = data_a.dim();
+    // compute weighted kendall's tau and write to output
+    let dims_a = data_a.dim();
     let lanes = stop.lanes_mut(Axis(2));
     result
         .indexed_iter_mut()
@@ -119,9 +163,9 @@ fn single_iteration_2d<T>(
             let mut buf_w = vec![0.0_f64; buf_size];
             // get the start and end values to fill buffers
             let buf_row_start = get_start_position(row, radius);
-            let buf_row_end = get_end_position(row, radius, shape.0);
+            let buf_row_end = get_end_position(row, radius, dims_a.0);
             let buf_col_start = get_start_position(col, radius);
-            let buf_col_end = get_end_position(col, radius, shape.1);
+            let buf_col_end = get_end_position(col, radius, dims_a.1);
             fill_buffers_2d(
                 data_a,
                 data_b,
@@ -157,7 +201,6 @@ fn single_iteration_2d<T>(
                 *nt = 0.0;
                 *re = 0.0;
             } else {
-                // do Wt kendall tau here
                 let tau = weighted_kendall_tau_b(&buf_a, &buf_b, &buf_w).unwrap_or(0.0);
                 *nt = tau;
                 *re = tau * *nn * 1.5;
@@ -184,7 +227,7 @@ fn single_iteration_2d<T>(
         });
 }
 
-// Fill the working buffers a, b and w.
+/// Fill working buffers from 2-dimensional data.
 fn fill_buffers_2d<T>(
     data_a: ArrayView2<T>,
     data_b: ArrayView2<T>,

@@ -37,8 +37,12 @@ pub fn map_array_error(err: ArrayError) -> PyErr {
             a_arr_len,
             b_arr_len,
         } => PyValueError::new_err(format!(
-            "Input array lengths, {} and {}, do not match.",
+            "Mismatched array lengths, {} and {}, do not match.",
             a_arr_len, b_arr_len
         )),
+        ArrayError::MismatchedArrayShapes { shape_a , shape_b } => PyValueError::new_err(format!(
+            "Mismatched array shapes, {:?} and {:?}, do not match.",
+            shape_a, shape_b
+        ))
     }
 }
