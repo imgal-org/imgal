@@ -12,7 +12,15 @@ pub fn register_statistics_module(parent_module: &Bound<'_, PyModule>) -> PyResu
 
     // add statistics submodule functions
     statistics_module.add_function(wrap_pyfunction!(
+        statistics_functions::statistics_effective_sample_size,
+        &statistics_module
+    )?)?;
+    statistics_module.add_function(wrap_pyfunction!(
         statistics_functions::statistics_sum,
+        &statistics_module
+    )?)?;
+    statistics_module.add_function(wrap_pyfunction!(
+        statistics_functions::statistics_weighted_kendall_tau_b,
         &statistics_module
     )?)?;
     statistics_module.add_function(wrap_pyfunction!(

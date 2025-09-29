@@ -6,7 +6,7 @@
 /// set. Only the weights of the associated sample set are needed. The ESS is
 /// defined as:
 ///
-/// ```math
+/// ```text
 /// ESS = (Σ wᵢ)² / Σ (wᵢ²)
 /// ```
 ///
