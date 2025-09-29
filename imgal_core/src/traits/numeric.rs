@@ -13,6 +13,7 @@ pub trait ToFloat64:
     + MulAssign
     + Sum
     + Debug
+    + Default
     + Into<f64>
     + PartialOrd
     + Send
@@ -30,6 +31,7 @@ impl<T> ToFloat64 for T where
         + MulAssign
         + Sum
         + Debug
+        + Default
         + Into<f64>
         + PartialOrd
         + Send

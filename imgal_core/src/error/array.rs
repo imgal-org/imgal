@@ -30,6 +30,10 @@ pub enum ArrayError {
         a_arr_len: usize,
         b_arr_len: usize,
     },
+    MismatchedArrayShapes {
+        shape_a: Vec<usize>,
+        shape_b: Vec<usize>,
+    },
 }
 
 // "Dimension size {} of axis {} is out of bounds for dimension size {}."
@@ -78,6 +82,13 @@ impl fmt::Display for ArrayError {
                     f,
                     "Mismatched array lengths, {} and {}, do not match.",
                     a_arr_len, b_arr_len
+                )
+            }
+            ArrayError::MismatchedArrayShapes { shape_a, shape_b } => {
+                write!(
+                    f,
+                    "Mismatched array shapes, {:?} and {:?}, do not match.",
+                    shape_a, shape_b
                 )
             }
         }
