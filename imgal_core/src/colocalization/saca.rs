@@ -23,9 +23,9 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Arguments
 ///
-/// * `data_a`: The 2-dimensional input image, `A`. Image `A` must have the same
+/// * `image_a`: The 2-dimensional input image, `A`. Image `A` must have the same
 ///    shape as image `B`.
-/// * `data_b`: Ihe 2-dimensional input image, `B`. Image `B` must have the same
+/// * `image_b`: Ihe 2-dimensional input image, `B`. Image `B` must have the same
 ///    shape as image `A`.
 /// * `threshold_a`: Pixel intensity threshold value for image `A`. Pixels below
 ///    this value are given a weight of 0.0 if the pixel is in the circular
@@ -40,9 +40,13 @@ use crate::traits::numeric::ToFloat64;
 ///    anti-colocalization by its sign and the degree or strength of the
 ///    relationship through its absolute values.
 /// * `Err(ArrayError)`: If the dimensions of image `A` and `B` do not match.
+///
+/// # Reference
+///
+/// <https://doi.org/10.1109/TIP.2019.2909194>
 pub fn saca_2d<T>(
-    data_a: ArrayView2<T>,
-    data_b: ArrayView2<T>,
+    image_a: ArrayView2<T>,
+    image_b: ArrayView2<T>,
     threshold_a: T,
     threshold_b: T,
 ) -> Result<Array2<f64>, ArrayError>
@@ -51,8 +55,8 @@ where
 {
     // TODO make 2D output for now, final output should be 3D (heatmap + p-values)
     // ensure input images have the same shape
-    let dims_a = data_a.dim();
-    let dims_b = data_b.dim();
+    let dims_a = image_a.dim();
+    let dims_b = image_b.dim();
     if dims_a != dims_b {
         return Err(ArrayError::MismatchedArrayShapes {
             shape_a: vec![dims_a.0, dims_a.1],
@@ -82,8 +86,8 @@ where
     (0..tu).for_each(|s| {
         radius = size_f.floor() as usize;
         single_iteration_2d(
-            data_a,
-            data_b,
+            image_a,
+            image_b,
             threshold_a,
             threshold_b,
             result.view_mut(),
@@ -116,8 +120,8 @@ where
 
 /// Single 2-dimensional SACA iteration.
 fn single_iteration_2d<T>(
-    data_a: ArrayView2<T>,
-    data_b: ArrayView2<T>,
+    image_a: ArrayView2<T>,
+    image_b: ArrayView2<T>,
     threshold_a: T,
     threshold_b: T,
     mut result: ArrayViewMut2<f64>,
@@ -141,7 +145,7 @@ fn single_iteration_2d<T>(
     let buf_size = (2 * radius + 1) * (2 * radius + 1);
 
     // compute weighted kendall's tau and write to output
-    let dims_a = data_a.dim();
+    let dims_a = image_a.dim();
     let lanes = stop.lanes_mut(Axis(2));
     result
         .indexed_iter_mut()
@@ -167,8 +171,8 @@ fn single_iteration_2d<T>(
             let buf_col_start = get_start_position(col, radius);
             let buf_col_end = get_end_position(col, radius, dims_a.1);
             fill_buffers_2d(
-                data_a,
-                data_b,
+                image_a,
+                image_b,
                 kernel.view(),
                 old_tau.view(),
                 old_sqrt_n.view(),
@@ -229,8 +233,8 @@ fn single_iteration_2d<T>(
 
 /// Fill working buffers from 2-dimensional data.
 fn fill_buffers_2d<T>(
-    data_a: ArrayView2<T>,
-    data_b: ArrayView2<T>,
+    image_a: ArrayView2<T>,
+    image_b: ArrayView2<T>,
     kernel: ArrayView2<f64>,
     old_tau: ArrayView2<f64>,
     old_sqrt_n: ArrayView2<f64>,
@@ -267,8 +271,8 @@ fn fill_buffers_2d<T>(
             let kr = ((r as isize - pos_row) + radius) as usize;
             let kc = ((c as isize - pos_col) + radius) as usize;
             // load the buffers with data from images and associated weights
-            buf_a[i] = data_a[[r, c]];
-            buf_b[i] = data_b[[r, c]];
+            buf_a[i] = image_a[[r, c]];
+            buf_b[i] = image_b[[r, c]];
             buf_w[i] = kernel[[kr, kc]];
             tau_diff = old_tau[[r, c]] - ot;
             tau_diff_abs = tau_diff.abs() * on_dn;

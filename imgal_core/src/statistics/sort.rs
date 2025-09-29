@@ -22,7 +22,7 @@ use crate::traits::numeric::ToFloat64;
 /// # Returns
 ///
 /// * `OK(f64)`: The number of swaps needed to sort the input array.
-/// * `Err(ArrayError)`: An ArrayError.
+/// * `Err(ArrayError)`: If the data and weights array lengths do not match.
 ///
 /// # Reference
 ///
