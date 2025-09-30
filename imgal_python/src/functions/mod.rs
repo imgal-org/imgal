@@ -7,3 +7,4 @@ pub mod parameter_functions;
 pub mod phasor_functions;
 pub mod simulation_functions;
 pub mod statistics_functions;
+pub mod threshold_functions;
