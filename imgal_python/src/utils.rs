@@ -14,7 +14,7 @@ use pyo3::prelude::*;
 /// * `module_name` - The name of the module to add to sys.modules.
 pub fn py_import_module(module_name: &str) {
     let import_cmd = format!(
-        "import sys; sys.modules['imgal_python.{}'] = '{}'",
+        "import sys; sys.modules['imgal.{}'] = '{}'",
         module_name, module_name
     );
     let c_str_cmd =

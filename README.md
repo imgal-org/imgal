@@ -63,8 +63,8 @@ $ mamba activate myenv
 ### Using `imgal` in Python
 
 ```python
-import imgal_python.simulation.decay as dsim
-import imgal_python.simulation.noise as nsim
+import imgal.simulation.decay as dsim
+import imgal.simulation.noise as nsim
 
 # biexponential decay parameters
 samples = 256

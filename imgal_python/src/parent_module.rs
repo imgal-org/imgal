@@ -6,7 +6,7 @@ use super::child_modules::{
 };
 
 /// Python binding for the imgal parent module.
-#[pymodule(name = "imgal_python")]
+#[pymodule(name = "imgal")]
 fn imgal_parent_module(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // register child modules
     colocalization_module::register_colocalization_module(m)?;
