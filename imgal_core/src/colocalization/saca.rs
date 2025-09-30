@@ -188,7 +188,6 @@ fn single_iteration_2d<T>(
                 buf_col_start,
                 buf_col_end,
             );
-            // TODO: parallalize this?
             // zero out weights for values below threshold and find the ESS of the neighborhood
             buf_a
                 .iter()
