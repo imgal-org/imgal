@@ -219,16 +219,9 @@ fn single_iteration_2d<T>(
             }
         });
 
-    // TODO: there might be a faster way than this...maybe `.assign` is more efficient.
     // store old tau and n
-    Zip::from(old_tau.view_mut())
-        .and(old_sqrt_n.view_mut())
-        .and(new_tau.view())
-        .and(new_sqrt_n.view())
-        .par_for_each(|ot, on, &nt, &nn| {
-            *ot = nt;
-            *on = nn;
-        });
+    old_tau.assign(&new_tau);
+    old_sqrt_n.assign(&new_sqrt_n);
 }
 
 /// Fill working buffers from 2-dimensional data.
