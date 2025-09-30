@@ -8,7 +8,7 @@ pub fn register_kernel_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
     let kernel_module = PyModule::new(parent_module.py(), "kernel")?;
     let neighborhood_module = PyModule::new(parent_module.py(), "neighborhood")?;
 
-    // add moduleto Python's sys.modules
+    // add module to Python's sys.modules
     py_import_module("kernel");
     py_import_module("kernel.neighborhood");
 
