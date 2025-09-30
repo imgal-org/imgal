@@ -1,6 +1,7 @@
 use std::f64;
 
 use numpy::{IntoPyArray, PyArray2, PyReadonlyArray2};
+use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 
 use crate::error::map_array_error;
@@ -36,17 +37,39 @@ use imgal_core::colocalization;
 #[pyo3(name = "saca_2d")]
 pub fn colocalization_saca_2d<'py>(
     py: Python<'py>,
-    image_a: PyReadonlyArray2<f64>,
-    image_b: PyReadonlyArray2<f64>,
+    image_a: Bound<'py, PyAny>,
+    image_b: Bound<'py, PyAny>,
     threshold_a: f64,
     threshold_b: f64,
 ) -> PyResult<Bound<'py, PyArray2<f64>>> {
-    colocalization::saca_2d(
-        image_a.as_array(),
-        image_b.as_array(),
-        threshold_a,
-        threshold_b,
-    )
-    .map(|output| output.into_pyarray(py))
-    .map_err(map_array_error)
+    if let Ok(arr_a) = image_a.extract::<PyReadonlyArray2<u8>>() {
+        let arr_b = image_b.extract::<PyReadonlyArray2<u8>>()?;
+        colocalization::saca_2d(
+            arr_a.as_array(),
+            arr_b.as_array(),
+            threshold_a as u8,
+            threshold_b as u8,
+        )
+        .map(|output| output.into_pyarray(py))
+        .map_err(map_array_error)
+    } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray2<u16>>() {
+        let arr_b = image_b.extract::<PyReadonlyArray2<u16>>()?;
+        colocalization::saca_2d(
+            arr_a.as_array(),
+            arr_b.as_array(),
+            threshold_a as u16,
+            threshold_b as u16,
+        )
+        .map(|output| output.into_pyarray(py))
+        .map_err(map_array_error)
+    } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray2<f64>>() {
+        let arr_b = image_b.extract::<PyReadonlyArray2<f64>>()?;
+        colocalization::saca_2d(arr_a.as_array(), arr_b.as_array(), threshold_a, threshold_b)
+            .map(|output| output.into_pyarray(py))
+            .map_err(map_array_error)
+    } else {
+        return Err(PyErr::new::<PyTypeError, _>(
+            "Unsupported array dtype, supported array dtypes are u8, u16 and f64.",
+        ));
+    }
 }
