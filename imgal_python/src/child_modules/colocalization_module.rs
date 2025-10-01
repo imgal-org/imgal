@@ -15,6 +15,10 @@ pub fn register_colocalization_module(parent_module: &Bound<'_, PyModule>) -> Py
         colocalization_functions::colocalization_saca_2d,
         &colocalization_module
     )?)?;
+    colocalization_module.add_function(wrap_pyfunction!(
+        colocalization_functions::colocalization_saca_3d,
+        &colocalization_module
+    )?)?;
 
     // attach to parent module
     parent_module.add_submodule(&colocalization_module)
