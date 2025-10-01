@@ -53,9 +53,9 @@ where
     let mut k: usize;
 
     // create working buffers
-    let mut data_buf = data.to_owned();
-    let mut weights_buf = weights.to_owned();
-    let mut cum_weights_buf: Vec<f64> = vec![0.0; dl];
+    let mut data_buf = vec![T::default(); dl];
+    let mut weights_buf = vec![0.0; dl];
+    let mut cum_weights_buf = vec![0.0; dl];
 
     // weighted bottom-up merge sort
     while step < dl {
@@ -65,7 +65,7 @@ where
         cum_weights_buf[0] = weights[0];
         cum_weights_buf
             .iter_mut()
-            .zip(weights_buf.iter())
+            .zip(weights.iter())
             .skip(1)
             .for_each(|(cw, w)| {
                 *cw = cw_acc + w;
