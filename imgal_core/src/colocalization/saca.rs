@@ -232,6 +232,147 @@ where
     Ok(result)
 }
 
+/// Fill working buffers from 2-dimensional data.
+fn fill_buffers_2d<T>(
+    image_a: ArrayView2<T>,
+    image_b: ArrayView2<T>,
+    kernel: ArrayView2<f64>,
+    old_tau: ArrayView2<f64>,
+    old_sqrt_n: ArrayView2<f64>,
+    buf_a: &mut [T],
+    buf_b: &mut [T],
+    buf_w: &mut [f64],
+    dn: f64,
+    radius: usize,
+    pos_row: usize,
+    pos_col: usize,
+    buf_row_start: usize,
+    buf_row_end: usize,
+    buf_col_start: usize,
+    buf_col_end: usize,
+) where
+    T: ToFloat64,
+{
+    // set compute parameters
+    let mut i: usize = 0;
+    let ot = old_tau[[pos_row, pos_col]];
+    let on = old_sqrt_n[[pos_row, pos_col]];
+    let on_dn = on / dn;
+    let pos_row = pos_row as isize;
+    let pos_col = pos_col as isize;
+    let radius = radius as isize;
+
+    // create a 2D iterator centered with the kernel
+    (buf_row_start..=buf_row_end)
+        .flat_map(|r| (buf_col_start..=buf_col_end).map(move |c| (r, c)))
+        .for_each(|(r, c)| {
+            let tau_diff: f64;
+            let tau_diff_abs: f64;
+            // subtract current position to get offset from kernel center
+            let kr = ((r as isize - pos_row) + radius) as usize;
+            let kc = ((c as isize - pos_col) + radius) as usize;
+            // load the buffers with data from images and associated weights
+            buf_a[i] = image_a[[r, c]];
+            buf_b[i] = image_b[[r, c]];
+            buf_w[i] = kernel[[kr, kc]];
+            tau_diff = old_tau[[r, c]] - ot;
+            tau_diff_abs = tau_diff.abs() * on_dn;
+            if tau_diff_abs < 1.0 {
+                buf_w[i] = buf_w[i] * (1.0 - tau_diff_abs).powi(2);
+            } else {
+                buf_w[i] = 0.0;
+            }
+            i += 1;
+        });
+
+    // zero out the rest of the buffers
+    buf_a[i..].fill(T::default());
+    buf_b[i..].fill(T::default());
+    buf_w[i..].fill(0.0);
+}
+
+/// Fill working buffers from 3-dimensional data.
+fn fill_buffers_3d<T>(
+    image_a: ArrayView3<T>,
+    image_b: ArrayView3<T>,
+    kernel: ArrayView3<f64>,
+    old_tau: ArrayView3<f64>,
+    old_sqrt_n: ArrayView3<f64>,
+    buf_a: &mut [T],
+    buf_b: &mut [T],
+    buf_w: &mut [f64],
+    dn: f64,
+    radius: usize,
+    pos_pln: usize,
+    pos_row: usize,
+    pos_col: usize,
+    buf_pln_start: usize,
+    buf_pln_end: usize,
+    buf_row_start: usize,
+    buf_row_end: usize,
+    buf_col_start: usize,
+    buf_col_end: usize,
+) where
+    T: ToFloat64,
+{
+    // set compute parameters
+    let mut i: usize = 0;
+    let ot = old_tau[[pos_pln, pos_row, pos_col]];
+    let on = old_sqrt_n[[pos_pln, pos_row, pos_col]];
+    let on_dn = on / dn;
+    let pos_pln = pos_pln as isize;
+    let pos_row = pos_row as isize;
+    let pos_col = pos_col as isize;
+    let radius = radius as isize;
+
+    // create a 3D iterator centered with the kernel
+    (buf_pln_start..=buf_pln_end)
+        .flat_map(|p| {
+            (buf_row_start..=buf_row_end)
+                .flat_map(move |r| (buf_col_start..=buf_col_end).map(move |c| (p, r, c)))
+        })
+        .for_each(|(p, r, c)| {
+            let tau_diff: f64;
+            let tau_diff_abs: f64;
+            // subtract current position to get offset from kernel center
+            let kp = ((p as isize - pos_pln) + radius) as usize;
+            let kr = ((r as isize - pos_row) + radius) as usize;
+            let kc = ((c as isize - pos_col) + radius) as usize;
+            // load the buffers with data from images and associated weights
+            buf_a[i] = image_a[[p, r, c]];
+            buf_b[i] = image_b[[p, r, c]];
+            buf_w[i] = kernel[[kp, kr, kc]];
+            tau_diff = old_tau[[p, r, c]] - ot;
+            tau_diff_abs = tau_diff.abs() * on_dn;
+            if tau_diff_abs < 1.0 {
+                buf_w[i] = buf_w[i] * (1.0 - tau_diff_abs).powi(2);
+            } else {
+                buf_w[i] = 0.0;
+            }
+            i += 1;
+        });
+
+    // zero out the rest of the buffers
+    buf_a[i..].fill(T::default());
+    buf_b[i..].fill(T::default());
+    buf_w[i..].fill(0.0);
+}
+
+/// Get the end position for filling the buffers along an axis.
+fn get_end_position(location: usize, radius: usize, boundary: usize) -> usize {
+    let end = location + radius;
+    if end >= boundary { boundary - 1 } else { end }
+}
+
+/// Get the start position for filling the buffers along an axis.
+fn get_start_position(location: usize, radius: usize) -> usize {
+    if location < radius {
+        0
+    } else {
+        location - radius
+    }
+}
+
 /// Single 2-dimensional SACA iteration.
 fn single_iteration_2d<T>(
     image_a: ArrayView2<T>,
@@ -447,145 +588,4 @@ fn single_iteration_3d<T>(
     // store old tau and n
     old_tau.assign(&new_tau);
     old_sqrt_n.assign(&new_sqrt_n);
-}
-
-/// Fill working buffers from 2-dimensional data.
-fn fill_buffers_2d<T>(
-    image_a: ArrayView2<T>,
-    image_b: ArrayView2<T>,
-    kernel: ArrayView2<f64>,
-    old_tau: ArrayView2<f64>,
-    old_sqrt_n: ArrayView2<f64>,
-    buf_a: &mut [T],
-    buf_b: &mut [T],
-    buf_w: &mut [f64],
-    dn: f64,
-    radius: usize,
-    pos_row: usize,
-    pos_col: usize,
-    buf_row_start: usize,
-    buf_row_end: usize,
-    buf_col_start: usize,
-    buf_col_end: usize,
-) where
-    T: ToFloat64,
-{
-    // set compute parameters
-    let mut i: usize = 0;
-    let ot = old_tau[[pos_row, pos_col]];
-    let on = old_sqrt_n[[pos_row, pos_col]];
-    let on_dn = on / dn;
-    let pos_row = pos_row as isize;
-    let pos_col = pos_col as isize;
-    let radius = radius as isize;
-
-    // create a 2D iterator centered with the kernel
-    (buf_row_start..=buf_row_end)
-        .flat_map(|r| (buf_col_start..=buf_col_end).map(move |c| (r, c)))
-        .for_each(|(r, c)| {
-            let tau_diff: f64;
-            let tau_diff_abs: f64;
-            // subtract current position to get offset from kernel center
-            let kr = ((r as isize - pos_row) + radius) as usize;
-            let kc = ((c as isize - pos_col) + radius) as usize;
-            // load the buffers with data from images and associated weights
-            buf_a[i] = image_a[[r, c]];
-            buf_b[i] = image_b[[r, c]];
-            buf_w[i] = kernel[[kr, kc]];
-            tau_diff = old_tau[[r, c]] - ot;
-            tau_diff_abs = tau_diff.abs() * on_dn;
-            if tau_diff_abs < 1.0 {
-                buf_w[i] = buf_w[i] * (1.0 - tau_diff_abs).powi(2);
-            } else {
-                buf_w[i] = 0.0;
-            }
-            i += 1;
-        });
-
-    // zero out the rest of the buffers
-    buf_a[i..].fill(T::default());
-    buf_b[i..].fill(T::default());
-    buf_w[i..].fill(0.0);
-}
-
-/// Fill working buffers from 3-dimensional data.
-fn fill_buffers_3d<T>(
-    image_a: ArrayView3<T>,
-    image_b: ArrayView3<T>,
-    kernel: ArrayView3<f64>,
-    old_tau: ArrayView3<f64>,
-    old_sqrt_n: ArrayView3<f64>,
-    buf_a: &mut [T],
-    buf_b: &mut [T],
-    buf_w: &mut [f64],
-    dn: f64,
-    radius: usize,
-    pos_pln: usize,
-    pos_row: usize,
-    pos_col: usize,
-    buf_pln_start: usize,
-    buf_pln_end: usize,
-    buf_row_start: usize,
-    buf_row_end: usize,
-    buf_col_start: usize,
-    buf_col_end: usize,
-) where
-    T: ToFloat64,
-{
-    // set compute parameters
-    let mut i: usize = 0;
-    let ot = old_tau[[pos_pln, pos_row, pos_col]];
-    let on = old_sqrt_n[[pos_pln, pos_row, pos_col]];
-    let on_dn = on / dn;
-    let pos_pln = pos_pln as isize;
-    let pos_row = pos_row as isize;
-    let pos_col = pos_col as isize;
-    let radius = radius as isize;
-
-    // create a 3D iterator centered with the kernel
-    (buf_pln_start..=buf_pln_end)
-        .flat_map(|p| {
-            (buf_row_start..=buf_row_end)
-                .flat_map(move |r| (buf_col_start..=buf_col_end).map(move |c| (p, r, c)))
-        })
-        .for_each(|(p, r, c)| {
-            let tau_diff: f64;
-            let tau_diff_abs: f64;
-            // subtract current position to get offset from kernel center
-            let kp = ((p as isize - pos_pln) + radius) as usize;
-            let kr = ((r as isize - pos_row) + radius) as usize;
-            let kc = ((c as isize - pos_col) + radius) as usize;
-            // load the buffers with data from images and associated weights
-            buf_a[i] = image_a[[p, r, c]];
-            buf_b[i] = image_b[[p, r, c]];
-            buf_w[i] = kernel[[kp, kr, kc]];
-            tau_diff = old_tau[[p, r, c]] - ot;
-            tau_diff_abs = tau_diff.abs() * on_dn;
-            if tau_diff_abs < 1.0 {
-                buf_w[i] = buf_w[i] * (1.0 - tau_diff_abs).powi(2);
-            } else {
-                buf_w[i] = 0.0;
-            }
-            i += 1;
-        });
-
-    // zero out the rest of the buffers
-    buf_a[i..].fill(T::default());
-    buf_b[i..].fill(T::default());
-    buf_w[i..].fill(0.0);
-}
-
-/// Get the end position for filling the buffers along an axis.
-fn get_end_position(location: usize, radius: usize, boundary: usize) -> usize {
-    let end = location + radius;
-    if end >= boundary { boundary - 1 } else { end }
-}
-
-/// Get the start position for filling the buffers along an axis.
-fn get_start_position(location: usize, radius: usize) -> usize {
-    if location < radius {
-        0
-    } else {
-        location - radius
-    }
 }
