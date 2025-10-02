@@ -1,6 +1,6 @@
-use imgal_core::filter;
-use imgal_core::integration::midpoint;
-use imgal_core::simulation::{decay, instrument};
+use imgal::filter;
+use imgal::integration::midpoint;
+use imgal::simulation::{decay, instrument};
 
 // simulated bioexponential decay parameters, unit is nanoseconds
 const SAMPLES: usize = 256;

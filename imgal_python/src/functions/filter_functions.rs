@@ -1,7 +1,7 @@
 use numpy::{IntoPyArray, PyArray1};
 use pyo3::prelude::*;
 
-use imgal_core::filter;
+use imgal::filter;
 
 /// Convolve two 1-dimensional signals using the Fast Fourier Transform (FFT).
 ///

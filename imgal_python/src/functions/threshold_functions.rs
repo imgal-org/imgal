@@ -2,7 +2,7 @@ use numpy::{IntoPyArray, PyArrayDyn, PyReadonlyArrayDyn};
 use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 
-use imgal_core::threshold;
+use imgal::threshold;
 
 /// Create a boolean mask from a threshold value.
 ///

@@ -1,4 +1,4 @@
-use imgal_core::statistics;
+use imgal::statistics;
 
 #[test]
 fn statistics_sum() {

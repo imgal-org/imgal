@@ -5,7 +5,7 @@ use numpy::{
 use pyo3::prelude::*;
 
 use crate::error::map_array_error;
-use imgal_core::simulation;
+use imgal::simulation;
 
 /// Simulate a 1-dimensional Gaussian IRF convolved monoexponential or
 /// multiexponential decay curve.

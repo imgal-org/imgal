@@ -19,7 +19,7 @@ use crate::traits::numeric::ToFloat64;
 /// ```
 /// use ndarray::Array1;
 ///
-/// use imgal_core::statistics::sum;
+/// use imgal::statistics::sum;
 ///
 /// // create a 1-dimensional array
 /// let arr = [1.82, 3.35, 7.13, 9.25];

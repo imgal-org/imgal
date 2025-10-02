@@ -2,7 +2,7 @@ use numpy::PyReadwriteArray1;
 use pyo3::prelude::*;
 
 use crate::error::map_array_error;
-use imgal_core::statistics;
+use imgal::statistics;
 
 /// Compute the effective sample size (ESS) of a weighted sample set.
 ///

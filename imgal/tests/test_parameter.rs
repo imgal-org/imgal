@@ -1,4 +1,4 @@
-use imgal_core::parameter;
+use imgal::parameter;
 
 #[test]
 fn parameter_abbe_diffraction_limit() {

@@ -5,7 +5,7 @@ use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 
 use crate::error::map_array_error;
-use imgal_core::colocalization;
+use imgal::colocalization;
 
 /// Compute colocalization strength using 2-dimensional Spatially Adaptive
 /// Colocalization Analysis (SACA)

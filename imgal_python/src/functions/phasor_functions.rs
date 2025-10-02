@@ -5,7 +5,7 @@ use numpy::{
 use pyo3::prelude::*;
 
 use crate::error::map_array_error;
-use imgal_core::phasor::{calibration, plot, time_domain};
+use imgal::phasor::{calibration, plot, time_domain};
 
 /// Calibrate a real and imaginary (G, S) coordinates.
 ///

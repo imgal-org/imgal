@@ -9,5 +9,5 @@ name = "imgal_java"
 crate-type = ["cdylib"]
 
 [dependencies]
-imgal_core = { path = "../imgal_core" }
+imgal = { path = "../imgal" }
 ndarray = "0.16.0"

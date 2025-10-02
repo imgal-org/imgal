@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use imgal_core::integration;
+use imgal::integration;
 
 /// Integrate a curve with Simpson's 1/3 rule and the trapezoid rule.
 ///

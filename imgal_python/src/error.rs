@@ -1,7 +1,7 @@
 use pyo3::PyErr;
 use pyo3::exceptions::{PyException, PyIndexError, PyValueError};
 
-use imgal_core::error::ArrayError;
+use imgal::error::ArrayError;
 
 /// Map ArrayError types to Python exceptions.
 pub fn map_array_error(err: ArrayError) -> PyErr {

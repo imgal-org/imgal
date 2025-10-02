@@ -1,5 +1,5 @@
-use imgal_core::distribution::gaussian;
-use imgal_core::integration;
+use imgal::distribution::gaussian;
+use imgal::integration;
 
 // helper functions
 fn get_gaussian_distribution(bins: usize) -> Vec<f64> {

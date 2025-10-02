@@ -1,7 +1,7 @@
 use numpy::{IntoPyArray, PyArray1};
 use pyo3::prelude::*;
 
-use imgal_core::distribution;
+use imgal::distribution;
 
 /// Generate a normalized Gaussian distribution over a specified range.
 ///

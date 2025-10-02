@@ -1,4 +1,4 @@
-use imgal_core::kernel::neighborhood;
+use imgal::kernel::neighborhood;
 
 // kernel parameters
 const RADIUS: usize = 5;

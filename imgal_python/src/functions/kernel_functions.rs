@@ -2,7 +2,7 @@ use numpy::{IntoPyArray, PyArray2, PyArray3};
 use pyo3::prelude::*;
 
 use crate::error::map_array_error;
-use imgal_core::kernel;
+use imgal::kernel;
 
 /// Create a 2-dimensional square kernel with a circle neighborhood.
 ///

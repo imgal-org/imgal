@@ -1,8 +1,8 @@
 use ndarray::{Array2, Axis, s};
 
-use imgal_core::parameter::omega;
-use imgal_core::phasor::{calibration, plot, time_domain};
-use imgal_core::simulation::{decay, noise};
+use imgal::parameter::omega;
+use imgal::phasor::{calibration, plot, time_domain};
+use imgal::simulation::{decay, noise};
 
 // simulated bioexponential decay parameters
 const SAMPLES: usize = 256;

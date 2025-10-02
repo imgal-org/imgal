@@ -1,7 +1,7 @@
 use ndarray::s;
 
-use imgal_core::integration::midpoint;
-use imgal_core::simulation::{decay, instrument, noise};
+use imgal::integration::midpoint;
+use imgal::simulation::{decay, instrument, noise};
 
 // simulated bioexponential decay parameters
 const SAMPLES: usize = 256;

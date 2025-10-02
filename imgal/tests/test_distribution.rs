@@ -1,5 +1,5 @@
-use imgal_core::distribution;
-use imgal_core::integration::midpoint;
+use imgal::distribution;
+use imgal::integration::midpoint;
 
 #[test]
 fn distribution_gaussian() {

@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use imgal_core::parameter;
+use imgal::parameter;
 
 /// Compute the Abbe diffraction limit.
 ///

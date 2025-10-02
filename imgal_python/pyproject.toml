@@ -3,9 +3,9 @@ requires = ["maturin>=1.8.3"]
 build-backend = "maturin"
 
 [project]
-name = "imgal-python"
+name = "imgal"
 version = "0.1.0.dev0"
-description = "Python wrapper for imgal_core"
+description = "Python wrapper for imgal."
 authors = [{ name = "Edward Evans", email = "elevans2@wisc.edu" }]
 readme = "README.md"
 requires-python = ">=3.11"

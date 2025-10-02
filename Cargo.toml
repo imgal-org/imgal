@@ -1,7 +1,6 @@
 [workspace]
 members = [
 	"imgal",
-	"imgal_core",
 	"imgal_java",
 	"imgal_python",
 ]

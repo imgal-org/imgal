@@ -9,6 +9,6 @@ name = "imgal"
 crate-type = ["cdylib"]
 
 [dependencies]
-imgal_core = { path = "../imgal_core" }
+imgal = { path = "../imgal" }
 pyo3 = { version = "0.25", features = ["extension-module"] }
 numpy = "0.25.0"

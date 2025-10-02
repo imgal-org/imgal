@@ -3,12 +3,12 @@
 ⚠️ Warning: This is an experimental project!
 
 Imgal (**Im**a**g**e **A**lgorithm **L**ibrary), is fast and mostly* safe image processing and algorithm library written in Rust. This library is directly inspired by [imagej-ops](https://github.com/imagej/imagej-ops/),
-[SciJava Ops](https://github.com/scijava/scijava), [ImgLib2](https://github.com/imglib/imglib2), the ImageJ2 ecosystem. `imgal` is organized as a monorepo with `imgal_core` as the core library that contains the algorithm logic while `imgal_java` and `imgal_python` serve `imgal`'s
+[SciJava Ops](https://github.com/scijava/scijava), [ImgLib2](https://github.com/imglib/imglib2), the ImageJ2 ecosystem. `imgal` is organized as a monorepo with `imgal` as the core library that contains the algorithm logic while `imgal_java` and `imgal_python` serve `imgal`'s
 Java and Python language bindings.
 
 ## Installation
 
-### Building `imgal_core` from source
+### Building `imgal` from source
 
 You can build the entire project from the root with:
 
@@ -45,7 +45,7 @@ $ cd imgal_python
 $ uv run maturin develop --release
 ```
 
-This will create a `.venv` in the local directory, compile `imgal_core` and `imgal_python` and install the bindings in the venv.
+This will create a `.venv` in the local directory, compile `imgal` and `imgal_python` and install the bindings in the venv.
 
 Alternatively if you're using `conda` or `mamba` you can do the following:
 
