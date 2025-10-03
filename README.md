@@ -59,7 +59,24 @@ $ mamba activate myenv
 
 ## Usage
 
-### Using `imgal` in Python
+### Using `imgal` with Rust
+
+Add `imgal` do your crates's dependencies and import the `imgal` namespace with your desired function. The example below demonstrates how to create a cube shaped kernel with a weighted sphere (_i.e._ the neighborhood) of the specified radius and weight decay rate defined by the falloff radius.
+
+```rust
+use imgal::kernel::neighborhood;
+
+fn main() {
+  // set radius and weight decay falloff radius
+  let radius = 5;
+  let falloff = 7.5;
+
+  // create a weighted sphere with given radius and falloff
+  let sphere = neighborhood::weighted_sphere(radius, falloff, None);
+}
+```
+
+### Using `imgal` with Python
 
 Once `imgal_python` has been installed in a compatiable Python environment, `imgal` will be available to import. The example below demonstrates how to obtain a colocalization z-score (_i.e._ colocalization and
 anti-colocalization strength) using the [Spatially Adaptive Colocalization Analysis (SACA)](https://doi.org/10.1109/TIP.2019.2909194) framework. The two number values after the channels are threshold values for channels `a` and `b` respectively.
