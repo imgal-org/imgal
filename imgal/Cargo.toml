@@ -1,8 +1,14 @@
 [package]
 name = "imgal"
+description = "A fast and open-source scientific image processing and algorithm library."
 version = "0.1.0"
 authors = ["Edward Evans"]
 edition = "2024"
+license = "Unlicense"
+homepage = "https://docs.rs/imgal"
+repository = "https://github.com/imgal-sc/imgal"
+readme = "../README.md"
+categories = ["algorithms", "mathematics", "science"]
 
 [lib]
 name = "imgal"
