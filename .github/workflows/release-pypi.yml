@@ -1,198 +1,112 @@
-name: Release Python Wheels (imgal_python)
+name: Release imgal_python to PyPI
 
 on:
-  workflow_dispatch:
+  release:
+    types: [published]
+  workflow_dispatch:  # Allows manual triggering with dry-run option
     inputs:
-      dry_run:
-        description: "If true, build all wheels but do NOT upload to PyPI."
+      dry-run:
+        description: 'Dry run (build only, do not publish)'
         required: false
-        default: "false"
-        type: choice
-        options: ["false","true"]
-
-env:
-  # Path to the Rust crate that provides the Python extension (adjust if needed)
-  PYTHON_CRATE_PATH: ../../imgal_python
-  # List of Python interpreters for the manylinux container build
-  PY_VERSIONS_CLI: "-i python3.9 -i python3.10 -i python3.11 -i python3.12 -i python3.13"
-  DRY_RUN: ${{ inputs.dry_run }}
+        type: boolean
+        default: true
 
 permissions:
   contents: read
 
 jobs:
-  linux-wheels:
-    name: Linux Wheels (${{ matrix.target }})
-    runs-on: ubuntu-latest
+  build-wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
-        target: [x86_64, aarch64]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up QEMU (for aarch64)
-        if: matrix.target == 'aarch64'
-        uses: docker/setup-qemu-action@v3
-
-      - name: Cache Cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: linux-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            linux-${{ matrix.target }}-cargo-
-
-      - name: Build wheels (manylinux)
-        uses: messense/maturin-action@v1
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          manylinux: "2_28"
-          command: build
-          args: >-
-            --release
-            --out dist
-            -m ${{ env.PYTHON_CRATE_PATH }}/Cargo.toml
-            ${{ env.PY_VERSIONS_CLI }}
-            --sdist
+          args: --release --out dist --manifest-path imgal_python/Cargo.toml
+          sccache: 'true'
+          manylinux: auto
 
-      - name: List built files
-        run: ls -1 dist
-
-      - name: Upload artifacts
+      - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-linux-${{ matrix.target }}
-          path: dist/*
+          name: wheels-${{ matrix.os }}
+          path: dist
 
-  macos-wheels:
-    name: macOS Wheels (${{ matrix.runner_label }} py${{ matrix.python-version }})
-    strategy:
-      fail-fast: false
-      matrix:
-        runner_label: [macos-13, macos-14]   # macos-13 = Intel, macos-14 = Apple Silicon
-        python-version: ["3.9","3.10","3.11","3.12","3.13"]
-    runs-on: ${{ matrix.runner_label }}
+  build-sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Cache Cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: macos-${{ matrix.runner_label }}-py${{ matrix.python-version }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            macos-${{ matrix.runner_label }}-py${{ matrix.python-version }}-cargo-
-      - name: Install maturin
-        run: pip install --upgrade maturin
-      - name: Build macOS wheel
-        run: >
-          maturin build
-          --release
-          --out dist
-          -m ${{ env.PYTHON_CRATE_PATH }}/Cargo.toml
-          --interpreter python${{ matrix.python-version }}
-      - name: List built files
-        run: ls -1 dist
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheels-${{ matrix.runner_label }}-py${{ matrix.python-version }}
-          path: dist/*
+      - uses: actions/checkout@v4
 
-  windows-wheels:
-    name: Windows Wheels (py${{ matrix.python-version }})
-    runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.9","3.10","3.11","3.12","3.13"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Build sdist
+        uses: PyO3/maturin-action@v1
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: Cache Cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            C:\Users\runneradmin\.cargo\registry
-            C:\Users\runneradmin\.cargo\git
-            target
-          key: windows-py${{ matrix.python-version }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            windows-py${{ matrix.python-version }}-cargo-
-      - name: Install maturin
-        run: pip install --upgrade maturin
-      - name: Build Windows wheel
-        shell: bash
-        run: >
-          maturin build
-          --release
-          --out dist
-          -m ${{ env.PYTHON_CRATE_PATH }}/Cargo.toml
-          --interpreter python${{ matrix.python-version }}
-      - name: List built files
-        shell: bash
-        run: ls -1 dist
-      - name: Upload artifacts
+          command: sdist
+          args: --out dist --manifest-path imgal_python/Cargo.toml
+
+      - name: Upload sdist
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-windows-py${{ matrix.python-version }}
-          path: dist/*
+          name: sdist
+          path: dist
 
   publish:
     name: Publish to PyPI
-    needs:
-      - linux-wheels
-      - macos-wheels
-      - windows-wheels
     runs-on: ubuntu-latest
+    needs: [build-wheels, build-sdist]
+    # Only run publish job on actual releases, or manual trigger with dry-run=false
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.dry-run == false)
+    environment:
+      name: pypi
+      url: https://pypi.org/p/imgal
+    permissions:
+      id-token: write  # Required for trusted publishing
+
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
+          pattern: '*'
           path: dist
           merge-multiple: true
 
-      - name: Extract version from Cargo.toml (for logging)
-        run: |
-          ver=$(grep -E '^version\s*=' ${PYTHON_CRATE_PATH}/Cargo.toml | head -1 | sed -E 's/version\s*=\s*"([^"]+)".*/\1/')
-          echo "Detected package version: $ver"
-          echo "PACKAGE_VERSION=$ver" >> $GITHUB_ENV
-
-      - name: List collected files
-        run: ls -1 dist
-
-      - name: Basic wheel presence check
-        run: |
-          python - <<'EOF'
-import glob
-w=glob.glob("dist/*.whl")
-print("Found wheels:", len(w))
-assert w, "No wheels found!"
-EOF
-
-      - name: Dry run notice
-        if: env.DRY_RUN == 'true'
-        run: echo "Dry run selected: skipping PyPI upload."
-
       - name: Publish to PyPI
-        if: env.DRY_RUN == 'false'
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: PyO3/maturin-action@v1
         with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          skip-existing: true
+          command: upload
+          args: --skip-existing dist/*
+        env:
+          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+
+  dry-run-summary:
+    name: Dry Run Summary
+    runs-on: ubuntu-latest
+    needs: [build-wheels, build-sdist]
+    # Only run on manual trigger with dry-run=true
+    if: github.event_name == 'workflow_dispatch' && inputs.dry-run == true
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*'
+          path: dist
+          merge-multiple: true
+
+      - name: List built packages
+        run: |
+          echo "## 🔍 Dry Run Complete - Packages Built" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The following packages were built successfully:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          ls -lh dist/ >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "To publish these packages to PyPI, trigger this workflow again with dry-run=false" >> $GITHUB_STEP_SUMMARY
