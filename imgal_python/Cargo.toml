@@ -5,7 +5,7 @@ authors = ["Edward Evans"]
 edition = "2024"
 license = "Unlicense"
 repository = "https://github.com/imgal-sc/imgal"
-readme = "../README.md"
+readme = "README.md"
 
 [lib]
 name = "imgal"
