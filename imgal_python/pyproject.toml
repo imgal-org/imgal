@@ -31,5 +31,4 @@ classifiers = [
     "Programming Language :: Rust",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Image Processing",
-    "Topic :: Mathematics",
 ]
