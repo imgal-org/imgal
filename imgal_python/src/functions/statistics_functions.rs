@@ -90,7 +90,28 @@ pub fn statistics_weighted_merge_sort_mut<'py>(
     mut weights: PyReadwriteArray1<f64>,
 ) -> PyResult<f64> {
     // pattern match and extract the allowed array type
-    if let Ok(mut d) = data.extract::<PyReadwriteArray1<f64>>() {
+    if let Ok(mut d) = data.extract::<PyReadwriteArray1<u8>>() {
+        return statistics::weighted_merge_sort_mut(
+            d.as_slice_mut().unwrap(),
+            weights.as_slice_mut().unwrap(),
+        )
+        .map(|output| output)
+        .map_err(map_array_error);
+    } else if let Ok(mut d) = data.extract::<PyReadwriteArray1<u16>>() {
+        return statistics::weighted_merge_sort_mut(
+            d.as_slice_mut().unwrap(),
+            weights.as_slice_mut().unwrap(),
+        )
+        .map(|output| output)
+        .map_err(map_array_error);
+    } else if let Ok(mut d) = data.extract::<PyReadwriteArray1<f32>>() {
+        return statistics::weighted_merge_sort_mut(
+            d.as_slice_mut().unwrap(),
+            weights.as_slice_mut().unwrap(),
+        )
+        .map(|output| output)
+        .map_err(map_array_error);
+    } else if let Ok(mut d) = data.extract::<PyReadwriteArray1<f64>>() {
         return statistics::weighted_merge_sort_mut(
             d.as_slice_mut().unwrap(),
             weights.as_slice_mut().unwrap(),
@@ -106,7 +127,7 @@ pub fn statistics_weighted_merge_sort_mut<'py>(
         .map_err(map_array_error);
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-            "Unsupported array dtype.",
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
         ));
     }
 }

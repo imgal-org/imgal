@@ -27,12 +27,15 @@ pub fn threshold_manual_mask<'py>(
     } else if let Ok(arr) = image.extract::<PyReadonlyArrayDyn<u16>>() {
         let output = threshold::manual_mask(arr.as_array(), threshold as u16);
         return Ok(output.into_pyarray(py));
+    } else if let Ok(arr) = image.extract::<PyReadonlyArrayDyn<f32>>() {
+        let output = threshold::manual_mask(arr.as_array(), threshold as f32);
+        return Ok(output.into_pyarray(py));
     } else if let Ok(arr) = image.extract::<PyReadonlyArrayDyn<f64>>() {
         let output = threshold::manual_mask(arr.as_array(), threshold);
         return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<PyTypeError, _>(
-            "Unsupported array dtype, supported array dtypes are u8, u16 and f64.",
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
         ));
     }
 }

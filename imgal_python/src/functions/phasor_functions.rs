@@ -67,21 +67,21 @@ pub fn calibration_image<'py>(
     axis: Option<usize>,
 ) -> PyResult<Bound<'py, PyArray3<f64>>> {
     // pattern match and extract allowed array types
-    if let Ok(array) = data.extract::<PyReadonlyArray3<f32>>() {
-        let ro_arr = array.readonly();
-        let output = calibration::image(ro_arr.as_array(), modulation, phase, axis);
+    if let Ok(arr) = data.extract::<PyReadonlyArray3<u8>>() {
+        let output = calibration::image(arr.as_array(), modulation, phase, axis);
         return Ok(output.into_pyarray(py));
-    } else if let Ok(array) = data.extract::<PyReadonlyArray3<f64>>() {
-        let ro_arr = array.readonly();
-        let output = calibration::image(ro_arr.as_array(), modulation, phase, axis);
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray3<u16>>() {
+        let output = calibration::image(arr.as_array(), modulation, phase, axis);
         return Ok(output.into_pyarray(py));
-    } else if let Ok(array) = data.extract::<PyReadonlyArray3<u16>>() {
-        let ro_arr = array.readonly();
-        let output = calibration::image(ro_arr.as_array(), modulation, phase, axis);
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray3<f32>>() {
+        let output = calibration::image(arr.as_array(), modulation, phase, axis);
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray3<f64>>() {
+        let output = calibration::image(arr.as_array(), modulation, phase, axis);
         return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-            "Unsupported array dtype.",
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
         ));
     }
 }
@@ -246,17 +246,7 @@ pub fn time_domain_image<'py>(
     axis: Option<usize>,
 ) -> PyResult<Bound<'py, PyArray3<f64>>> {
     // pattern match and extract allowed array types
-    if let Ok(arr) = data.extract::<PyReadonlyArray3<f32>>() {
-        if let Some(m) = mask {
-            return time_domain::image(arr.as_array(), period, Some(m.as_array()), harmonic, axis)
-                .map(|output| output.into_pyarray(py))
-                .map_err(map_array_error);
-        } else {
-            return time_domain::image(arr.as_array(), period, None, harmonic, axis)
-                .map(|output| output.into_pyarray(py))
-                .map_err(map_array_error);
-        }
-    } else if let Ok(arr) = data.extract::<PyReadonlyArray3<f64>>() {
+    if let Ok(arr) = data.extract::<PyReadonlyArray3<u8>>() {
         if let Some(m) = mask {
             return time_domain::image(arr.as_array(), period, Some(m.as_array()), harmonic, axis)
                 .map(|output| output.into_pyarray(py))
@@ -276,9 +266,29 @@ pub fn time_domain_image<'py>(
                 .map(|output| output.into_pyarray(py))
                 .map_err(map_array_error);
         }
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray3<f32>>() {
+        if let Some(m) = mask {
+            return time_domain::image(arr.as_array(), period, Some(m.as_array()), harmonic, axis)
+                .map(|output| output.into_pyarray(py))
+                .map_err(map_array_error);
+        } else {
+            return time_domain::image(arr.as_array(), period, None, harmonic, axis)
+                .map(|output| output.into_pyarray(py))
+                .map_err(map_array_error);
+        }
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray3<f64>>() {
+        if let Some(m) = mask {
+            return time_domain::image(arr.as_array(), period, Some(m.as_array()), harmonic, axis)
+                .map(|output| output.into_pyarray(py))
+                .map_err(map_array_error);
+        } else {
+            return time_domain::image(arr.as_array(), period, None, harmonic, axis)
+                .map(|output| output.into_pyarray(py))
+                .map_err(map_array_error);
+        }
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-            "Unsupported array dtype.",
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
         ));
     }
 }

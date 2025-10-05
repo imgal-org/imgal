@@ -342,21 +342,21 @@ pub fn noise_poisson_1d<'py>(
     seed: Option<u64>,
 ) -> PyResult<Bound<'py, PyArray1<f64>>> {
     // pattern match and extract allowed array types
-    if let Ok(arr) = data.extract::<PyReadonlyArray1<f32>>() {
-        let output = simulation::noise::poisson_1d(arr.as_slice().unwrap(), scale, seed);
-        return Ok(output.into_pyarray(py));
-    } else if let Ok(arr) = data.extract::<PyReadonlyArray1<f64>>() {
-        let output = simulation::noise::poisson_1d(arr.as_slice().unwrap(), scale, seed);
-        return Ok(output.into_pyarray(py));
-    } else if let Ok(arr) = data.extract::<PyReadonlyArray1<u8>>() {
+    if let Ok(arr) = data.extract::<PyReadonlyArray1<u8>>() {
         let output = simulation::noise::poisson_1d(arr.as_slice().unwrap(), scale, seed);
         return Ok(output.into_pyarray(py));
     } else if let Ok(arr) = data.extract::<PyReadonlyArray1<u16>>() {
         let output = simulation::noise::poisson_1d(arr.as_slice().unwrap(), scale, seed);
         return Ok(output.into_pyarray(py));
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray1<f32>>() {
+        let output = simulation::noise::poisson_1d(arr.as_slice().unwrap(), scale, seed);
+        return Ok(output.into_pyarray(py));
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray1<f64>>() {
+        let output = simulation::noise::poisson_1d(arr.as_slice().unwrap(), scale, seed);
+        return Ok(output.into_pyarray(py));
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-            "Unsupported array dtype.",
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
         ));
     }
 }
@@ -411,29 +411,25 @@ pub fn noise_poisson_3d<'py>(
     axis: Option<usize>,
 ) -> PyResult<Bound<'py, PyArray3<f64>>> {
     // pattern match and extract allowed array types
-    if let Ok(array) = data.extract::<PyReadonlyArray3<f32>>() {
-        let ro_arr = array.readonly();
-        simulation::noise::poisson_3d(ro_arr.as_array(), scale, seed, axis)
+    if let Ok(arr) = data.extract::<PyReadonlyArray3<u8>>() {
+        simulation::noise::poisson_3d(arr.as_array(), scale, seed, axis)
             .map(|output| output.into_pyarray(py))
             .map_err(map_array_error)
-    } else if let Ok(array) = data.extract::<PyReadonlyArray3<f64>>() {
-        let ro_arr = array.readonly();
-        simulation::noise::poisson_3d(ro_arr.as_array(), scale, seed, axis)
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray3<u16>>() {
+        simulation::noise::poisson_3d(arr.as_array(), scale, seed, axis)
             .map(|output| output.into_pyarray(py))
             .map_err(map_array_error)
-    } else if let Ok(array) = data.extract::<PyReadonlyArray3<u8>>() {
-        let ro_arr = array.readonly();
-        simulation::noise::poisson_3d(ro_arr.as_array(), scale, seed, axis)
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray3<f32>>() {
+        simulation::noise::poisson_3d(arr.as_array(), scale, seed, axis)
             .map(|output| output.into_pyarray(py))
             .map_err(map_array_error)
-    } else if let Ok(array) = data.extract::<PyReadonlyArray3<u16>>() {
-        let ro_arr = array.readonly();
-        simulation::noise::poisson_3d(ro_arr.as_array(), scale, seed, axis)
+    } else if let Ok(arr) = data.extract::<PyReadonlyArray3<f64>>() {
+        simulation::noise::poisson_3d(arr.as_array(), scale, seed, axis)
             .map(|output| output.into_pyarray(py))
             .map_err(map_array_error)
     } else {
         return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-            "Unsupported array dtype.",
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
         ));
     }
 }

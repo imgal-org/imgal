@@ -62,6 +62,16 @@ pub fn colocalization_saca_2d<'py>(
         )
         .map(|output| output.into_pyarray(py))
         .map_err(map_array_error)
+    } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray2<f32>>() {
+        let arr_b = image_b.extract::<PyReadonlyArray2<f32>>()?;
+        colocalization::saca_2d(
+            arr_a.as_array(),
+            arr_b.as_array(),
+            threshold_a as f32,
+            threshold_b as f32,
+        )
+        .map(|output| output.into_pyarray(py))
+        .map_err(map_array_error)
     } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray2<f64>>() {
         let arr_b = image_b.extract::<PyReadonlyArray2<f64>>()?;
         colocalization::saca_2d(arr_a.as_array(), arr_b.as_array(), threshold_a, threshold_b)
@@ -69,7 +79,7 @@ pub fn colocalization_saca_2d<'py>(
             .map_err(map_array_error)
     } else {
         return Err(PyErr::new::<PyTypeError, _>(
-            "Unsupported array dtype, supported array dtypes are u8, u16 and f64.",
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
         ));
     }
 }
@@ -129,6 +139,16 @@ pub fn colocalization_saca_3d<'py>(
         )
         .map(|output| output.into_pyarray(py))
         .map_err(map_array_error)
+    } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray3<f32>>() {
+        let arr_b = image_b.extract::<PyReadonlyArray3<f32>>()?;
+        colocalization::saca_3d(
+            arr_a.as_array(),
+            arr_b.as_array(),
+            threshold_a as f32,
+            threshold_b as f32,
+        )
+        .map(|output| output.into_pyarray(py))
+        .map_err(map_array_error)
     } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray3<f64>>() {
         let arr_b = image_b.extract::<PyReadonlyArray3<f64>>()?;
         colocalization::saca_3d(arr_a.as_array(), arr_b.as_array(), threshold_a, threshold_b)
@@ -136,7 +156,7 @@ pub fn colocalization_saca_3d<'py>(
             .map_err(map_array_error)
     } else {
         return Err(PyErr::new::<PyTypeError, _>(
-            "Unsupported array dtype, supported array dtypes are u8, u16 and f64.",
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
         ));
     }
 }
