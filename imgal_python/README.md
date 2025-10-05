@@ -4,7 +4,7 @@ The `pyimgal` package serves as the Python bindings wrapper for [imgal](https://
 
 ## Installation
 
-### `imgal` from PyPI
+### `pyimgal` from PyPI
 
 You can install `pyimgal` from PyPI with:
 
