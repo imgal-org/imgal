@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "pyimgal"
-version = "0.1.0"
+version = "0.1.1.dev0"
 description = "Python wrapper and bindings for imgal."
 authors = [{ name = "Edward Evans", email = "elevans2@wisc.edu" }]
 license = "Unlicense"
