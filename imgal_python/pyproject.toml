@@ -3,9 +3,9 @@ requires = ["maturin>=1.8.3"]
 build-backend = "maturin"
 
 [project]
-name = "imgal"
+name = "pyimgal"
 version = "0.1.0"
-description = "A fast and open-source scientific image processing and algorithm library."
+description = "Python wrapper and bindings for imgal."
 authors = [{ name = "Edward Evans", email = "elevans2@wisc.edu" }]
 license = "Unlicense"
 readme = "README.md"

@@ -121,7 +121,7 @@ jobs:
     if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry-run == 'false')
     environment:
       name: pypi
-      url: https://pypi.org/p/imgal
+      url: https://pypi.org/p/pyimgal
     permissions:
       id-token: write  # Required for trusted publishing
 

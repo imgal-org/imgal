@@ -1,27 +1,27 @@
-# imgal_python
+# pyimgal
 
-The `imgal_python` package serves as the Python bindings wrapper for [imgal](https://github.com/imgal-sc/imgal).
+The `pyimgal` package serves as the Python bindings wrapper for [imgal](https://github.com/imgal-sc/imgal).
 
 ## Installation
 
 ### `imgal` from PyPI
 
-You can install `imgal` from PyPI with:
+You can install `pyimgal` from PyPI with:
 
 ```bash
-pip install imgal
+pip install pyimgal
 ```
 
-### `imgal` from source
+### `imgal_python` from source
 
-To build the `imgal` Python bindings, use the `maturin` build tool. If you're using `uv` you can do the following in the `imgal_python` crate directory, to build the Python bindings:
+To build the `pyimgal` Python bindings from source, use the `maturin` build tool. If you're using `uv` you can do the following in the `imgal_python` crate directory to build the Python bindings:
 
 ```bash
 $ cd imgal_python
 $ uv run maturin develop --release
 ```
 
-This will create a `.venv` in the local directory, compile the `imgal` Rust library and the `imgal_python` PyO3 bindings and install the bindings in the venv.
+This will create a `.venv` in the local directory, compile the `imgal` Rust library and the `imgal_python` PyO3 bindings and install the bindings in the venv as `pyimgal`.
 
 Alternatively if you're using `conda` or `mamba` you can do the following:
 
@@ -35,7 +35,7 @@ $ mamba activate myenv
 
 ### Using `imgal` with Python
 
-Once `imgal` has been installed in a compatiable Python environment, `imgal` will be available to import. The example below demonstrates how to obtain a colocalization z-score (_i.e._ colocalization and
+Once `pyimgal` has been installed in a compatiable Python environment, `imgal` will be available to import. The example below demonstrates how to obtain a colocalization z-score (_i.e._ colocalization and
 anti-colocalization strength) using the [Spatially Adaptive Colocalization Analysis (SACA)](https://doi.org/10.1109/TIP.2019.2909194) framework. The two number values after the channels are threshold values for channels `a` and `b` respectively.
 
 ```python
