@@ -1,4 +1,4 @@
-name: Publish imgal on PyPI
+name: Release pyimgal on PyPI
 
 on:
   release:
@@ -138,10 +138,8 @@ jobs:
           echo "📦 Publishing the following packages:"
           ls -lh dist/
 
-      - name: Publish to PyPI
-        uses: PyO3/maturin-action@v1
+      - name: Publish to PyPI using Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          command: upload
-          args: --skip-existing dist/*
-        env:
-          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true
+          verbose: true
