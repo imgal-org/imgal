@@ -1,3 +1,5 @@
+use std::mem;
+
 use ndarray::{
     Array2, Array3, Array4, ArrayView2, ArrayView3, ArrayViewMut2, ArrayViewMut3, ArrayViewMut4,
     Axis, Zip,
@@ -96,14 +98,17 @@ where
             result.view_mut(),
             new_tau.view_mut(),
             new_sqrt_n.view_mut(),
+            stop.view_mut(),
             old_tau.view_mut(),
             old_sqrt_n.view_mut(),
-            stop.view_mut(),
             radius,
             dn,
             lambda,
             lower_bound_check,
         );
+        // swap array memory, faster than copying
+        mem::swap(&mut old_tau, &mut new_tau);
+        mem::swap(&mut old_sqrt_n, &mut new_sqrt_n);
         size_f *= step_size;
         if s == tl {
             lower_bound_check = true;
@@ -207,14 +212,17 @@ where
             result.view_mut(),
             new_tau.view_mut(),
             new_sqrt_n.view_mut(),
+            stop.view_mut(),
             old_tau.view_mut(),
             old_sqrt_n.view_mut(),
-            stop.view_mut(),
             radius,
             dn,
             lambda,
             lower_bound_check,
         );
+        // swap array memory, faster than copying
+        mem::swap(&mut old_tau, &mut new_tau);
+        mem::swap(&mut old_sqrt_n, &mut new_sqrt_n);
         size_f *= step_size;
         if s == tl {
             lower_bound_check = true;
@@ -382,9 +390,9 @@ fn single_iteration_2d<T>(
     mut result: ArrayViewMut2<f64>,
     mut new_tau: ArrayViewMut2<f64>,
     mut new_sqrt_n: ArrayViewMut2<f64>,
-    mut old_tau: ArrayViewMut2<f64>,
-    mut old_sqrt_n: ArrayViewMut2<f64>,
     mut stop: ArrayViewMut3<f64>,
+    old_tau: ArrayViewMut2<f64>,
+    old_sqrt_n: ArrayViewMut2<f64>,
     radius: usize,
     dn: f64,
     lambda: f64,
@@ -473,10 +481,6 @@ fn single_iteration_2d<T>(
                 }
             }
         });
-
-    // store old tau and n
-    old_tau.assign(&new_tau);
-    old_sqrt_n.assign(&new_sqrt_n);
 }
 
 /// Single 3-dimensional SACA iteration.
@@ -488,9 +492,9 @@ fn single_iteration_3d<T>(
     mut result: ArrayViewMut3<f64>,
     mut new_tau: ArrayViewMut3<f64>,
     mut new_sqrt_n: ArrayViewMut3<f64>,
-    mut old_tau: ArrayViewMut3<f64>,
-    mut old_sqrt_n: ArrayViewMut3<f64>,
     mut stop: ArrayViewMut4<f64>,
+    old_tau: ArrayViewMut3<f64>,
+    old_sqrt_n: ArrayViewMut3<f64>,
     radius: usize,
     dn: f64,
     lambda: f64,
@@ -584,8 +588,4 @@ fn single_iteration_3d<T>(
                 }
             }
         });
-
-    // store old tau and n
-    old_tau.assign(&new_tau);
-    old_sqrt_n.assign(&new_sqrt_n);
 }
