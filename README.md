@@ -139,3 +139,7 @@ $ mamba activate myenv
 ```
 
 This will install `pyimgal` in the currently active Python environment.
+
+## Documentation
+
+Each function in `imgal` is documented and published [here](https://docs.rs/imgal/).
