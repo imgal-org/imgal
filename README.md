@@ -17,7 +17,7 @@ contains the algorithm logic while `imgal_java` and `imgal_python` serve
 ### Using `imgal` with Rust
 
 To use `imgal` in your Rust project add it to your crates's dependencies and
-import the desired `imgal` namepsaces.
+import the desired `imgal` namespaces.
 
 ```
 [dependencies]
@@ -66,7 +66,7 @@ building from source section below for more details.
 
 Once `imgal_python` has been installed in a compatiable Python environment,
 `imgal` will be available to import. The example below demonstrates how
-toolchain a colocalization z-score (_i.e._ colocalization and anti-colocalization
+to obtain a colocalization z-score (_i.e._ colocalization and anti-colocalization
 strength) using the [Spatially Adaptive Colocalization Analysis (SACA)](https://doi.org/10.1109/TIP.2019.2909194)
 framework. The two number values after the channels are threshold values for
 channels `a` and `b` respectively.
@@ -83,7 +83,7 @@ ch_a = image[:, :, 0]
 ch_b = image[:, :, 1]
 
 # perform SACA 2D
-coloc_zscore = coloc.saca_2d(ch_a, ch_b, 500.0, 500.0)
+coloc_zscore = coloc.saca_2d(ch_a, ch_b, 525, 400)
 ```
 ## Building from source
 
