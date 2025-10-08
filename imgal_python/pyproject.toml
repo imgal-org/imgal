@@ -11,7 +11,7 @@ license = "Unlicense"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "maturin>=1.8.3",
+    "numpy",
 ]
 keywords = ["image-processing", "algorithm", "rust"]
 classifiers = [
