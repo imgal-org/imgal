@@ -269,27 +269,26 @@ fn fill_buffers_2d<T>(
     let pos_row = pos_row as isize;
     let pos_col = pos_col as isize;
     let radius = radius as isize;
+    let row_offset = radius - pos_row;
+    let col_offset = radius - pos_col;
 
     // create a 2D iterator centered with the kernel
     (buf_row_start..=buf_row_end)
         .flat_map(|r| (buf_col_start..=buf_col_end).map(move |c| (r, c)))
         .for_each(|(r, c)| {
-            let tau_diff: f64;
-            let tau_diff_abs: f64;
             // subtract current position to get offset from kernel center
-            let kr = ((r as isize - pos_row) + radius) as usize;
-            let kc = ((c as isize - pos_col) + radius) as usize;
+            let kr = (r as isize + row_offset) as usize;
+            let kc = (c as isize + col_offset) as usize;
             // load the buffers with data from images and associated weights
             buf_a[i] = image_a[[r, c]];
             buf_b[i] = image_b[[r, c]];
-            buf_w[i] = kernel[[kr, kc]];
-            tau_diff = old_tau[[r, c]] - ot;
-            tau_diff_abs = tau_diff.abs() * on_dn;
-            if tau_diff_abs < 1.0 {
-                buf_w[i] = buf_w[i] * (1.0 - tau_diff_abs).powi(2);
+            let tau_diff_abs = (old_tau[[r, c]] - ot).abs() * on_dn;
+            let w = kernel[[kr, kc]];
+            buf_w[i] = if tau_diff_abs < 1.0 {
+                w * (1.0 - tau_diff_abs).powi(2)
             } else {
-                buf_w[i] = 0.0;
-            }
+                0.0
+            };
             i += 1;
         });
 
@@ -332,6 +331,9 @@ fn fill_buffers_3d<T>(
     let pos_row = pos_row as isize;
     let pos_col = pos_col as isize;
     let radius = radius as isize;
+    let pln_offset = radius - pos_pln;
+    let row_offset = radius - pos_row;
+    let col_offset = radius - pos_col;
 
     // create a 3D iterator centered with the kernel
     (buf_pln_start..=buf_pln_end)
@@ -340,23 +342,20 @@ fn fill_buffers_3d<T>(
                 .flat_map(move |r| (buf_col_start..=buf_col_end).map(move |c| (p, r, c)))
         })
         .for_each(|(p, r, c)| {
-            let tau_diff: f64;
-            let tau_diff_abs: f64;
             // subtract current position to get offset from kernel center
-            let kp = ((p as isize - pos_pln) + radius) as usize;
-            let kr = ((r as isize - pos_row) + radius) as usize;
-            let kc = ((c as isize - pos_col) + radius) as usize;
+            let kp = (p as isize  + pln_offset) as usize;
+            let kr = (r as isize  + row_offset) as usize;
+            let kc = (c as isize  + col_offset) as usize;
             // load the buffers with data from images and associated weights
             buf_a[i] = image_a[[p, r, c]];
             buf_b[i] = image_b[[p, r, c]];
-            buf_w[i] = kernel[[kp, kr, kc]];
-            tau_diff = old_tau[[p, r, c]] - ot;
-            tau_diff_abs = tau_diff.abs() * on_dn;
-            if tau_diff_abs < 1.0 {
-                buf_w[i] = buf_w[i] * (1.0 - tau_diff_abs).powi(2);
+            let tau_diff_abs = (old_tau[[p, r, c]] - ot).abs() * on_dn;
+            let w = kernel[[kp, kr, kc]];
+            buf_w[i] = if tau_diff_abs < 1.0 {
+                w * (1.0 - tau_diff_abs).powi(2)
             } else {
-                buf_w[i] = 0.0;
-            }
+                0.0
+            };
             i += 1;
         });
 
