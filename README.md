@@ -119,13 +119,16 @@ library files can be found in `target/release`.
 
 ### Building `imgal_python` from source
 
-To build the `imgal` Rust bindings for Python, use the `maturin` build tool.
-If you're using `uv`, add `maturin` to your environment and run the `develop --release`
-command in the `imgal_python` directory of the repository.
+To build the `pyimgal` Python package from source, use the `maturin` build tool
+(this requires the Rust toolchain). If you're using `uv` to manage your Python
+virtual environments (venv) add `maturin` to your environment and run the
+`maturin develop --release` command in the `imgal_python` directory of the
+[imgal](https://github.com/imgal-sc/imgal) repository with your venv activated:
 
 ```bash
-$ cd imgal_python
-$ uv run maturin develop --release
+$ source ~/path/to/myenv/.venv/bin/activate
+$ (myenv) cd imgal_python
+$ maturin develop --release
 ```
 
 Alternatively if you're using `conda` or `mamba` you can do the following:
