@@ -343,9 +343,9 @@ fn fill_buffers_3d<T>(
         })
         .for_each(|(p, r, c)| {
             // subtract current position to get offset from kernel center
-            let kp = (p as isize  + pln_offset) as usize;
-            let kr = (r as isize  + row_offset) as usize;
-            let kc = (c as isize  + col_offset) as usize;
+            let kp = (p as isize + pln_offset) as usize;
+            let kr = (r as isize + row_offset) as usize;
+            let kc = (c as isize + col_offset) as usize;
             // load the buffers with data from images and associated weights
             buf_a[i] = data_a[[p, r, c]];
             buf_b[i] = data_b[[p, r, c]];

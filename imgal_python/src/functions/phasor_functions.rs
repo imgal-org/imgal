@@ -1,6 +1,5 @@
 use numpy::{
-    IntoPyArray, PyArray2, PyArray3, PyReadonlyArray2, PyReadonlyArray3,
-    PyReadwriteArray3,
+    IntoPyArray, PyArray2, PyArray3, PyReadonlyArray2, PyReadonlyArray3, PyReadwriteArray3,
 };
 use pyo3::prelude::*;
 
