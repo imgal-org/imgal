@@ -11,7 +11,7 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Arguments
 ///
-/// * `image`: An n-dimensional image.
+/// * `data`: An n-dimensional image or array.
 /// * `threshold`: The image pixel threshold value.
 ///
 /// # Returns
@@ -19,13 +19,13 @@ use crate::traits::numeric::ToFloat64;
 /// * `ArrayD<bool>`: A boolean array of the same shape as the input image
 ///    with pixels that are greater than the threshold value set as `true`
 ///    and pixels that are below the threshold value set as `false`.
-pub fn manual_mask<T>(image: ArrayViewD<T>, threshold: T) -> ArrayD<bool>
+pub fn manual_mask<T>(data: ArrayViewD<T>, threshold: T) -> ArrayD<bool>
 where
     T: ToFloat64,
 {
     // create output mask of same shape and apply threshold
-    let mut mask = ArrayD::<bool>::default(image.dim());
-    Zip::from(image).and(&mut mask).par_for_each(|&ip, mp| {
+    let mut mask = ArrayD::<bool>::default(data.dim());
+    Zip::from(data).and(&mut mask).par_for_each(|&ip, mp| {
         *mp = ip > threshold;
     });
 

@@ -20,9 +20,9 @@ use imgal::colocalization;
 /// and their colocalization coefficient computed using Kendall's Tau-b rank
 /// correlation.
 ///
-/// :param image_a: The 2-dimensional input image, "A". Image "A" must have the
+/// :param data_a: The 2-dimensional input image, "A". Image "A" must have the
 ///     same shape as image "B".
-/// :param image_b: Ihe 2-dimensional input image, "B". Image "B" must have the
+/// :param data_b: Ihe 2-dimensional input image, "B". Image "B" must have the
 ///     same shape as image "A".
 /// :param threshold_a: Pixel intensity threshold value for image "A". Pixels
 ///     below this value are given a weight of 0.0 if the pixel is in the
@@ -37,13 +37,13 @@ use imgal::colocalization;
 #[pyo3(name = "saca_2d")]
 pub fn colocalization_saca_2d<'py>(
     py: Python<'py>,
-    image_a: Bound<'py, PyAny>,
-    image_b: Bound<'py, PyAny>,
+    data_a: Bound<'py, PyAny>,
+    data_b: Bound<'py, PyAny>,
     threshold_a: f64,
     threshold_b: f64,
 ) -> PyResult<Bound<'py, PyArray2<f64>>> {
-    if let Ok(arr_a) = image_a.extract::<PyReadonlyArray2<u8>>() {
-        let arr_b = image_b.extract::<PyReadonlyArray2<u8>>()?;
+    if let Ok(arr_a) = data_a.extract::<PyReadonlyArray2<u8>>() {
+        let arr_b = data_b.extract::<PyReadonlyArray2<u8>>()?;
         colocalization::saca_2d(
             arr_a.as_array(),
             arr_b.as_array(),
@@ -52,8 +52,8 @@ pub fn colocalization_saca_2d<'py>(
         )
         .map(|output| output.into_pyarray(py))
         .map_err(map_array_error)
-    } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray2<u16>>() {
-        let arr_b = image_b.extract::<PyReadonlyArray2<u16>>()?;
+    } else if let Ok(arr_a) = data_a.extract::<PyReadonlyArray2<u16>>() {
+        let arr_b = data_b.extract::<PyReadonlyArray2<u16>>()?;
         colocalization::saca_2d(
             arr_a.as_array(),
             arr_b.as_array(),
@@ -62,8 +62,8 @@ pub fn colocalization_saca_2d<'py>(
         )
         .map(|output| output.into_pyarray(py))
         .map_err(map_array_error)
-    } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray2<f32>>() {
-        let arr_b = image_b.extract::<PyReadonlyArray2<f32>>()?;
+    } else if let Ok(arr_a) = data_a.extract::<PyReadonlyArray2<f32>>() {
+        let arr_b = data_b.extract::<PyReadonlyArray2<f32>>()?;
         colocalization::saca_2d(
             arr_a.as_array(),
             arr_b.as_array(),
@@ -72,8 +72,8 @@ pub fn colocalization_saca_2d<'py>(
         )
         .map(|output| output.into_pyarray(py))
         .map_err(map_array_error)
-    } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray2<f64>>() {
-        let arr_b = image_b.extract::<PyReadonlyArray2<f64>>()?;
+    } else if let Ok(arr_a) = data_a.extract::<PyReadonlyArray2<f64>>() {
+        let arr_b = data_b.extract::<PyReadonlyArray2<f64>>()?;
         colocalization::saca_2d(arr_a.as_array(), arr_b.as_array(), threshold_a, threshold_b)
             .map(|output| output.into_pyarray(py))
             .map_err(map_array_error)
@@ -97,9 +97,9 @@ pub fn colocalization_saca_2d<'py>(
 /// and their colocalization coefficient computed using Kendall's Tau-b rank
 /// correlation.
 ///
-/// :param image_a: The 3-dimensional input image, "A". Image "A" must have the
+/// :param data_a: The 3-dimensional input image, "A". Image "A" must have the
 ///     same shape as image "B".
-/// :param image_b: Ihe 3-dimensional input image, "B". Image "B" must have the
+/// :param data_b: Ihe 3-dimensional input image, "B". Image "B" must have the
 ///     same shape as image "A".
 /// :param threshold_a: Pixel intensity threshold value for image "A". Pixels
 ///     below this value are given a weight of 0.0 if the pixel is in the
@@ -114,13 +114,13 @@ pub fn colocalization_saca_2d<'py>(
 #[pyo3(name = "saca_3d")]
 pub fn colocalization_saca_3d<'py>(
     py: Python<'py>,
-    image_a: Bound<'py, PyAny>,
-    image_b: Bound<'py, PyAny>,
+    data_a: Bound<'py, PyAny>,
+    data_b: Bound<'py, PyAny>,
     threshold_a: f64,
     threshold_b: f64,
 ) -> PyResult<Bound<'py, PyArray3<f64>>> {
-    if let Ok(arr_a) = image_a.extract::<PyReadonlyArray3<u8>>() {
-        let arr_b = image_b.extract::<PyReadonlyArray3<u8>>()?;
+    if let Ok(arr_a) = data_a.extract::<PyReadonlyArray3<u8>>() {
+        let arr_b = data_b.extract::<PyReadonlyArray3<u8>>()?;
         colocalization::saca_3d(
             arr_a.as_array(),
             arr_b.as_array(),
@@ -129,8 +129,8 @@ pub fn colocalization_saca_3d<'py>(
         )
         .map(|output| output.into_pyarray(py))
         .map_err(map_array_error)
-    } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray3<u16>>() {
-        let arr_b = image_b.extract::<PyReadonlyArray3<u16>>()?;
+    } else if let Ok(arr_a) = data_a.extract::<PyReadonlyArray3<u16>>() {
+        let arr_b = data_b.extract::<PyReadonlyArray3<u16>>()?;
         colocalization::saca_3d(
             arr_a.as_array(),
             arr_b.as_array(),
@@ -139,8 +139,8 @@ pub fn colocalization_saca_3d<'py>(
         )
         .map(|output| output.into_pyarray(py))
         .map_err(map_array_error)
-    } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray3<f32>>() {
-        let arr_b = image_b.extract::<PyReadonlyArray3<f32>>()?;
+    } else if let Ok(arr_a) = data_a.extract::<PyReadonlyArray3<f32>>() {
+        let arr_b = data_b.extract::<PyReadonlyArray3<f32>>()?;
         colocalization::saca_3d(
             arr_a.as_array(),
             arr_b.as_array(),
@@ -149,8 +149,8 @@ pub fn colocalization_saca_3d<'py>(
         )
         .map(|output| output.into_pyarray(py))
         .map_err(map_array_error)
-    } else if let Ok(arr_a) = image_a.extract::<PyReadonlyArray3<f64>>() {
-        let arr_b = image_b.extract::<PyReadonlyArray3<f64>>()?;
+    } else if let Ok(arr_a) = data_a.extract::<PyReadonlyArray3<f64>>() {
+        let arr_b = data_b.extract::<PyReadonlyArray3<f64>>()?;
         colocalization::saca_3d(arr_a.as_array(), arr_b.as_array(), threshold_a, threshold_b)
             .map(|output| output.into_pyarray(py))
             .map_err(map_array_error)
