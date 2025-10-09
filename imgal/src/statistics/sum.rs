@@ -33,5 +33,5 @@ pub fn sum<T>(data: &[T]) -> T
 where
     T: ToFloat64,
 {
-    data.iter().copied().sum()
+    data.iter().fold(T::default(), |acc, &v| acc + v)
 }
