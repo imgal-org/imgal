@@ -16,6 +16,18 @@ pub fn register_statistics_module(parent_module: &Bound<'_, PyModule>) -> PyResu
         &statistics_module
     )?)?;
     statistics_module.add_function(wrap_pyfunction!(
+        statistics_functions::statistics_max,
+        &statistics_module
+    )?)?;
+    statistics_module.add_function(wrap_pyfunction!(
+        statistics_functions::statistics_min,
+        &statistics_module
+    )?)?;
+    statistics_module.add_function(wrap_pyfunction!(
+        statistics_functions::statistics_min_max,
+        &statistics_module
+    )?)?;
+    statistics_module.add_function(wrap_pyfunction!(
         statistics_functions::statistics_sum,
         &statistics_module
     )?)?;

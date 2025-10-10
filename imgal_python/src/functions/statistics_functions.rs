@@ -1,4 +1,5 @@
-use numpy::PyReadwriteArray1;
+use numpy::{PyReadonlyArrayDyn, PyReadwriteArray1};
+use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 
 use crate::error::map_array_error;
@@ -19,6 +20,94 @@ use imgal::statistics;
 #[pyo3(name = "effective_sample_size")]
 pub fn statistics_effective_sample_size(weights: Vec<f64>) -> f64 {
     statistics::effective_sample_size(&weights)
+}
+
+/// Find the maximum value in an n-dimensional array.
+///
+/// This function iterates through all elements of an n-dimensional array to
+/// determine the maximum value.
+///
+/// :param data: The input n-dimensional array view.
+/// :return: The maximum value in the input data array.
+#[pyfunction]
+#[pyo3(name = "max")]
+pub fn statistics_max<'py>(data: Bound<'py, PyAny>) -> PyResult<f64> {
+    if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<u8>>() {
+        let m = statistics::max(arr.as_array());
+        return Ok(m as f64);
+    } else if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<u16>>() {
+        let m = statistics::max(arr.as_array());
+        return Ok(m as f64);
+    } else if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<f32>>() {
+        let m = statistics::max(arr.as_array());
+        return Ok(m as f64);
+    } else if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<f64>>() {
+        let m = statistics::max(arr.as_array());
+        return Ok(m as f64);
+    } else {
+        return Err(PyErr::new::<PyTypeError, _>(
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
+        ));
+    }
+}
+
+/// Find the minimum value in an n-dimensional array.
+///
+/// This function iterates through all elements of an n-dimensional array to
+/// determine the minimum value.
+///
+/// :param data: The input n-dimensional array view.
+/// :return: The minimum value in the input data array.
+#[pyfunction]
+#[pyo3(name = "min")]
+pub fn statistics_min<'py>(data: Bound<'py, PyAny>) -> PyResult<f64> {
+    if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<u8>>() {
+        let m = statistics::min(arr.as_array());
+        return Ok(m as f64);
+    } else if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<u16>>() {
+        let m = statistics::min(arr.as_array());
+        return Ok(m as f64);
+    } else if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<f32>>() {
+        let m = statistics::min(arr.as_array());
+        return Ok(m as f64);
+    } else if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<f64>>() {
+        let m = statistics::min(arr.as_array());
+        return Ok(m as f64);
+    } else {
+        return Err(PyErr::new::<PyTypeError, _>(
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
+        ));
+    }
+}
+/// Find the minimum and maximum values in an n-dimensional array.
+///
+/// This function iterates through all elements of an n-dimensional array to
+/// determine the minimum and maximum values.
+///
+/// :param data: The input n-dimensional array view.
+/// :return: A tuple containing the minimum and maximum values (_i.e._
+///     (min, max)) in the given array. If the array is empty a minimum and
+///     maximum value of 0 is returned in the tuple.
+#[pyfunction]
+#[pyo3(name = "min_max")]
+pub fn statistics_min_max<'py>(data: Bound<'py, PyAny>) -> PyResult<(f64, f64)> {
+    if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<u8>>() {
+        let mm = statistics::min_max(arr.as_array());
+        return Ok((mm.0 as f64, mm.1 as f64));
+    } else if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<u16>>() {
+        let mm = statistics::min_max(arr.as_array());
+        return Ok((mm.0 as f64, mm.1 as f64));
+    } else if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<f32>>() {
+        let mm = statistics::min_max(arr.as_array());
+        return Ok((mm.0 as f64, mm.1 as f64));
+    } else if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<f64>>() {
+        let mm = statistics::min_max(arr.as_array());
+        return Ok((mm.0 as f64, mm.1 as f64));
+    } else {
+        return Err(PyErr::new::<PyTypeError, _>(
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
+        ));
+    }
 }
 
 /// Compute the sum of a sequence of numbers.
