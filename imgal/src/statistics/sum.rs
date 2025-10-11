@@ -12,7 +12,7 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Returns
 ///
-/// * `f64`: The sum.
+/// * `T`: The sum.
 ///
 /// # Examples
 ///
