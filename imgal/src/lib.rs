@@ -2,6 +2,7 @@ pub mod colocalization;
 pub mod distribution;
 pub mod error;
 pub mod filter;
+pub mod image;
 pub mod integration;
 pub mod kernel;
 pub mod parameter;

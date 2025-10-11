@@ -1,6 +1,7 @@
 pub mod colocalization_module;
 pub mod distribution_module;
 pub mod filter_module;
+pub mod image_module;
 pub mod integration_module;
 pub mod kernel_module;
 pub mod parameter_module;
