@@ -24,8 +24,6 @@ pub fn histogram<T>(data: ArrayViewD<T>, bins: Option<usize>) -> Vec<i64>
 where
     T: ToFloat64,
 {
-    // TODO: set reasonable default bins
-    // TODO: parallelize this
     let bins = bins.unwrap_or(256);
 
     // return an empty histogram if bins is zero or array is zero
@@ -39,8 +37,6 @@ where
     // construct histogram
     let mut hist = vec![0; bins];
     let bin_width: f64 = (max.into() - min.into()) / bins as f64;
-
-    // populate histogram
     data.iter().for_each(|&v| {
         let bin_index: usize = ((v.into() - min.into()) / bin_width) as usize;
         let bin_index = bin_index.min(bins - 1);
