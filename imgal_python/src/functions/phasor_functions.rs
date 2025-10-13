@@ -218,6 +218,13 @@ pub fn plot_map_image<'py>(
         .map_err(map_array_error)
 }
 
+/// TODO docs
+#[pyfunction]
+#[pyo3(name = "curve_quality")]
+pub fn time_domain_curve_quality(data: Vec<f64>, period: f64) -> f64{
+    time_domain::curve_quality(&data, period)
+}
+
 /// Compute the real and imaginary (G, S) coordinates of a 3-dimensional decay
 /// image.
 ///

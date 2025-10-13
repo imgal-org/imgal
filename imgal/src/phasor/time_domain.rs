@@ -7,6 +7,21 @@ use crate::integration::midpoint;
 use crate::parameter::omega;
 use crate::traits::numeric::ToFloat64;
 
+/// Assess curve quality using my own equation:
+///
+/// sum(bin_count/(midpoint(data).powi(2)))
+pub fn curve_quality<T>(data: &[T], period: f64) -> f64
+where
+    T: ToFloat64,
+{
+    let dl = data.len() as f64;
+    let bin_width = period / dl;
+    let area = midpoint(&data, Some(bin_width));
+    let cq = data.iter().fold(0.0, |acc, &v| acc + (v.to_f64() / (area).powi(2)));
+
+    cq / dl
+}
+
 /// Compute the real and imaginary (G, S) coordinates of a 3-dimensional decay
 /// image.
 ///
