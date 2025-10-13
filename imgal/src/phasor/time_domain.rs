@@ -93,7 +93,7 @@ where
                         .zip(w_sin_buf.iter())
                         .for_each(|((v, cosv), sinv)| {
                             // midpoint integration
-                            let vf: f64 = (*v).into();
+                            let vf: f64 = (*v).to_f64();
                             iv += vf;
                             gv += vf * cosv;
                             sv += vf * sinv;
@@ -125,7 +125,7 @@ where
                     .zip(w_sin_buf.iter())
                     .for_each(|((v, cosv), sinv)| {
                         // midpoint integration
-                        let vf: f64 = (*v).into();
+                        let vf: f64 = (*v).to_f64();
                         iv += vf;
                         gv += vf * cosv;
                         sv += vf * sinv;
@@ -180,7 +180,7 @@ where
     let h_w_dt: f64 = h * w * dt;
     let mut buf = Vec::with_capacity(n);
     for i in 0..n {
-        buf.push(data[i].into() * f64::sin(h_w_dt * (i as f64)));
+        buf.push(data[i].to_f64() * f64::sin(h_w_dt * (i as f64)));
     }
     let i_sin_integral: f64 = midpoint(&buf, Some(dt));
     let i_integral: f64 = midpoint(data, Some(dt));
@@ -223,7 +223,7 @@ where
     let h_w_dt: f64 = h * w * dt;
     let mut buf = Vec::with_capacity(n);
     for i in 0..n {
-        buf.push(data[i].into() * f64::cos(h_w_dt * (i as f64)));
+        buf.push(data[i].to_f64() * f64::cos(h_w_dt * (i as f64)));
     }
     let i_cos_integral: f64 = midpoint(&buf, Some(dt));
     let i_integral: f64 = midpoint(data, Some(dt));

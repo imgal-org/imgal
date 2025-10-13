@@ -25,5 +25,5 @@ pub fn abbe_diffraction_limit<T>(wavelength: T, na: f64) -> f64
 where
     T: ToFloat64,
 {
-    wavelength.into() / (2.0 * na)
+    wavelength.to_f64() / (2.0 * na)
 }

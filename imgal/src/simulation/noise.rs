@@ -39,8 +39,8 @@ where
 
     let mut n_data = vec![0.0; data.len()];
     n_data.iter_mut().zip(data.iter()).for_each(|(n, &d)| {
-        if d.into() > 0.0 {
-            let l: f64 = d.into() * scale;
+        if d.to_f64() > 0.0 {
+            let l: f64 = d.to_f64() * scale;
             let p = Poisson::new(l).unwrap();
             *n = p.sample(&mut rng);
         } else {
@@ -143,8 +143,8 @@ where
             .par_for_each(|s_ln, d_ln| {
                 let mut rng = StdRng::seed_from_u64(s);
                 Zip::from(s_ln).and(d_ln).for_each(|s, d| {
-                    if (*s).into() > 0.0 {
-                        let l = (*s).into() * scale;
+                    if (*s).to_f64() > 0.0 {
+                        let l = (*s).to_f64() * scale;
                         let p = Poisson::new(l).unwrap();
                         *d = p.sample(&mut rng);
                     } else {
@@ -159,8 +159,8 @@ where
             .par_for_each(|s_ln, d_ln| {
                 let mut rng = rand::rng();
                 Zip::from(s_ln).and(d_ln).for_each(|s, d| {
-                    if (*s).into() > 0.0 {
-                        let l = (*s).into() * scale;
+                    if (*s).to_f64() > 0.0 {
+                        let l = (*s).to_f64() * scale;
                         let p = Poisson::new(l).unwrap();
                         *d = p.sample(&mut rng);
                     } else {

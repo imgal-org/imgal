@@ -25,5 +25,5 @@ pub fn omega<T>(period: T) -> f64
 where
     T: ToFloat64,
 {
-    2.0 * PI / period.into()
+    2.0 * PI / period.to_f64()
 }

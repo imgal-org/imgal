@@ -95,8 +95,8 @@ where
     Zip::from(src_lanes)
         .and(dst_lanes)
         .par_for_each(|s_ln, mut d_ln| {
-            d_ln[0] = s_ln[0].into() * g_trans - s_ln[1].into() * s_trans;
-            d_ln[1] = s_ln[0].into() * s_trans + s_ln[1].into() * g_trans;
+            d_ln[0] = s_ln[0].to_f64() * g_trans - s_ln[1].to_f64() * s_trans;
+            d_ln[1] = s_ln[0].to_f64() * s_trans + s_ln[1].to_f64() * g_trans;
         });
 
     c_data

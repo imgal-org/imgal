@@ -24,5 +24,5 @@ pub fn midpoint<T>(x: &[T], delta_x: Option<f64>) -> f64
 where
     T: ToFloat64,
 {
-    delta_x.unwrap_or(1.0) * sum(x).into()
+    delta_x.unwrap_or(1.0) * sum(x).to_f64()
 }

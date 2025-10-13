@@ -36,9 +36,9 @@ where
 
     // construct histogram
     let mut hist = vec![0; bins];
-    let bin_width: f64 = (max.into() - min.into()) / bins as f64;
+    let bin_width: f64 = (max.to_f64() - min.to_f64()) / bins as f64;
     data.iter().for_each(|&v| {
-        let bin_index: usize = ((v.into() - min.into()) / bin_width) as usize;
+        let bin_index: usize = ((v.to_f64() - min.to_f64()) / bin_width) as usize;
         let bin_index = bin_index.min(bins - 1);
         hist[bin_index] += 1;
     });

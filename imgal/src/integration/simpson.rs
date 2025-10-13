@@ -44,7 +44,7 @@ where
         // compute the even subintervals with Simpson's rule
         let integral: f64 = simpson(&x[..n], delta_x).unwrap();
         // compute the last subinterval with a trapizoid
-        let trap: f64 = (d_x / 2.0) * (x[n - 1] + x[n]).into();
+        let trap: f64 = (d_x / 2.0) * (x[n - 1] + x[n]).to_f64();
         integral + trap
     }
 }
@@ -83,10 +83,10 @@ where
     if n % 2 == 0 {
         // compute integal with Simpson's rule
         let mut coef: f64;
-        let mut integral: f64 = (x[0] + x[n]).into();
+        let mut integral: f64 = (x[0] + x[n]).to_f64();
         for i in 1..n {
             coef = if i % 2 == 1 { 4.0 } else { 2.0 };
-            integral += coef * x[i].into();
+            integral += coef * x[i].to_f64();
         }
         Ok((d_x / 3.0) * integral)
     } else {
