@@ -18,7 +18,11 @@ pub fn register_phasor_module(parent_module: &Bound<'_, PyModule>) -> PyResult<(
 
     // add phasor::time_domain submodule functions
     time_domain_module.add_function(wrap_pyfunction!(
-        phasor_functions::time_domain_curve_quality,
+        phasor_functions::time_domain_histogram_quality,
+        &time_domain_module
+    )?)?;
+    time_domain_module.add_function(wrap_pyfunction!(
+        phasor_functions::time_domain_histogram_quality_image,
         &time_domain_module
     )?)?;
     time_domain_module.add_function(wrap_pyfunction!(

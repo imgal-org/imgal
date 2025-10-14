@@ -218,11 +218,90 @@ pub fn plot_map_image<'py>(
         .map_err(map_array_error)
 }
 
-/// TODO docs
+/// Compute the histogram quality value from a 1-dimensional decay array.
+///
+/// This function computes the fraction of bins in the histogram that exceed a
+/// specified threshold. This metric provides a measure of histogram "quality"
+/// by quantifying the proportion of bins with sufficient counts for reliable
+/// analysis.
+///
+/// q = (1/n) ∑ C(xᵢ > t)
+///
+/// where:
+/// - "n" is the total number of bins.
+/// - "xᵢ" is the value in bin "i".
+/// - "t" is the count threshold.
+/// - "C(·)" is the count function, 1 if "true", 0 if "false".
+///
+/// :param data: The 1-dimensional decay data as a slice.
+/// :param count_threshold: The minimum bin count value a bin must exceed to be
+///     considered valid.
+/// :return: The decay histogram quality value. The quality value, "q", ranges
+///     from 0.0 to 1.0, where 1.0 indicates all bins exceed the count threshold
+///     and 0.0 indicates that none do.
 #[pyfunction]
-#[pyo3(name = "curve_quality")]
-pub fn time_domain_curve_quality(data: Vec<f64>, period: f64) -> f64{
-    time_domain::curve_quality(&data, period)
+#[pyo3(name = "histogram_quality")]
+pub fn time_domain_histogram_quality(data: Vec<f64>, count_threshold: f64) -> f64 {
+    time_domain::histogram_quality(&data, count_threshold)
+}
+
+/// Compute a histogram quality map from a 3-dimensional decay array.
+///
+/// This function computes the fraction of bins in the histogram that exceed a
+/// specified threshold (i.e. the histogram quality metric "q") for each
+/// 1-dimensional histogram in the input array. The "q" values are returned
+/// as a 2-dimensonal quality or "q" map. The histogram quality metric is
+/// defined as:
+///
+/// q = (1/n) ∑ I(xᵢ > t)
+///
+/// where:
+/// - "n" is the total number of bins.
+/// - "xᵢ" is the value in bin "i".
+/// - "t" is the count threshold.
+/// - "C(·)" is the count function, 1 if "true", 0 if "false".
+///
+/// :param data: The 3-dimensional decay data.
+/// :param count_threshold: The minimum bin count value a bin must exceed to be
+///     considered valid.
+/// :param axis: The decay or lifetime axis, default = 2.
+/// :return: The 2-dimensional quality or "q" map of the input data.
+///     The quality value, "q", ranges from 0.0 to 1.0, where 1.0 indicates all
+///     bins exceed the count threshold and 0.0 indicates that none do.
+#[pyfunction]
+#[pyo3(name = "histogram_quality_image")]
+#[pyo3(signature = (data, count_threshold, axis=None))]
+pub fn time_domain_histogram_quality_image<'py>(
+    py: Python<'py>,
+    data: Bound<'py, PyAny>,
+    count_threshold: f64,
+    axis: Option<usize>,
+) -> PyResult<Bound<'py, PyArray2<f64>>> {
+    // pattern match and extract allowed array types
+    if let Ok(arr) = data.extract::<PyReadonlyArray3<u8>>() {
+        return time_domain::histogram_quality_image(arr.as_array(), count_threshold as u8, axis)
+            .map(|output| output.into_pyarray(py))
+            .map_err(map_array_error);
+    }
+    if let Ok(arr) = data.extract::<PyReadonlyArray3<u16>>() {
+        return time_domain::histogram_quality_image(arr.as_array(), count_threshold as u16, axis)
+            .map(|output| output.into_pyarray(py))
+            .map_err(map_array_error);
+    }
+    if let Ok(arr) = data.extract::<PyReadonlyArray3<f32>>() {
+        return time_domain::histogram_quality_image(arr.as_array(), count_threshold as f32, axis)
+            .map(|output| output.into_pyarray(py))
+            .map_err(map_array_error);
+    }
+    if let Ok(arr) = data.extract::<PyReadonlyArray3<f64>>() {
+        return time_domain::histogram_quality_image(arr.as_array(), count_threshold, axis)
+            .map(|output| output.into_pyarray(py))
+            .map_err(map_array_error);
+    } else {
+        return Err(PyErr::new::<PyTypeError, _>(
+            "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
+        ));
+    }
 }
 
 /// Compute the real and imaginary (G, S) coordinates of a 3-dimensional decay

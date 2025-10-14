@@ -7,19 +7,117 @@ use crate::integration::midpoint;
 use crate::parameter::omega;
 use crate::traits::numeric::ToFloat64;
 
-/// Assess curve quality using my own equation:
+/// Compute the histogram quality value from a 1-dimensional decay array.
 ///
-/// sum(bin_count/(midpoint(data).powi(2)))
-pub fn curve_quality<T>(data: &[T], period: f64) -> f64
+/// # Description
+///
+/// This function computes the fraction of bins in the histogram that exceed a
+/// specified threshold. This metric provides a measure of histogram "quality"
+/// by quantifying the proportion of bins with sufficient counts for reliable
+/// analysis.
+///
+/// ```text
+/// q = (1/n) ∑ C(xᵢ > t)
+/// ```
+///
+/// where:
+/// - `n` is the total number of bins.
+/// - `xᵢ` is the value in bin `i`.
+/// - `t` is the count threshold.
+/// - `C(·)` is the count function, 1 if `true`, 0 if `false`.
+///
+/// # Arguments
+///
+/// * `data`: The 1-dimensional decay data as a slice.
+/// * `count_threshold`: The minimum bin count value a bin must exceed to be
+///    considered valid.
+///
+/// # Returns
+///
+/// * `f64`: The decay histogram quality value. The quality value, `q`, ranges
+///    from 0.0 to 1.0, where 1.0 indicates all bins exceed the count threshold
+///    and 0.0 indicates that none do.
+pub fn histogram_quality<T>(data: &[T], count_threshold: T) -> f64
 where
     T: ToFloat64,
 {
-    let dl = data.len() as f64;
-    let bin_width = period / dl;
-    let area = midpoint(&data, Some(bin_width));
-    let cq = data.iter().fold(0.0, |acc, &v| acc + (v.to_f64() / (area).powi(2)));
+    let valid_bin_count = data.iter().fold(0_i32, |mut acc, &v| {
+        if v > count_threshold {
+            acc += 1;
+        }
+        acc
+    });
 
-    cq / dl
+    valid_bin_count as f64 / data.len() as f64
+}
+
+/// Compute a histogram quality map from a 3-dimensional decay array.
+///
+/// # Description
+///
+/// This function computes the fraction of bins in the histogram that exceed a
+/// specified threshold (_i.e._ the histogram quality metric `q`) for each
+/// 1-dimensional histogram in the input array. The `q` values are returned
+/// as a 2-dimensonal quality or `q` map. The histogram quality metric is
+/// defined as:
+///
+/// ```text
+/// q = (1/n) ∑ I(xᵢ > t)
+/// ```
+///
+/// where:
+/// - `n` is the total number of bins.
+/// - `xᵢ` is the value in bin `i`.
+/// - `t` is the count threshold.
+/// - `C(·)` is the count function, 1 if `true`, 0 if `false`.
+///
+/// # Arguments
+///
+/// * `data`: The 3-dimensional decay data.
+/// * `count_threshold`: The minimum bin count value a bin must exceed to be
+///    considered valid.
+/// * `axis`: The decay or lifetime axis, default = 2.
+///
+/// # Returns
+///
+/// * `f64`: The 2-dimensional quality or `q` map of the input data.
+///    The quality value, `q`, ranges from 0.0 to 1.0, where 1.0 indicates all
+///    bins exceed the count threshold and 0.0 indicates that none do.
+pub fn histogram_quality_image<T>(
+    data: ArrayView3<T>,
+    count_threshold: T,
+    axis: Option<usize>,
+) -> Result<Array2<f64>, ArrayError>
+where
+    T: ToFloat64,
+{
+    // set optional parameter if needed
+    let a = axis.unwrap_or(2);
+
+    // check if axis parameter is valid
+    if a >= 3 {
+        return Err(ArrayError::InvalidAxis {
+            axis_idx: a,
+            dim_len: 3,
+        });
+    }
+
+    // create output array and zip iterate
+    let mut shape = data.shape().to_vec();
+    shape.remove(a);
+    let mut q_arr = Array2::<f64>::zeros((shape[0], shape[1]));
+    let lanes = data.lanes(Axis(a));
+    Zip::from(lanes)
+        .and(q_arr.view_mut())
+        .par_for_each(|ln, p| {
+            if let Some(l) = ln.as_slice() {
+                *p = histogram_quality(l, count_threshold);
+            } else {
+                *p = histogram_quality(&ln.to_vec(), count_threshold);
+            }
+        });
+
+    Ok(q_arr)
 }
 
 /// Compute the real and imaginary (G, S) coordinates of a 3-dimensional decay
