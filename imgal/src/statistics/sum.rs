@@ -29,6 +29,7 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// assert_eq!(total, 21.55);
 /// ```
+#[inline(always)]
 pub fn sum<T>(data: &[T]) -> T
 where
     T: ToFloat64,

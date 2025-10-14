@@ -21,6 +21,7 @@ use crate::traits::numeric::ToFloat64;
 /// # Returns
 ///
 /// * `f64`: The omega (ω) value.
+#[inline(always)]
 pub fn omega<T>(period: T) -> f64
 where
     T: ToFloat64,

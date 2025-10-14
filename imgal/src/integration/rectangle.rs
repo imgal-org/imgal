@@ -20,6 +20,7 @@ use crate::traits::numeric::ToFloat64;
 /// # Returns
 ///
 /// * `f64`: The computed integral.
+#[inline]
 pub fn midpoint<T>(x: &[T], delta_x: Option<f64>) -> f64
 where
     T: ToFloat64,
