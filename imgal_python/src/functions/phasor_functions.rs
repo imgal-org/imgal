@@ -1,6 +1,7 @@
 use numpy::{
     IntoPyArray, PyArray2, PyArray3, PyReadonlyArray2, PyReadonlyArray3, PyReadwriteArray3,
 };
+use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 
 use crate::error::map_array_error;
@@ -79,7 +80,7 @@ pub fn calibration_image<'py>(
         let output = calibration::image(arr.as_array(), modulation, phase, axis);
         return Ok(output.into_pyarray(py));
     } else {
-        return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+        return Err(PyErr::new::<PyTypeError, _>(
             "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
         ));
     }
@@ -372,7 +373,7 @@ pub fn time_domain_image<'py>(
                 .map_err(map_array_error);
         }
     } else {
-        return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+        return Err(PyErr::new::<PyTypeError, _>(
             "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
         ));
     }
