@@ -2,6 +2,7 @@ use ndarray::s;
 
 use imgal::integration::midpoint;
 use imgal::simulation::{decay, instrument, noise};
+use imgal::statistics::sum;
 
 // simulated bioexponential decay parameters
 const SAMPLES: usize = 256;
@@ -32,16 +33,13 @@ fn decay_gaussian_exponential_1d() {
     )
     .unwrap();
 
-    // bin width for integration check
-    let dt = PERIOD / SAMPLES as f64;
-
-    // integrate the curve for photon count (approx) and check peak curve value
+    // check curve photon count and a point on the curve (near max)
     assert!(ensure_within_tolerance(
-        midpoint(&i, Some(dt)),
-        5015.983504781878,
+        sum(&i),
+        4960.5567668085005,
         1e-12
     ));
-    assert!(ensure_within_tolerance(i[68], 2810.4960313074985, 1e-12));
+    assert!(ensure_within_tolerance(i[68], 135.7148429095218, 1e-12));
 }
 
 // test the simulation::decay module
@@ -60,19 +58,16 @@ fn decay_gaussian_exponential_3d() {
     )
     .unwrap();
 
-    // bin width for integration check
-    let dt = PERIOD / SAMPLES as f64;
-
-    // check shape, curve by integration and a point
+    // check curve photon count and a point on the curve (near max)
     assert_eq!(i.shape(), [10, 10, 256]);
     assert!(ensure_within_tolerance(
-        midpoint(i.slice(s![5, 5, ..]).as_slice().unwrap(), Some(dt)),
-        5015.983504781878,
+        sum(i.slice(s![5, 5, ..]).as_slice().unwrap()),
+        4960.5567668085005,
         1e-12
     ));
     assert!(ensure_within_tolerance(
         i[[5, 5, 68]],
-        2810.4960313074985,
+        135.7148429095218,
         1e-12
     ));
 }
@@ -82,16 +77,13 @@ fn decay_ideal_exponential_1d() {
     // simulate decay data
     let i = decay::ideal_exponential_1d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS).unwrap();
 
-    // bin width for integration check
-    let dt = PERIOD / SAMPLES as f64;
-
-    // check the curve by integration and a point
+    // check curve photon count and a point on the curve
     assert!(ensure_within_tolerance(
-        midpoint(&i, Some(dt)),
-        5055.86745659704,
+        sum(&i),
+        5000.0,
         1e-12
     ));
-    assert!(ensure_within_tolerance(i[30], 1110.5191029245611, 1e-12));
+    assert!(ensure_within_tolerance(i[30], 53.625382823015336, 1e-12));
 }
 
 #[test]
@@ -100,19 +92,16 @@ fn decay_ideal_exponential_3d() {
     let i = decay::ideal_exponential_3d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS, SHAPE)
         .unwrap();
 
-    // bin width for integration check
-    let dt = PERIOD / SAMPLES as f64;
-
-    // check shape, curve by integration and a point
+    // check curve photon count and a point on the curve
     assert_eq!(i.shape(), [10, 10, 256]);
     assert!(ensure_within_tolerance(
-        midpoint(i.slice(s![5, 5, ..]).as_slice().unwrap(), Some(dt)),
-        5055.86745659704,
+        sum(i.slice(s![5, 5, ..]).as_slice().unwrap()),
+        5000.0,
         1e-12
     ));
     assert!(ensure_within_tolerance(
         i[[5, 5, 30]],
-        1110.5191029245611,
+        53.625382823015336,
         1e-12
     ));
 }
@@ -124,16 +113,13 @@ fn decay_irf_exponential_1d() {
     let i =
         decay::irf_exponential_1d(&irf, SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS).unwrap();
 
-    // bin width for integration check
-    let dt = PERIOD / SAMPLES as f64;
-
     // check the curve by integration and a point
     assert!(ensure_within_tolerance(
-        midpoint(&i, Some(dt)),
-        5015.983504781878,
+        sum(&i),
+        4960.5567668085005,
         1e-12
     ));
-    assert!(ensure_within_tolerance(i[68], 2810.4960313074985, 1e-12));
+    assert!(ensure_within_tolerance(i[68], 135.7148429095218, 1e-12));
 }
 
 #[test]
@@ -151,19 +137,16 @@ fn decay_irf_exponential_3d() {
     )
     .unwrap();
 
-    // bin width for integration check
-    let dt = PERIOD / SAMPLES as f64;
-
-    // check shape, cruve by integration and a point
+    // check the curve by integration and a point
     assert_eq!(i.shape(), [10, 10, 256]);
     assert!(ensure_within_tolerance(
-        midpoint(i.slice(s![5, 5, ..]).as_slice().unwrap(), Some(dt)),
-        5015.983504781878,
+        sum(i.slice(s![5, 5, ..]).as_slice().unwrap()),
+        4960.5567668085005,
         1e-12
     ));
     assert!(ensure_within_tolerance(
         i[[5, 5, 68]],
-        2810.4960313074985,
+        135.7148429095218,
         1e-12
     ));
 }

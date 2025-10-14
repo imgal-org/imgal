@@ -191,12 +191,7 @@ pub fn ideal_exponential_1d(
     // create taus array and compute pre-exponential factors
     let frac_arr = Array1::from_vec(fractions.to_vec());
     let taus_arr = Array1::from_vec(taus.to_vec());
-    let mut alph_arr = &frac_arr / &taus_arr;
-
-    // scale the total integrated intensity to equal total counts
-    let alta_arr = &alph_arr * &taus_arr;
-    let scale = total_counts / sum(alta_arr.as_slice().unwrap());
-    alph_arr *= scale;
+    let alph_arr = &frac_arr / &taus_arr;
 
     // create the time array and compute the intensity decay curve
     let mut i_arr = vec![0.0; samples];
@@ -210,6 +205,10 @@ pub fn ideal_exponential_1d(
                 *i += al * (-t / ta).exp();
             });
         });
+
+    // scale the histogram to total_counts
+    let scale = total_counts / sum(&i_arr);
+    i_arr.iter_mut().for_each(|v| *v *= scale);
 
     Ok(i_arr)
 }

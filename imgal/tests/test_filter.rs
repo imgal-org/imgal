@@ -1,6 +1,6 @@
 use imgal::filter;
-use imgal::integration::midpoint;
 use imgal::simulation::{decay, instrument};
+use imgal::statistics::sum;
 
 // simulated bioexponential decay parameters, unit is nanoseconds
 const SAMPLES: usize = 256;
@@ -23,16 +23,13 @@ fn filter_fft_convolve_1d() {
     let b = instrument::gaussian_irf_1d(SAMPLES, PERIOD, IRF_CENTER, IRF_WIDTH);
     let conv = filter::fft_convolve_1d(&a, &b);
 
-    // bin width for integration check
-    let dt = PERIOD / SAMPLES as f64;
-
-    // check curve by integration and the peak of the curve
+    // check curve photon count and a point on the curve (near max)
     assert!(ensure_within_tolerance(
-        midpoint(&conv, Some(dt)),
-        5015.983504781878,
+        sum(&conv),
+        4960.5567668085005,
         1e-12
     ));
-    assert!(ensure_within_tolerance(conv[68], 2810.4960313074985, 1e-12));
+    assert!(ensure_within_tolerance(conv[68], 135.7148429095218, 1e-12));
 }
 
 #[test]
@@ -51,18 +48,15 @@ fn filter_fft_deconvolve_1d() {
     let b = decay::ideal_exponential_1d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS).unwrap();
     let dconv = filter::fft_deconvolve_1d(&a, &b, None);
 
-    // bin width for integration check
-    let dt = PERIOD / SAMPLES as f64;
-
-    // check curve by integration and the peak of the curve
+    // check curve photon count and a point on the curve (near max)
     assert!(ensure_within_tolerance(
-        midpoint(&dconv, Some(dt)),
-        0.04882693030413842,
+        sum(&dconv),
+        0.9999755326287557,
         1e-12
     ));
     assert!(ensure_within_tolerance(
         dconv[62],
-        0.09054437407721573,
+        0.0905443740772156,
         1e-12
     ));
 }

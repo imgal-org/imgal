@@ -252,7 +252,7 @@ fn time_domain_imaginary() {
     let i = decay::ideal_exponential_1d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS).unwrap();
     let s = time_domain::imaginary(&i, PERIOD, None);
 
-    assert_eq!(s, 0.4102178630685902);
+    assert_eq!(s, 0.4102178630685894);
 }
 
 #[test]
@@ -260,5 +260,5 @@ fn time_domain_real() {
     let i = decay::ideal_exponential_1d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS).unwrap();
     let g = time_domain::real(&i, PERIOD, None);
 
-    assert_eq!(g, 0.6601376050345189);
+    assert_eq!(g, 0.660137605034518);
 }
