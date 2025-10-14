@@ -204,16 +204,16 @@ pub fn plot_monoexponential_coordinates(tau: f64, omega: f64) -> (f64, f64) {
 /// :return: A 2-dimensional boolean mask where "true" pixels
 ///     represent values found in the "g_coords" and "s_coords" arrays.
 #[pyfunction]
-#[pyo3(name = "map_image")]
+#[pyo3(name = "map_mask")]
 #[pyo3(signature = (data, g_coords, s_coords, axis=None))]
-pub fn plot_map_image<'py>(
+pub fn plot_map_mask<'py>(
     py: Python<'py>,
     data: PyReadonlyArray3<f64>,
     g_coords: Vec<f64>,
     s_coords: Vec<f64>,
     axis: Option<usize>,
 ) -> PyResult<Bound<'py, PyArray2<bool>>> {
-    plot::map_image(data.as_array(), &g_coords, &s_coords, axis)
+    plot::map_mask(data.as_array(), &g_coords, &s_coords, axis)
         .map(|output| output.into_pyarray(py))
         .map_err(map_array_error)
 }
