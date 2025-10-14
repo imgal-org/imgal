@@ -13,9 +13,9 @@ use imgal::distribution;
 /// f(x) = exp(-((x - μ)² / (2σ²)))
 ///
 /// where:
-/// - `x` is the position along the range
-/// - `μ` is the center (mean)
-/// - `σ` is the sigma (standard deviation)
+/// - `x` is the position along the range.
+/// - `μ` is the center (mean).
+/// - `σ` is the sigma (standard deviation).
 ///
 ///
 /// :param sigma: The standard deviation of the Gaussian distribution (i.e. the width).

@@ -7,7 +7,11 @@ use imgal::statistics::min_max;
 fn image_histogram() {
     // create data with known values and get the histogram
     let data = Array2::from_shape_fn((20, 20), |(i, j)| {
-        if i < 15 { 0 } else { ((i - 15) * 20 + j) as u16}
+        if i < 15 {
+            0
+        } else {
+            ((i - 15) * 20 + j) as u16
+        }
     });
     let hist = image::histogram(data.view().into_dyn(), Some(20));
 

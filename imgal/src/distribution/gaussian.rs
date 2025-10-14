@@ -13,9 +13,9 @@ use crate::statistics::sum;
 /// f(x) = exp(-((x - μ)² / (2σ²)))
 /// ```
 /// Where:
-/// - `x` is the position along the range
-/// - `μ` is the center (mean)
-/// - `σ` is the sigma (standard deviation)
+/// - `x` is the position along the range.
+/// - `μ` is the center (mean).
+/// - `σ` is the sigma (standard deviation).
 ///
 /// # Arguments
 ///

@@ -34,11 +34,7 @@ fn decay_gaussian_exponential_1d() {
     .unwrap();
 
     // check curve photon count and a point on the curve (near max)
-    assert!(ensure_within_tolerance(
-        sum(&i),
-        4960.5567668085005,
-        1e-12
-    ));
+    assert!(ensure_within_tolerance(sum(&i), 4960.5567668085005, 1e-12));
     assert!(ensure_within_tolerance(i[68], 135.7148429095218, 1e-12));
 }
 
@@ -78,11 +74,7 @@ fn decay_ideal_exponential_1d() {
     let i = decay::ideal_exponential_1d(SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS).unwrap();
 
     // check curve photon count and a point on the curve
-    assert!(ensure_within_tolerance(
-        sum(&i),
-        5000.0,
-        1e-12
-    ));
+    assert!(ensure_within_tolerance(sum(&i), 5000.0, 1e-12));
     assert!(ensure_within_tolerance(i[30], 53.625382823015336, 1e-12));
 }
 
@@ -114,11 +106,7 @@ fn decay_irf_exponential_1d() {
         decay::irf_exponential_1d(&irf, SAMPLES, PERIOD, &TAUS, &FRACTIONS, TOTAL_COUNTS).unwrap();
 
     // check the curve by integration and a point
-    assert!(ensure_within_tolerance(
-        sum(&i),
-        4960.5567668085005,
-        1e-12
-    ));
+    assert!(ensure_within_tolerance(sum(&i), 4960.5567668085005, 1e-12));
     assert!(ensure_within_tolerance(i[68], 135.7148429095218, 1e-12));
 }
 
