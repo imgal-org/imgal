@@ -173,7 +173,7 @@ fn plot_map_image() {
     let s_coords = gs_arr.slice(s![25..30, 25..30, 1]).flatten().to_vec();
 
     // map the coords back to the image
-    let mask = plot::map_image(gs_arr.view(), &g_coords, &s_coords, None).unwrap();
+    let mask = plot::map_mask(gs_arr.view(), &g_coords, &s_coords, None).unwrap();
 
     // check a spot in mask and outside of it
     assert_eq!(mask[[28, 28]], true);
