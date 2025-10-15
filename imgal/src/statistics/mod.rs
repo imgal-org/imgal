@@ -1,3 +1,4 @@
+//! Statistics functions.
 pub mod kendall_tau;
 pub use kendall_tau::weighted_kendall_tau_b;
 pub mod min_max;

@@ -1,3 +1,4 @@
+//! Numerical integration functions.
 pub mod rectangle;
 pub use rectangle::midpoint;
 
