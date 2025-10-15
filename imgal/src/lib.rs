@@ -11,7 +11,7 @@
 //!
 //! ## Crate Status
 //!
-//! This crate is still under active development on and it's API is not stable.
+//! This crate is still under active development and it's API is not stable.
 pub mod colocalization;
 pub mod distribution;
 pub mod error;
