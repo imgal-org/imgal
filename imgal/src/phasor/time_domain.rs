@@ -28,8 +28,6 @@ use crate::traits::numeric::ToFloat64;
 /// - `xᵢ` is the value in bin `i`.
 /// - `vb` is the number of valid bins (_i.e._ bins above threshold).
 /// - `t` is the count threshold.
-/// - `I(·)` is the indicator function, returns `true` if `xᵢ` is above the
-///    threshold, else it returns `false`.
 ///
 /// # Arguments
 ///
@@ -90,8 +88,6 @@ where
 /// - `xᵢ` is the value in bin `i`.
 /// - `vb` is the number of valid bins (_i.e._ bins above threshold).
 /// - `t` is the count threshold.
-/// - `I(·)` is the indicator function, returns `true` if `xᵢ` is above the
-///    threshold, else it returns `false`.
 ///
 /// # Arguments
 ///

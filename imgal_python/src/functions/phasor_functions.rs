@@ -236,8 +236,6 @@ pub fn plot_map_mask<'py>(
 /// - "xᵢ" is the value in bin "i".
 /// - "vb" is the number of valid bins (_i.e._ bins above threshold).
 /// - "t" is the count threshold.
-/// - "I(·)" is the indicator function, returns "true" if "xᵢ" is above the
-///    threshold, else it returns "false".
 ///
 /// :param data: The 1-dimensional decay data as a slice.
 /// :param count_threshold: The minimum bin count value a bin must exceed to be
@@ -272,10 +270,8 @@ pub fn time_domain_histogram_quality(data: Vec<f64>, count_threshold: f64) -> f6
 /// where:
 /// - "n" is the total number of bins.
 /// - "xᵢ" is the value in bin "i".
-/// - `vb` is the number of valid bins (_i.e._ bins above threshold).
+/// - "vb" is the number of valid bins (_i.e._ bins above threshold).
 /// - "t" is the count threshold.
-/// - "I(·)" is the indicator function, returns "true" if "xᵢ" is above the
-///    threshold, else it returns "false".
 ///
 /// :param data: The 3-dimensional decay data.
 /// :param count_threshold: The minimum bin count value a bin must exceed to be
