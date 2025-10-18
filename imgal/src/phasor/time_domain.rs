@@ -20,12 +20,13 @@ use crate::traits::numeric::ToFloat64;
 /// quality. The histogram quality metric is defined as:
 ///
 /// ```text
-/// q = ∑ (I(xᵢ > t) * xᵢ²) / n
+/// q = (vb / n²) * ∑₍xᵢ > t₎ xᵢ²
 /// ```
 ///
 /// where:
 /// - `n` is the total number of bins.
 /// - `xᵢ` is the value in bin `i`.
+/// - `vb` is the number of valid bins (_i.e._ bins above threshold).
 /// - `t` is the count threshold.
 /// - `I(·)` is the indicator function, returns `true` if `xᵢ` is above the
 ///    threshold, else it returns `false`.
@@ -50,13 +51,21 @@ pub fn histogram_quality<T>(data: &[T], count_threshold: T) -> f64
 where
     T: ToFloat64,
 {
-    let dl = data.len() as f64;
-    data.iter().fold(0.0_f64, |mut acc, &v| {
+    let vb = data.iter().fold(0_i32, |mut acc, &v| {
         if v > count_threshold {
-            acc += v.to_f64().powi(2) / dl;
+            acc += 1;
         }
         acc
-    })
+    }) as f64;
+    let dl = data.len() as f64;
+    let q = data.iter().fold(0.0_f64, |mut acc, &v| {
+        if v > count_threshold {
+            acc += v.to_f64().powi(2);
+        }
+        acc
+    });
+
+    q * (vb / dl.powi(2))
 }
 
 /// Compute a histogram quality image from a 3-dimensional decay array.
@@ -73,12 +82,13 @@ where
 /// 2-dimensional array or `q` map. The histogram quality metric is defined as:
 ///
 /// ```text
-/// q = ∑ (I(xᵢ > t) * xᵢ²) / n
+/// q = (vb / n²) * ∑₍xᵢ > t₎ xᵢ²
 /// ```
 ///
 /// where:
 /// - `n` is the total number of bins.
 /// - `xᵢ` is the value in bin `i`.
+/// - `vb` is the number of valid bins (_i.e._ bins above threshold).
 /// - `t` is the count threshold.
 /// - `I(·)` is the indicator function, returns `true` if `xᵢ` is above the
 ///    threshold, else it returns `false`.

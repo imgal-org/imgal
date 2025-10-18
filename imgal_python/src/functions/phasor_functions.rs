@@ -229,11 +229,12 @@ pub fn plot_map_mask<'py>(
 /// a measure of photon counts above threshold and the count distribution
 /// quality. The histogram quality metric is defined as:
 ///
-/// q = ∑ (I(xᵢ > t) * xᵢ²) / n
+/// q = (vb / n²) * ∑₍xᵢ > t₎ xᵢ²
 ///
 /// where:
 /// - "n" is the total number of bins.
 /// - "xᵢ" is the value in bin "i".
+/// - "vb" is the number of valid bins (_i.e._ bins above threshold).
 /// - "t" is the count threshold.
 /// - "I(·)" is the indicator function, returns "true" if "xᵢ" is above the
 ///    threshold, else it returns "false".
@@ -266,11 +267,12 @@ pub fn time_domain_histogram_quality(data: Vec<f64>, count_threshold: f64) -> f6
 /// distribution quality. This function returns the "q" values as a
 /// 2-dimensional array or "q" map. The histogram quality metric is defined as:
 ///
-/// q = ∑ (I(xᵢ > t) * xᵢ²) / n
+/// q = ∑ (I(xᵢ > t) * xᵢ² * vb) / n²
 ///
 /// where:
 /// - "n" is the total number of bins.
 /// - "xᵢ" is the value in bin "i".
+/// - `vb` is the number of valid bins (_i.e._ bins above threshold).
 /// - "t" is the count threshold.
 /// - "I(·)" is the indicator function, returns "true" if "xᵢ" is above the
 ///    threshold, else it returns "false".
