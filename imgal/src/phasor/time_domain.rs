@@ -11,20 +11,24 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Description
 ///
-/// This function computes the fraction of bins in the histogram that exceed a
-/// specified threshold. This metric provides a measure of histogram "quality"
-/// by quantifying the proportion of bins with sufficient counts for reliable
-/// analysis.
+/// This function computes a weighted quality metric, `q`, for time domain
+/// fluorescence lifetime imaging microscopy (FLIM) photon arrival histograms.
+/// Bins exceeding the `count_threshold` contribute a weighted value to `q`,
+/// rewarding bins with high counts, while still considering histograms with
+/// their counts distributed across multiple valid bins. The `q` value provides
+/// a measure of photon counts above threshold and the count distribution
+/// quality. The histogram quality metric is defined as:
 ///
 /// ```text
-/// q = (1/n) ∑ C(xᵢ > t)
+/// q = ∑ (I(xᵢ > t) * xᵢ²) / n
 /// ```
 ///
 /// where:
 /// - `n` is the total number of bins.
 /// - `xᵢ` is the value in bin `i`.
 /// - `t` is the count threshold.
-/// - `C(·)` is the count function, 1 if `true`, 0 if `false`.
+/// - `I(·)` is the indicator function, returns `true` if `xᵢ` is above the
+///    threshold, else it returns `false`.
 ///
 /// # Arguments
 ///
@@ -34,42 +38,50 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// # Returns
 ///
-/// * `f64`: The decay histogram quality value. The quality value, `q`, ranges
-///    from 0.0 to 1.0, where 1.0 indicates all bins exceed the count threshold
-///    and 0.0 indicates that none do.
+/// * `f64`: The histogram quality value, `q`. A `q` value of 0.0 occurs when
+///    no bins exceed the threshold, indicating an insufficient histogram for
+///    analysis. Values in the range of < 1.0 indicate histograms with few
+///    photons overall and/or photons disributed across many other bins with
+///    low counts per bin. Values between 1.0 and 10.0 contain good photon counts
+///    and/or photon distribution across the histogram. Values exceeding 10.0
+///    indicate high quality histograms with high photon counts that are
+///    distributed across the histogram.
 pub fn histogram_quality<T>(data: &[T], count_threshold: T) -> f64
 where
     T: ToFloat64,
 {
-    let valid_bin_count = data.iter().fold(0_i32, |mut acc, &v| {
+    let dl = data.len() as f64;
+    data.iter().fold(0.0_f64, |mut acc, &v| {
         if v > count_threshold {
-            acc += 1;
+            acc += v.to_f64().powi(2) / dl;
         }
         acc
-    });
-
-    valid_bin_count as f64 / data.len() as f64
+    })
 }
 
-/// Compute a histogram quality map from a 3-dimensional decay array.
+/// Compute a histogram quality image from a 3-dimensional decay array.
 ///
 /// # Description
 ///
-/// This function computes the fraction of bins in the histogram that exceed a
-/// specified threshold (_i.e._ the histogram quality metric `q`) for each
-/// 1-dimensional histogram in the input array. The `q` values are returned
-/// as a 2-dimensonal quality or `q` map. The histogram quality metric is
-/// defined as:
+/// This function computes a weighted quality metric, `q`, for time domain
+/// fluorescence lifetime imaging microscopy (FLIM) photon arrival 3-dimensional
+/// arrays. Bins exceeding the `count_threshold` contribute a weighted value to
+/// `q`, rewarding bins with high counts, while still considering histograms
+/// with their counts distributed across multiple valid bins. The `q` value
+/// provides a measure of photon counts above threshold and the count
+/// distribution quality. This function returns the `q` values as a
+/// 2-dimensional array or `q` map. The histogram quality metric is defined as:
 ///
 /// ```text
-/// q = (1/n) ∑ I(xᵢ > t)
+/// q = ∑ (I(xᵢ > t) * xᵢ²) / n
 /// ```
 ///
 /// where:
 /// - `n` is the total number of bins.
 /// - `xᵢ` is the value in bin `i`.
 /// - `t` is the count threshold.
-/// - `C(·)` is the count function, 1 if `true`, 0 if `false`.
+/// - `I(·)` is the indicator function, returns `true` if `xᵢ` is above the
+///    threshold, else it returns `false`.
 ///
 /// # Arguments
 ///
@@ -80,9 +92,16 @@ where
 ///
 /// # Returns
 ///
-/// * `f64`: The 2-dimensional quality or `q` map of the input data.
-///    The quality value, `q`, ranges from 0.0 to 1.0, where 1.0 indicates all
-///    bins exceed the count threshold and 0.0 indicates that none do.
+/// * `Ok(Array2<f64>)`: The 2-dimensional pixel-wise histogram quality, `q`,
+///    value map. A `q` value of 0.0 occurs when no bins exceed the threshold,
+///    indicating an insufficient histogram for analysis. Values in the range
+///    of < 1.0 indicate histograms with few photons overall and/or photons
+///    disributed across many other bins with low counts per bin. Values
+///    between 1.0 and 10.0 contain good photon counts and/or photon
+///    distribution across the histogram. Values exceeding 10.0 indicate high
+///    quality histograms with high photon counts that are distributed across
+///    the histogram.
+/// * `Err(ArrayError)`: If axis is >= 3.
 pub fn histogram_quality_image<T>(
     data: ArrayView3<T>,
     count_threshold: T,

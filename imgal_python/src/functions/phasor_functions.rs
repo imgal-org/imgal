@@ -221,54 +221,73 @@ pub fn plot_map_mask<'py>(
 
 /// Compute the histogram quality value from a 1-dimensional decay array.
 ///
-/// This function computes the fraction of bins in the histogram that exceed a
-/// specified threshold. This metric provides a measure of histogram "quality"
-/// by quantifying the proportion of bins with sufficient counts for reliable
-/// analysis.
+/// This function computes a weighted quality metric, "q", for time domain
+/// fluorescence lifetime imaging microscopy (FLIM) photon arrival histograms.
+/// Bins exceeding the "count_threshold" contribute a weighted value to "q",
+/// rewarding bins with high counts, while still considering histograms with
+/// their counts distributed across multiple valid bins. The "q" value provides
+/// a measure of photon counts above threshold and the count distribution
+/// quality. The histogram quality metric is defined as:
 ///
-/// q = (1/n) ∑ C(xᵢ > t)
+/// q = ∑ (I(xᵢ > t) * xᵢ²) / n
 ///
 /// where:
 /// - "n" is the total number of bins.
 /// - "xᵢ" is the value in bin "i".
 /// - "t" is the count threshold.
-/// - "C(·)" is the count function, 1 if "true", 0 if "false".
+/// - "I(·)" is the indicator function, returns "true" if "xᵢ" is above the
+///    threshold, else it returns "false".
 ///
 /// :param data: The 1-dimensional decay data as a slice.
 /// :param count_threshold: The minimum bin count value a bin must exceed to be
 ///     considered valid.
-/// :return: The decay histogram quality value. The quality value, "q", ranges
-///     from 0.0 to 1.0, where 1.0 indicates all bins exceed the count threshold
-///     and 0.0 indicates that none do.
+/// :return: The histogram quality value, "q". A "q" value of 0.0 occurs when
+///     no bins exceed the threshold, indicating an insufficient histogram for
+///     analysis. Values in the range of < 1.0 indicate histograms with few
+///     photons overall and/or photons disributed across many other bins with
+///     low counts per bin. Values between 1.0 and 10.0 contain good photon counts
+///     and/or photon distribution across the histogram. Values exceeding 10.0
+///     indicate high quality histograms with high photon counts that are
+///     distributed across the histogram.
 #[pyfunction]
 #[pyo3(name = "histogram_quality")]
 pub fn time_domain_histogram_quality(data: Vec<f64>, count_threshold: f64) -> f64 {
     time_domain::histogram_quality(&data, count_threshold)
 }
 
-/// Compute a histogram quality map from a 3-dimensional decay array.
+/// Compute a histogram quality image from a 3-dimensional decay array.
 ///
-/// This function computes the fraction of bins in the histogram that exceed a
-/// specified threshold (i.e. the histogram quality metric "q") for each
-/// 1-dimensional histogram in the input array. The "q" values are returned
-/// as a 2-dimensonal quality or "q" map. The histogram quality metric is
-/// defined as:
+/// This function computes a weighted quality metric, "q", for time domain
+/// fluorescence lifetime imaging microscopy (FLIM) photon arrival 3-dimensional
+/// arrays. Bins exceeding the "count_threshold" contribute a weighted value to
+/// "q", rewarding bins with high counts, while still considering histograms
+/// with their counts distributed across multiple valid bins. The "q" value
+/// provides a measure of photon counts above threshold and the count
+/// distribution quality. This function returns the "q" values as a
+/// 2-dimensional array or "q" map. The histogram quality metric is defined as:
 ///
-/// q = (1/n) ∑ I(xᵢ > t)
+/// q = ∑ (I(xᵢ > t) * xᵢ²) / n
 ///
 /// where:
 /// - "n" is the total number of bins.
 /// - "xᵢ" is the value in bin "i".
 /// - "t" is the count threshold.
-/// - "C(·)" is the count function, 1 if "true", 0 if "false".
+/// - "I(·)" is the indicator function, returns "true" if "xᵢ" is above the
+///    threshold, else it returns "false".
 ///
 /// :param data: The 3-dimensional decay data.
 /// :param count_threshold: The minimum bin count value a bin must exceed to be
 ///     considered valid.
 /// :param axis: The decay or lifetime axis, default = 2.
-/// :return: The 2-dimensional quality or "q" map of the input data.
-///     The quality value, "q", ranges from 0.0 to 1.0, where 1.0 indicates all
-///     bins exceed the count threshold and 0.0 indicates that none do.
+/// :return: The 2-dimensional pixel-wise histogram quality, "q",
+///     value map. A "q" value of 0.0 occurs when no bins exceed the threshold,
+///     indicating an insufficient histogram for analysis. Values in the range
+///     of < 1.0 indicate histograms with few photons overall and/or photons
+///     disributed across many other bins with low counts per bin. Values
+///     between 1.0 and 10.0 contain good photon counts and/or photon
+///     distribution across the histogram. Values exceeding 10.0 indicate high
+///     quality histograms with high photon counts that are distributed across
+///     the histogram.
 #[pyfunction]
 #[pyo3(name = "histogram_quality_image")]
 #[pyo3(signature = (data, count_threshold, axis=None))]
