@@ -10,5 +10,5 @@ crate-type = ["cdylib"]
 doc = false
 
 [dependencies]
-imgal = { path = "../imgal" }
+imgal_c = { path = "../imgal_c" }
 ndarray = "0.16.0"

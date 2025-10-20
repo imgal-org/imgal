@@ -1,1 +1,1 @@
-pub mod statistics_bindings;
+pub mod statistics_cabi;

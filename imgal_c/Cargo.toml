@@ -5,8 +5,8 @@ authors = ["Edward Evans"]
 edition = "2024"
 
 [lib]
-name = "imgal"
-crate-type = ["cdylib"]
+name = "imgal_c"
+crate-type = ["cdylib", "rlib"]
 doc = false
 
 [dependencies]
