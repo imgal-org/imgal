@@ -16,7 +16,7 @@ import java.nio.file.StandardCopyOption;
  */
 public abstract class AbstractNativeLibrary {
 	// TODO support macOS and Windows style native libs
-	private static String libPath = "/native/libimgal.so";
+	private static String libPath = "/native/libimgal_java.so";
 	public static final SymbolLookup libLookup;
 	public static final Linker linker = Linker.nativeLinker();
 
