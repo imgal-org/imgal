@@ -51,6 +51,7 @@
 			    <workingDirectory>${project.basedir}/../</workingDirectory>
                             <arguments>
                                 <argument>build</argument>
+                                <argument>--package=imgal_c</argument>
                                 <argument>--release</argument>
                             </arguments>
                             <skip>${skipRustBuild}</skip>
@@ -76,9 +77,9 @@
                             <resources>
                                 <!-- Linux -->
                                 <resource>
-					<directory>${project.basedir}/../../target/release</directory>
+					<directory>${project.basedir}/../target/release</directory>
                                     <includes>
-                                        <include>libimgal_java.so</include>
+                                        <include>libimgal_c.so</include>
                                     </includes>
                                     <excludes>
                                         <exclude>**/*.d</exclude>
@@ -88,16 +89,16 @@
                                 </resource>
                                 <!-- Windows -->
                                 <resource>
-					<directory>${project.basedir}/../../target/release</directory>
+					<directory>${project.basedir}/../target/release</directory>
                                     <includes>
-                                        <include>imgal_java.dll</include>
+                                        <include>imgal_c.dll</include>
                                     </includes>
                                 </resource>
                                 <!-- macOS -->
                                 <resource>
-					<directory>${project.basedir}/../../target/release</directory>
+					<directory>${project.basedir}/../target/release</directory>
                                     <includes>
-                                        <include>libimgal_java.dylib</include>
+                                        <include>libimgal_c.dylib</include>
                                     </includes>
                                 </resource>
                             </resources>

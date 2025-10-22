@@ -16,7 +16,7 @@ import java.nio.file.StandardCopyOption;
  */
 public abstract class AbstractNativeLibrary {
 	// TODO support macOS and Windows style native libs
-	private static String libPath = "/native/libimgal.so";
+	private static String libPath = "/native/libimgal_c.so";
 	public static final SymbolLookup libLookup;
 	public static final Linker linker = Linker.nativeLinker();
 
@@ -24,7 +24,7 @@ public abstract class AbstractNativeLibrary {
 	static {
 		try {
 			URL url = AbstractNativeLibrary.class.getResource(libPath);
-			Path tmpLib = Files.createTempFile("libimgal_java", "so");
+			Path tmpLib = Files.createTempFile("libimgal_c", "so");
 			try (InputStream is = url.openStream()) {
 				Files.copy(is, tmpLib, StandardCopyOption.REPLACE_EXISTING);
 			}

@@ -37,7 +37,7 @@ public class Statistics extends AbstractNativeLibrary {
 	 */
 	private static MethodHandle initSumMH() {
 		// locate the function address
-		MemorySegment fnMS = libLookup.findOrThrow("sum");
+		MemorySegment fnMS = libLookup.find("sum").orElseThrow();
 
 		// create a function descriptor
 		FunctionDescriptor fnSig = FunctionDescriptor.of(

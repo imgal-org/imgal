@@ -1,7 +1,7 @@
 [workspace]
 members = [
 	"imgal",
-	"imgal_java",
+	"imgal_c",
 	"imgal_python",
 ]
 resolver = "3"
