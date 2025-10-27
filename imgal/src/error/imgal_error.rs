@@ -2,7 +2,7 @@ use std::error;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum ArrayError {
+pub enum ImgalError {
     InvalidArrayGeneric {
         msg: &'static str,
     },
@@ -37,44 +37,44 @@ pub enum ArrayError {
 }
 
 // "Dimension size {} of axis {} is out of bounds for dimension size {}."
-impl fmt::Display for ArrayError {
+impl fmt::Display for ImgalError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ArrayError::InvalidArrayGeneric { msg } => {
+            ImgalError::InvalidArrayGeneric { msg } => {
                 write!(f, "{}", msg)
             }
-            ArrayError::InvalidArrayParameterValueEqual { param_name, value } => {
+            ImgalError::InvalidArrayParameterValueEqual { param_name, value } => {
                 write!(
                     f,
                     "Invalid array parameter value, the parameter {} can not equal {}.",
                     param_name, value
                 )
             }
-            ArrayError::InvalidArrayParameterValueGreater { param_name, value } => {
+            ImgalError::InvalidArrayParameterValueGreater { param_name, value } => {
                 write!(
                     f,
                     "Invalid array parameter value, the parameter {} can not be greater than {}.",
                     param_name, value
                 )
             }
-            ArrayError::InvalidArrayParameterValueLess { param_name, value } => {
+            ImgalError::InvalidArrayParameterValueLess { param_name, value } => {
                 write!(
                     f,
                     "Invalid array parameter value, the parameter {} can not be less than {}.",
                     param_name, value
                 )
             }
-            ArrayError::InvalidAxis { axis_idx, dim_len } => {
+            ImgalError::InvalidAxis { axis_idx, dim_len } => {
                 write!(
                     f,
                     "Invalid axis, axis {} is out of bounds for dimension length {}.",
                     axis_idx, dim_len
                 )
             }
-            ArrayError::InvalidSum { expected, got } => {
+            ImgalError::InvalidSum { expected, got } => {
                 write!(f, "Invalid sum, expected {} but got {}.", expected, got)
             }
-            ArrayError::MismatchedArrayLengths {
+            ImgalError::MismatchedArrayLengths {
                 a_arr_len,
                 b_arr_len,
             } => {
@@ -84,7 +84,7 @@ impl fmt::Display for ArrayError {
                     a_arr_len, b_arr_len
                 )
             }
-            ArrayError::MismatchedArrayShapes { shape_a, shape_b } => {
+            ImgalError::MismatchedArrayShapes { shape_a, shape_b } => {
                 write!(
                     f,
                     "Mismatched array shapes, {:?} and {:?}, do not match.",
@@ -95,4 +95,4 @@ impl fmt::Display for ArrayError {
     }
 }
 
-impl error::Error for ArrayError {}
+impl error::Error for ImgalError {}

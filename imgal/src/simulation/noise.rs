@@ -5,7 +5,7 @@ use rand::rngs::StdRng;
 use rand_distr::{Distribution, Poisson};
 use rayon::prelude::*;
 
-use crate::error::ArrayError;
+use crate::error::ImgalError;
 use crate::traits::numeric::ToFloat64;
 
 /// Simulate Poisson noise on a 1-dimensional array.
@@ -108,13 +108,13 @@ pub fn poisson_1d_mut(data: &mut [f64], scale: f64, seed: Option<u64>) {
 ///
 /// * `Ok(Array3<f64>)`: A 3-dimensional array of the input data with Poisson noise
 ///    applied.
-/// * `Err(ArrayError)`: If axis >= 3.
+/// * `Err(ImgalError)`: If axis >= 3.
 pub fn poisson_3d<T>(
     data: ArrayView3<T>,
     scale: f64,
     seed: Option<u64>,
     axis: Option<usize>,
-) -> Result<Array3<f64>, ArrayError>
+) -> Result<Array3<f64>, ImgalError>
 where
     T: ToFloat64,
 {
@@ -123,7 +123,7 @@ where
 
     // check if axis parameter is valid
     if a >= 3 {
-        return Err(ArrayError::InvalidAxis {
+        return Err(ImgalError::InvalidAxis {
             axis_idx: a,
             dim_len: 3,
         });

@@ -2,7 +2,7 @@ use std::f64;
 
 use ndarray::{Array2, Array3, ArrayView2, ArrayView3, Axis, Zip, stack};
 
-use crate::error::ArrayError;
+use crate::error::ImgalError;
 use crate::integration::midpoint;
 use crate::parameter::omega;
 use crate::traits::numeric::ToFloat64;
@@ -31,14 +31,14 @@ use crate::traits::numeric::ToFloat64;
 ///
 /// * `Ok(Array3<f64>)`: The real and imaginary coordinates as a 3D (ch, row, col) image,
 ///    where G and S are indexed at 0 and 1 respectively on the _channel_ axis.
-/// * `Err(ArrayError)`: If axis is >= 3.
+/// * `Err(ImgalError)`: If axis is >= 3.
 pub fn image<T>(
     data: ArrayView3<T>,
     period: f64,
     mask: Option<ArrayView2<bool>>,
     harmonic: Option<f64>,
     axis: Option<usize>,
-) -> Result<Array3<f64>, ArrayError>
+) -> Result<Array3<f64>, ImgalError>
 where
     T: ToFloat64,
 {
@@ -48,7 +48,7 @@ where
 
     // check if axis parameter is valid
     if a >= 3 {
-        return Err(ArrayError::InvalidAxis {
+        return Err(ImgalError::InvalidAxis {
             axis_idx: a,
             dim_len: 3,
         });

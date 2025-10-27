@@ -1,3 +1,3 @@
 //! Internal error module.
-pub mod array;
-pub use array::ArrayError;
+pub mod imgal_error;
+pub use imgal_error::ImgalError;

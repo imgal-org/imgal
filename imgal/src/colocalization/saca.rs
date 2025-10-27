@@ -6,7 +6,7 @@ use ndarray::{
 };
 use rayon::prelude::*;
 
-use crate::error::ArrayError;
+use crate::error::ImgalError;
 use crate::kernel::neighborhood::{weighted_circle, weighted_sphere};
 use crate::statistics::{effective_sample_size, weighted_kendall_tau_b};
 use crate::traits::numeric::ToFloat64;
@@ -44,7 +44,7 @@ use crate::traits::numeric::ToFloat64;
 /// * `OK(Array2<f64>)`: The pixel-wise _z-score_ indicating colocalization or
 ///    anti-colocalization by its sign and the degree or strength of the
 ///    relationship through its absolute values.
-/// * `Err(ArrayError)`: If the dimensions of image `A` and `B` do not match.
+/// * `Err(ImgalError)`: If the dimensions of image `A` and `B` do not match.
 ///
 /// # Reference
 ///
@@ -54,7 +54,7 @@ pub fn saca_2d<T>(
     data_b: ArrayView2<T>,
     threshold_a: T,
     threshold_b: T,
-) -> Result<Array2<f64>, ArrayError>
+) -> Result<Array2<f64>, ImgalError>
 where
     T: ToFloat64,
 {
@@ -63,7 +63,7 @@ where
     let dims_a = data_a.dim();
     let dims_b = data_b.dim();
     if dims_a != dims_b {
-        return Err(ArrayError::MismatchedArrayShapes {
+        return Err(ImgalError::MismatchedArrayShapes {
             shape_a: vec![dims_a.0, dims_a.1],
             shape_b: vec![dims_b.0, dims_b.1],
         });
@@ -159,7 +159,7 @@ where
 /// * `OK(Array3<f64>)`: The pixel-wise _z-score_ indicating colocalization or
 ///    anti-colocalization by its sign and the degree or strength of the
 ///    relationship through its absolute values.
-/// * `Err(ArrayError)`: If the dimensions of image `A` and `B` do not match.
+/// * `Err(ImgalError)`: If the dimensions of image `A` and `B` do not match.
 ///
 /// # Reference
 ///
@@ -169,7 +169,7 @@ pub fn saca_3d<T>(
     data_b: ArrayView3<T>,
     threshold_a: T,
     threshold_b: T,
-) -> Result<Array3<f64>, ArrayError>
+) -> Result<Array3<f64>, ImgalError>
 where
     T: ToFloat64,
 {
@@ -177,7 +177,7 @@ where
     let dims_a = data_a.dim();
     let dims_b = data_a.dim();
     if dims_a != dims_b {
-        return Err(ArrayError::MismatchedArrayShapes {
+        return Err(ImgalError::MismatchedArrayShapes {
             shape_a: vec![dims_a.0, dims_a.1, dims_a.2],
             shape_b: vec![dims_b.0, dims_b.1, dims_b.2],
         });

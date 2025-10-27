@@ -3,7 +3,7 @@ use std::f64;
 
 use ndarray::{Array2, ArrayView3, Axis, Zip};
 
-use crate::error::ArrayError;
+use crate::error::ImgalError;
 
 /// Compute the modulation of phasor G and S coordinates.
 ///
@@ -109,18 +109,18 @@ pub fn monoexponential_coordinates(tau: f64, omega: f64) -> (f64, f64) {
 ///
 /// * `Ok(Array2<bool>)`: A 2-dimensional boolean mask where `true` pixels
 ///    represent values found in the `g_coords` and `s_coords` arrays.
-/// * `Err(ArrayError)`: If "g" and "s" coordinate array lengths do not match.
+/// * `Err(ImgalError)`: If "g" and "s" coordinate array lengths do not match.
 pub fn map_mask(
     data: ArrayView3<f64>,
     g_coords: &[f64],
     s_coords: &[f64],
     axis: Option<usize>,
-) -> Result<Array2<bool>, ArrayError> {
+) -> Result<Array2<bool>, ImgalError> {
     // check g and s coords array lengths
     let gl = g_coords.len();
     let sl = s_coords.len();
     if gl != sl {
-        return Err(ArrayError::MismatchedArrayLengths {
+        return Err(ImgalError::MismatchedArrayLengths {
             a_arr_len: gl,
             b_arr_len: sl,
         });
@@ -129,7 +129,7 @@ pub fn map_mask(
     // check if axis parameter is valid
     let a = axis.unwrap_or(2);
     if a >= 3 {
-        return Err(ArrayError::InvalidAxis {
+        return Err(ImgalError::InvalidAxis {
             axis_idx: a,
             dim_len: 3,
         });

@@ -1,6 +1,6 @@
 use ndarray::{Array1, Array3, Zip};
 
-use crate::error::ArrayError;
+use crate::error::ImgalError;
 use crate::filter::fft_convolve_1d;
 use crate::simulation::instrument;
 use crate::statistics::sum;
@@ -40,7 +40,7 @@ use crate::statistics::sum;
 ///
 /// * `Ok(Vec<f64>)`: The 1-dimensonal Gaussian IRF convolved monoexponential
 ///    or multiexponential decay curve.
-/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+/// * `Err(ImgalError)`: If taus and fractions array lengths do not match. If
 ///    fractions array does not sum to 1.0.
 pub fn gaussian_exponential_1d(
     samples: usize,
@@ -50,7 +50,7 @@ pub fn gaussian_exponential_1d(
     total_counts: f64,
     irf_center: f64,
     irf_width: f64,
-) -> Result<Vec<f64>, ArrayError> {
+) -> Result<Vec<f64>, ImgalError> {
     let irf = instrument::gaussian_irf_1d(samples, period, irf_center, irf_width);
     let i_arr = ideal_exponential_1d(samples, period, taus, fractions, total_counts)?;
 
@@ -93,7 +93,7 @@ pub fn gaussian_exponential_1d(
 ///
 /// * `Ok(Array3<f64>)`: The 3-dimensional Gaussian IRF convolved monoexponential
 ///    or multiexponential decay curve.
-/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+/// * `Err(ImgalError)`: If taus and fractions array lengths do not match. If
 ///    fractions array does not sum to 1.0.
 pub fn gaussian_exponential_3d(
     samples: usize,
@@ -104,7 +104,7 @@ pub fn gaussian_exponential_3d(
     irf_center: f64,
     irf_width: f64,
     shape: (usize, usize),
-) -> Result<Array3<f64>, ArrayError> {
+) -> Result<Array3<f64>, ImgalError> {
     // create 1-dimensional gaussian IRF convolved curve and broadcast
     let i_arr = gaussian_exponential_1d(
         samples,
@@ -156,7 +156,7 @@ pub fn gaussian_exponential_3d(
 ///
 /// * `Ok(Vec<f64>)`: The 1-dimensonal monoexponential or multiexponential
 ///    decay curve.
-/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+/// * `Err(ImgalError)`: If taus and fractions array lengths do not match. If
 ///    fractions array does not sum to 1.0.
 ///
 /// # Reference
@@ -168,12 +168,12 @@ pub fn ideal_exponential_1d(
     taus: &[f64],
     fractions: &[f64],
     total_counts: f64,
-) -> Result<Vec<f64>, ArrayError> {
+) -> Result<Vec<f64>, ImgalError> {
     // check taus and fractions array lengths
     let tl = taus.len();
     let fl = fractions.len();
     if tl != fl {
-        return Err(ArrayError::MismatchedArrayLengths {
+        return Err(ImgalError::MismatchedArrayLengths {
             a_arr_len: tl,
             b_arr_len: fl,
         });
@@ -182,7 +182,7 @@ pub fn ideal_exponential_1d(
     // create fractions array and check sum to 1.0
     let fs = sum(fractions);
     if fs != 1.0 {
-        return Err(ArrayError::InvalidSum {
+        return Err(ImgalError::InvalidSum {
             expected: 1.0,
             got: fs,
         });
@@ -249,7 +249,7 @@ pub fn ideal_exponential_1d(
 ///
 /// * `Ok(Array3<f64>)`: The 3-dimensonal monoexponential or multiexponential
 ///    decay curve.
-/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+/// * `Err(ImgalError)`: If taus and fractions array lengths do not match. If
 ///    fractions array does not sum to 1.0.
 ///
 /// # Reference
@@ -262,7 +262,7 @@ pub fn ideal_exponential_3d(
     fractions: &[f64],
     total_counts: f64,
     shape: (usize, usize),
-) -> Result<Array3<f64>, ArrayError> {
+) -> Result<Array3<f64>, ImgalError> {
     // create 1-dimensional decay curve and broadcast
     let i_arr = ideal_exponential_1d(samples, period, taus, fractions, total_counts)?;
     let i_arr = Array1::from_vec(i_arr);
@@ -305,7 +305,7 @@ pub fn ideal_exponential_3d(
 ///
 /// * `Ok(Vec<f64>)`: The 1-dimensional IRF convolved monoexponential or
 ///    multiexponential decay curve.
-/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+/// * `Err(ImgalError)`: If taus and fractions array lengths do not match. If
 ///    fractions array does not sum to 1.0.
 pub fn irf_exponential_1d(
     irf: &[f64],
@@ -314,7 +314,7 @@ pub fn irf_exponential_1d(
     taus: &[f64],
     fractions: &[f64],
     total_counts: f64,
-) -> Result<Vec<f64>, ArrayError> {
+) -> Result<Vec<f64>, ImgalError> {
     // create ideal decay curve and convolve with input irf
     let i_arr = ideal_exponential_1d(samples, period, taus, fractions, total_counts)?;
 
@@ -356,7 +356,7 @@ pub fn irf_exponential_1d(
 ///
 /// * `Ok(Array3<f64>)`: The 3-dimensional IRF convolved monoexponential or
 ///    multiexponential decay curve.
-/// * `Err(ArrayError)`: If taus and fractions array lengths do not match. If
+/// * `Err(ImgalError)`: If taus and fractions array lengths do not match. If
 ///    fractions array does not sum to 1.0.
 pub fn irf_exponential_3d(
     irf: &[f64],
@@ -366,7 +366,7 @@ pub fn irf_exponential_3d(
     fractions: &[f64],
     total_counts: f64,
     shape: (usize, usize),
-) -> Result<Array3<f64>, ArrayError> {
+) -> Result<Array3<f64>, ImgalError> {
     // create 1-dimensional IRF convolved decay curve to broadcast
     let i_arr = irf_exponential_1d(irf, samples, period, taus, fractions, total_counts)?;
     let i_arr = Array1::from_vec(i_arr);

@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use crate::error::ArrayError;
+use crate::error::ImgalError;
 use crate::statistics::weighted_merge_sort_mut;
 use crate::traits::numeric::ToFloat64;
 
@@ -41,19 +41,19 @@ use crate::traits::numeric::ToFloat64;
 /// * `OK(f64)`: The weighted Kendall's Tau-b correlation coefficient, ranging
 ///    between -1.0 (negative correlation), 0.0 (no correlation) and 1.0
 ///    (positive correlation).
-/// * `Err(ArrayError)`: If input array lengths do not match.
+/// * `Err(ImgalError)`: If input array lengths do not match.
 pub fn weighted_kendall_tau_b<T>(
     data_a: &[T],
     data_b: &[T],
     weights: &[f64],
-) -> Result<f64, ArrayError>
+) -> Result<f64, ImgalError>
 where
     T: ToFloat64,
 {
     // check array lengths match
     let dl = data_a.len();
     if dl != data_b.len() || dl != weights.len() {
-        return Err(ArrayError::MismatchedArrayLengths {
+        return Err(ImgalError::MismatchedArrayLengths {
             a_arr_len: dl,
             b_arr_len: data_b.len().min(weights.len()),
         });
