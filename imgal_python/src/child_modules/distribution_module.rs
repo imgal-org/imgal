@@ -15,6 +15,10 @@ pub fn register_distribution_module(parent_module: &Bound<'_, PyModule>) -> PyRe
         distribution_functions::distribution_gaussian,
         &distribution_module
     )?)?;
+    distribution_module.add_function(wrap_pyfunction!(
+        distribution_functions::distribution_inverse_cdf,
+        &distribution_module
+    )?)?;
 
     // attach to parent module
     parent_module.add_submodule(&distribution_module)

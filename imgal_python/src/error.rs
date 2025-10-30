@@ -29,6 +29,15 @@ pub fn map_array_error(err: ImgalError) -> PyErr {
             "Axis {} is out of bounds for dimension length {}.",
             axis_idx, dim_len
         )),
+        ImgalError::InvalidParameterValueOutsideRange {
+            param_name,
+            value,
+            min,
+            max,
+        } => PyValueError::new_err(format!(
+            "Invalid parameter value, the parameter {} must be a value between {} and {} but got {}.",
+            param_name, min, max, value
+        )),
         ImgalError::InvalidSum { expected, got } => PyValueError::new_err(format!(
             "Invalid sum, expected {} but got {}.",
             expected, got

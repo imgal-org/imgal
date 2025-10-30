@@ -22,6 +22,12 @@ pub enum ImgalError {
         axis_idx: usize,
         dim_len: usize,
     },
+    InvalidParameterValueOutsideRange {
+        param_name: &'static str,
+        value: f64,
+        min: f64,
+        max: f64,
+    },
     InvalidSum {
         expected: f64,
         got: f64,
@@ -69,6 +75,18 @@ impl fmt::Display for ImgalError {
                     f,
                     "Invalid axis, axis {} is out of bounds for dimension length {}.",
                     axis_idx, dim_len
+                )
+            }
+            ImgalError::InvalidParameterValueOutsideRange {
+                param_name,
+                value,
+                min,
+                max,
+            } => {
+                write!(
+                    f,
+                    "Invalid parameter value, the parameter {} must be a value between {} and {} but got {}.",
+                    param_name, min, max, value
                 )
             }
             ImgalError::InvalidSum { expected, got } => {
