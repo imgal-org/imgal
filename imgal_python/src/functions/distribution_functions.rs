@@ -1,8 +1,8 @@
 use numpy::{IntoPyArray, PyArray1};
 use pyo3::prelude::*;
 
-use imgal::distribution;
 use crate::error::map_array_error;
+use imgal::distribution;
 
 /// Generate a normalized Gaussian distribution over a specified range.
 ///
@@ -49,6 +49,8 @@ pub fn distribution_gaussian(
 ///    "p".
 #[pyfunction]
 #[pyo3(name = "inverse_normal_cdf")]
-pub fn distribution_inverse_cdf(p: f64) -> PyResult<f64>{
-    distribution::inverse_normal_cdf(p).map(|output| output).map_err(map_array_error)
+pub fn distribution_inverse_cdf(p: f64) -> PyResult<f64> {
+    distribution::inverse_normal_cdf(p)
+        .map(|output| output)
+        .map_err(map_array_error)
 }

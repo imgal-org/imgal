@@ -1,6 +1,9 @@
 use std::f64;
 
-use numpy::{IntoPyArray, PyArray2, PyArray3, PyReadonlyArray2, PyReadonlyArray3};
+use numpy::{
+    IntoPyArray, PyArray2, PyArray3, PyArrayDyn, PyReadonlyArray2, PyReadonlyArray3,
+    PyReadonlyArrayDyn,
+};
 use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 
@@ -157,6 +160,36 @@ pub fn colocalization_saca_3d<'py>(
     } else {
         return Err(PyErr::new::<PyTypeError, _>(
             "Unsupported array dtype, supported array dtypes are u8, u16, f32, and f64.",
+        ));
+    }
+}
+
+/// Create a significant pixel mask from a pixel-wise z-score array.
+///
+/// This function applies Bonferroni correction to adjust for multiple
+/// comparisons and creates a boolean array representing the significant pixel
+/// mask.
+///
+/// :param data: The pixel-wise z-score indicating colocalization or
+///     anti-colocalization strength.
+/// :param alpha: The significance level representing the maximum type I error
+///     (i.e. positive error) allowed (default = 0.05).
+/// :return: The significant pixel mask where "true" pixels represent
+///     significant z-score values.
+#[pyfunction]
+#[pyo3(name = "saca_significance_mask")]
+#[pyo3(signature = (data, alpha=None))]
+pub fn colocalization_saca_significance_mask<'py>(
+    py: Python<'py>,
+    data: Bound<'py, PyAny>,
+    alpha: Option<f64>,
+) -> PyResult<Bound<'py, PyArrayDyn<bool>>> {
+    if let Ok(arr) = data.extract::<PyReadonlyArrayDyn<f64>>() {
+        let output = colocalization::saca_significance_mask(arr.as_array(), alpha);
+        return Ok(output.into_pyarray(py));
+    } else {
+        return Err(PyErr::new::<PyTypeError, _>(
+            "Unsupported array dtype, supported array dtypes are f64.",
         ));
     }
 }

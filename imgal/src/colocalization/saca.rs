@@ -1,14 +1,16 @@
 use std::mem;
 
 use ndarray::{
-    Array2, Array3, Array4, ArrayView2, ArrayView3, ArrayViewMut2, ArrayViewMut3, ArrayViewMut4,
-    Axis, Zip,
+    Array2, Array3, Array4, ArrayD, ArrayView2, ArrayView3, ArrayViewD, ArrayViewMut2,
+    ArrayViewMut3, ArrayViewMut4, Axis, Zip,
 };
 use rayon::prelude::*;
 
+use crate::distribution::inverse_normal_cdf;
 use crate::error::ImgalError;
 use crate::kernel::neighborhood::{weighted_circle, weighted_sphere};
 use crate::statistics::{effective_sample_size, weighted_kendall_tau_b};
+use crate::threshold::manual_mask;
 use crate::traits::numeric::ToFloat64;
 
 /// Compute colocalization strength using 2-dimensional Spatially Adaptive
@@ -58,7 +60,6 @@ pub fn saca_2d<T>(
 where
     T: ToFloat64,
 {
-    // TODO make 2D output for now, final output should be 3D (heatmap + p-values)
     // ensure input images have the same shape
     let dims_a = data_a.dim();
     let dims_b = data_b.dim();
@@ -173,7 +174,7 @@ pub fn saca_3d<T>(
 where
     T: ToFloat64,
 {
-    // TODO: consider returning z-score with p-value
+    // ensure input images have the same shape
     let dims_a = data_a.dim();
     let dims_b = data_a.dim();
     if dims_a != dims_b {
@@ -238,6 +239,35 @@ where
     });
 
     Ok(result)
+}
+
+/// Create a significant pixel mask from a pixel-wise _z-score_ array.
+///
+/// # Description
+///
+/// This function applies Bonferroni correction to adjust for multiple
+/// comparisons and creates a boolean array representing the significant pixel
+/// mask.
+///
+/// # Arguments
+///
+/// * `data`: The pixel-wise _z-score_ indicating colocalization or
+///    anti-colocalization strength.
+/// * `alpha`: The significance level representing the maximum type I error
+///    (_i.e._ false positive error) allowed (default = 0.05).
+///
+/// # Returns
+///
+/// * `ArrayD<bool>`: The significant pixel mask where `true` pixels represent
+///    significant _z-score_ values.
+///
+/// # Reference
+///
+/// <https://doi.org/10.1109/TIP.2019.2909194>
+pub fn saca_significance_mask(data: ArrayViewD<f64>, alpha: Option<f64>) -> ArrayD<bool> {
+    let alpha = alpha.unwrap_or(0.05);
+    let q = inverse_normal_cdf(1.0 - (alpha / data.len() as f64)).unwrap();
+    manual_mask(data, q)
 }
 
 /// Fill working buffers from 2-dimensional data.
@@ -469,7 +499,7 @@ fn single_iteration_2d<T>(
             } else {
                 let tau = weighted_kendall_tau_b(&buf_a, &buf_b, &buf_w).unwrap_or(0.0);
                 *nt = tau;
-                *re = tau * *nn * 1.5;
+                *re = tau * *nn * 2.5;
             }
             if bound_check {
                 tau_diff = (ln[1] - *nt).abs() * ln[2];
@@ -576,7 +606,7 @@ fn single_iteration_3d<T>(
             } else {
                 let tau = weighted_kendall_tau_b(&buf_a, &buf_b, &buf_w).unwrap_or(0.0);
                 *nt = tau;
-                *re = tau * *nn * 1.5;
+                *re = tau * *nn * 2.5;
             }
             if bound_check {
                 tau_diff = (ln[1] - *nt).abs() * ln[2];
